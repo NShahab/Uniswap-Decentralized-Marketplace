@@ -39,9 +39,6 @@ This document provides a summary of the package versions used in the project and
 
 **Prepared by [Nahid Shahab] on [2025-01-28]**
 
-"Here is the link to my report: Google Colab Link." 
----
-
 ## 1. Introduction
 
 The objective of this project is to predict financial time series data using advanced deep learning techniques. The focus is on leveraging Long Short-Term Memory (LSTM) and Gated Recurrent Unit (GRU) networks to capture the temporal dependencies in the data. The project specifically deals with cryptocurrency price prediction, using historical data to forecast future trends. Python, TensorFlow, and related libraries were employed to implement the models.
