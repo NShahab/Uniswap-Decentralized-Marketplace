@@ -5,7 +5,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import LSTM, GRU, Dense, Dropout
-from tensorflow.keras.callbacks import EarlyStopping
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau, ModelCheckpoint
+import joblib
 import os
 
 # Function to load and preprocess data
@@ -31,15 +32,21 @@ def resample_data(data, timeframe):
 # Function to add technical indicators
 def add_technical_indicators(data):
     data['SMA'] = data['close'].rolling(window=14).mean()
-    data['RSI'] = 100 - (100 / (1 + (data['close'].diff().gt(0).rolling(window=14).sum() / data['close'].diff().lt(0).abs().rolling(window=14).sum())))
+
+    delta = data['close'].diff()
+    gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+    loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+    rs = gain / loss
+    data['RSI'] = 100 - (100 / (1 + rs))
+
     data['Bollinger_Upper'] = data['close'].rolling(window=20).mean() + 2 * data['close'].rolling(window=20).std()
     data.dropna(inplace=True)
     return data
 
-# Function to normalize data
-def normalize_data(data):
+def normalize_data(data, scaler_path):
     scaler = MinMaxScaler(feature_range=(0, 1))
     normalized_data = scaler.fit_transform(data)
+    joblib.dump(scaler, scaler_path)  # Save scaler
     return normalized_data, scaler
 
 # Creating Sequences
@@ -47,7 +54,7 @@ def create_sequences(data, seq_length):
     X, y = [], []
     for i in range(seq_length, len(data)):
         X.append(data[i-seq_length:i])
-        y.append(data[i, 0])
+        y.append(data[i,0])  #  Closing price
     return np.array(X), np.array(y)
 
 # Function to build the LSTM model
@@ -77,19 +84,24 @@ def build_gru_model(input_shape):
     return gru_model
 
 # Function to train the model
-def train_model(model, X_train, y_train, X_val, y_val, epochs=100, batch_size=32):
+def train_model(model, X_train, y_train, X_val, y_val, epochs=100, batch_size=64):
     early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
+
+    reduce_lr = ReduceLROnPlateau(monitor='val_loss', factor=0.5, patience=5, min_lr=1e-6, verbose=1)
+
+    model_checkpoint = ModelCheckpoint(
+        'best_model.keras', monitor='val_loss', save_best_only=True, verbose=1)
 
     history = model.fit(
         X_train, y_train,
         validation_data=(X_val, y_val),
         epochs=epochs,
         batch_size=batch_size,
-        callbacks=[early_stopping],
+        callbacks=[early_stopping, reduce_lr, model_checkpoint],
         verbose=1
     )
-
     return model, history
+
 
 def evaluate_model(model, X_test, y_test, scaler):
     predictions = model.predict(X_test)
@@ -109,10 +121,10 @@ def evaluate_model(model, X_test, y_test, scaler):
 
     return y_test_rescaled, predictions_rescaled, mse, rmse, mae, r2, next_predicted_price
 
-# Function to save the model
 def save_model(model, model_type, timeframe):
-    model.save(f'model_{model_type}_{timeframe}.h5')
-    print(f"Model for {model_type} at {timeframe} saved as model_{model_type}_{timeframe}.h5")
+    model.save(f'model_{model_type}_{timeframe}.keras')  # Changing the format from h5 to keras
+    print(f"Model for {model_type} at {timeframe} saved as model_{model_type}_{timeframe}.keras")
+
 
 # Function to plot results for each timeframe
 def plot_results(y_test, predictions, model_type, timeframe, next_predicted_price, dates):
@@ -168,8 +180,8 @@ def plot_metrics_comparison(results):
 
 # Main function to execute all steps
 def main():
-    file_path = '/content/drive/MyDrive/Colab Notebooks/binance_data_20180101_to_20241229.csv'
-    timeframes = {'1H': '1 Hour', '4H': '4 Hours', '1D': '1 Day'}
+    file_path = '/content/drive/MyDrive/binance_data_20180101_to_20241229.csv'
+    timeframes = {'1h': '1 Hour', '4h': '4 Hours', '1d': '1 Day'}
     seq_length = 50
     results = {}
 
@@ -181,20 +193,33 @@ def main():
         tf_data = resample_data(data, tf)
         tf_data = add_technical_indicators(tf_data)
         features = tf_data[['close', 'open', 'high', 'low', 'volume', 'SMA', 'RSI', 'Bollinger_Upper']].values
-         # Normalize data
-        normalized_features, scaler = normalize_data(features)
-        X, y = create_sequences(normalized_features, seq_length)
 
-        train_size = int(0.8 * len(X))
-        X_train, X_test = X[:train_size], X[train_size:]
-        y_train, y_test = y[:train_size], y[train_size:]
+        # Normalize data
+        scaler_path = f'scaler_{tf}.pkl'
+        normalized_features, scaler = normalize_data(features, scaler_path)
+        
+        # Split data into train (80%), validation (10%), and test (10%)
+        train_size = int(0.8 * len(normalized_features))
+        val_size = int(0.1 * len(normalized_features))
+        test_size = len(normalized_features) - train_size - val_size
+
+        train_data = normalized_features[:train_size]
+        val_data = normalized_features[train_size:train_size+val_size]
+        test_data = normalized_features[train_size+val_size:]
+
+        # Create sequences for each split
+        X_train, y_train = create_sequences(train_data, seq_length)
+        X_val, y_val = create_sequences(val_data, seq_length)
+        X_test, y_test = create_sequences(test_data, seq_length)
 
         # Extract date index for plotting
-        dates = tf_data.index[train_size + seq_length:]
+        dates = tf_data.index[train_size + val_size + seq_length:]
+        if len(dates) == 0:
+         print(f"Warning: No dates available for plotting in {tf_name}.")
 
         # Train and evaluate LSTM model
-        lstm_model = build_lstm_model((X.shape[1], X.shape[2]))
-        lstm_model, lstm_history = train_model(lstm_model, X_train, y_train, X_test, y_test, epochs=100)
+        lstm_model = build_lstm_model((X_train.shape[1], X_train.shape[2]))
+        lstm_model, lstm_history = train_model(lstm_model, X_train, y_train, X_val, y_val, epochs=100)
         y_test_rescaled_lstm, predictions_rescaled_lstm, mse_lstm, rmse_lstm, mae_lstm, r2_lstm, next_predicted_price_lstm = evaluate_model(lstm_model, X_test, y_test, scaler)
 
         # Save LSTM model and plot results
@@ -203,8 +228,8 @@ def main():
         plot_results(y_test_rescaled_lstm, predictions_rescaled_lstm, 'LSTM', tf_name, next_predicted_price_lstm,dates)
 
         # Train and evaluate GRU model
-        gru_model = build_gru_model((X.shape[1], X.shape[2]))
-        gru_model, gru_history = train_model(gru_model, X_train, y_train, X_test, y_test, epochs=100)
+        gru_model = build_gru_model((X_train.shape[1], X_train.shape[2]))
+        gru_model, gru_history = train_model(gru_model, X_train, y_train, X_val, y_val, epochs=100)
         y_test_rescaled_gru, predictions_rescaled_gru, mse_gru, rmse_gru, mae_gru, r2_gru, next_predicted_price_gru = evaluate_model(gru_model, X_test, y_test, scaler)
 
         # Save GRU model and plot results
