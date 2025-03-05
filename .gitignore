@@ -1,1 +1,3 @@
-myenv/
+my_tensorflow_env/
+node_modules/
+.env

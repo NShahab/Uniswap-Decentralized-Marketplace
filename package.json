@@ -1,0 +1,16 @@
+{
+    "name": "uniswap-decentralized-marketplace",
+    "version": "1.0.0",
+    "scripts": {
+        "test": "npx hardhat test"
+    },
+    "dependencies": {
+        "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+        "@openzeppelin/contracts": "^5.2.0",
+        "@chainlink/contracts": "^0.8.0",
+        "@uniswap/v3-periphery": "^1.4.4",
+        "chai": "^4.3.7",
+        "dotenv": "^16.4.7",
+        "hardhat": "^2.22.0"
+    }
+}
