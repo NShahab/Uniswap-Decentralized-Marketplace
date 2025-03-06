@@ -1,77 +1,87 @@
-import React from 'react'
-import {
-    Container,
-    Box,
-    Heading,
-    Text,
-    Button,
-    VStack,
-    useToast
-} from '@chakra-ui/react'
-import { ethers } from 'ethers'
+import React, { useState } from 'react'
+import Head from 'next/head'
 import Link from 'next/link'
+import { ethers } from 'ethers'
 
 export default function Home() {
-    const toast = useToast()
+    const [isConnecting, setIsConnecting] = useState(false);
+    const [connectionStatus, setConnectionStatus] = useState(null);
 
     const connectWallet = async () => {
         if (typeof window.ethereum !== 'undefined') {
             try {
-                // درخواست اتصال به MetaMask
-                await window.ethereum.request({ method: 'eth_requestAccounts' })
+                setIsConnecting(true);
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-                // ایجاد provider
-                const provider = new ethers.providers.Web3Provider(window.ethereum)
-
-                toast({
-                    title: 'Connected Successfully',
-                    description: 'Your wallet has been connected.',
-                    status: 'success',
-                    duration: 5000,
-                    isClosable: true,
-                })
+                setConnectionStatus({
+                    type: 'success',
+                    message: 'Your wallet has been connected successfully.'
+                });
             } catch (error) {
-                toast({
-                    title: 'Connection Error',
-                    description: 'Please make sure MetaMask is installed and unlocked.',
-                    status: 'error',
-                    duration: 5000,
-                    isClosable: true,
-                })
+                setConnectionStatus({
+                    type: 'danger',
+                    message: 'Please make sure MetaMask is installed and unlocked.'
+                });
+            } finally {
+                setIsConnecting(false);
             }
         } else {
-            toast({
-                title: 'MetaMask Not Installed',
-                description: 'Please install MetaMask first.',
-                status: 'warning',
-                duration: 5000,
-                isClosable: true,
-            })
+            setConnectionStatus({
+                type: 'warning',
+                message: 'Please install MetaMask first.'
+            });
         }
     }
 
     return (
-        <Container maxW="container.lg" py={10}>
-            <VStack spacing={8} align="stretch">
-                <Box textAlign="center">
-                    <Heading mb={4}>Uniswap Marketplace</Heading>
-                    <Text fontSize="xl" mb={8}>
-                        Connect your wallet to get started
-                    </Text>
+        <>
+            <Head>
+                <title>Uniswap Marketplace</title>
+                <meta name="description" content="Decentralized exchange with price predictions" />
+            </Head>
 
-                    <VStack spacing={4}>
-                        <Button colorScheme="blue" size="lg" onClick={connectWallet}>
-                            Connect MetaMask
-                        </Button>
+            <div className="container py-5">
+                <div className="text-center mb-5">
+                    <h1 className="display-4 mb-3">Uniswap Marketplace</h1>
+                    <p className="lead">Connect your wallet to get started</p>
+                </div>
 
-                        <Link href="/Dashboard">
-                            <Button variant="outline">
-                                View Dashboard
-                            </Button>
-                        </Link>
-                    </VStack>
-                </Box>
-            </VStack>
-        </Container>
+                <div className="row justify-content-center">
+                    <div className="col-md-6">
+                        <div className="card shadow-sm">
+                            <div className="card-body text-center p-5">
+                                <h2 className="h4 mb-4">Welcome to Decentralized Exchange</h2>
+
+                                {connectionStatus && (
+                                    <div className={`alert alert-${connectionStatus.type} mb-4`} role="alert">
+                                        {connectionStatus.message}
+                                    </div>
+                                )}
+
+                                <div className="d-grid gap-3">
+                                    <button
+                                        className="btn btn-primary btn-lg"
+                                        onClick={connectWallet}
+                                        disabled={isConnecting}
+                                    >
+                                        {isConnecting ? (
+                                            <>
+                                                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                                Connecting...
+                                            </>
+                                        ) : 'Connect MetaMask'}
+                                    </button>
+
+                                    <Link href="/Dashboard" className="btn btn-outline-secondary">
+                                        View Dashboard
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </>
     )
 } 
