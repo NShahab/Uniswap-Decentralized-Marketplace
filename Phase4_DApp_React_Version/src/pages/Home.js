@@ -18,7 +18,7 @@ const ConnectedAccount = ({ account }) => (
             <small>{account}</small>
         </div>
         <Link to="/dashboard" className="btn btn-primary btn-lg">
-            Go to Dashboard
+            Go to ETH/USDT Dashboard
         </Link>
     </div>
 );
@@ -82,7 +82,7 @@ const Home = () => {
                 <div className="col-md-8">
                     <div className="card shadow-sm">
                         <div className="card-body text-center p-5">
-                            <h1 className="h3 mb-4">Welcome to Bitcoin Price Dashboard</h1>
+                            <h1 className="h3 mb-4">Welcome to Ethereum Price Dashboard</h1>
                             <ConnectionStatus status={connectionStatus} />
                             {account ? (
                                 <ConnectedAccount account={account} />
@@ -94,7 +94,7 @@ const Home = () => {
                                         account={account}
                                     />
                                     <Link to="/dashboard" className="btn btn-outline-secondary">
-                                        View Dashboard Without Connecting
+                                        View ETH/USDT Dashboard Without Connecting
                                     </Link>
                                 </div>
                             )}

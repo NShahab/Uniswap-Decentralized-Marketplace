@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { fetchCurrentPrice, fetchPredictedPrice, formatPrice } from '../utils/api';
+import { fetchBinancePrice, fetchPredictedPrice, formatPrice, calculatePriceDifference } from '../utils/api'; // تغییر fetchCurrentPrice به fetchBinancePrice و اضافه کردن calculatePriceDifference
 
-const PriceCard = ({ title, price, isLoading, error, color }) => (
+const PriceCard = ({ title, price, isLoading, error, color, difference }) => ( // اضافه کردن پراپ difference
     <div className="col-md-6 mb-4">
         <div className="border rounded p-3 h-100 price-card">
             <h5 className="text-center">{title}</h5>
@@ -20,6 +20,11 @@ const PriceCard = ({ title, price, isLoading, error, color }) => (
                         error || 'Error fetching data'
                     )}
                 </h3>
+                {difference && ( // نمایش اختلاف در صورت وجود
+                    <p className={`mt-2 ${difference.difference > 0 ? 'text-success' : 'text-danger'}`}>
+                        {difference.difference > 0 ? '+' : ''}${formatPrice(difference.difference)} ({difference.percentage.toFixed(2)}%)
+                    </p>
+                )}
             </div>
         </div>
     </div>
@@ -28,7 +33,7 @@ const PriceCard = ({ title, price, isLoading, error, color }) => (
 const TradingTips = () => (
     <div className="card shadow-sm">
         <div className="card-body">
-            <h5 className="card-title"> Trading Tips</h5>
+            <h5 className="card-title">Trading Tips</h5>
             <ul className="list-group list-group-flush">
                 <li className="list-group-item">Connect MetaMask wallet to start trading</li>
                 <li className="list-group-item">Monitor real-time prices and predictions</li>
@@ -44,6 +49,7 @@ const Dashboard = () => {
     const [currentPrice, setCurrentPrice] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [priceDifference, setPriceDifference] = useState(null); // اضافه کردن state برای اختلاف قیمت
 
     const fetchData = useCallback(async () => {
         try {
@@ -51,12 +57,15 @@ const Dashboard = () => {
             setError(null);
 
             const [current, predicted] = await Promise.all([
-                fetchCurrentPrice(),
+                fetchBinancePrice(), // تغییر fetchCurrentPrice به fetchBinancePrice
                 fetchPredictedPrice(),
             ]);
 
             setCurrentPrice(current);
             setPredictedPrice(predicted);
+
+            const difference = calculatePriceDifference(predicted, current); // محاسبه اختلاف قیمت
+            setPriceDifference(difference); // ذخیره اختلاف قیمت
         } catch (err) {
             setError(err.message);
         } finally {
@@ -76,21 +85,22 @@ const Dashboard = () => {
                 <div className="col-md-8 mx-auto">
                     <div className="card mb-4 shadow-sm">
                         <div className="card-body">
-                            <h2 className="card-title h4 text-center mb-4">BTC/USDT Price</h2>
+                            <h2 className="card-title h4 text-center mb-4">ETH/USDT Price</h2> {/* تغییر به ETH/USDT */}
                             <div className="row">
                                 <PriceCard
-                                    title=" Current Price"
+                                    title="Current Price"
                                     price={currentPrice}
                                     isLoading={isLoading}
                                     error={error}
                                     color="primary"
                                 />
                                 <PriceCard
-                                    title=" 4h Prediction"
+                                    title="4h Prediction"
                                     price={predictedPrice}
                                     isLoading={isLoading}
                                     error={error}
                                     color="success"
+                                    difference={priceDifference} // ارسال اختلاف قیمت به کامپوننت PriceCard
                                 />
                             </div>
                             {error && (

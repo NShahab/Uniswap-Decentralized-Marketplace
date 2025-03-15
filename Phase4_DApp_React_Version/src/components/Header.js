@@ -127,7 +127,7 @@ const Header = () => {
         <Nav>
             <NavContainer>
                 <Link to="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}>
-                    Bitcoin Dashboard
+                    ETH/USDT Dashboard
                 </Link>
                 <NavLinks>
                     <NavLink to="/" active={location.pathname === '/' ? 1 : undefined}>
