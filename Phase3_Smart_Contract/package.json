@@ -1,32 +1,21 @@
 {
-    "name": "uniswap-marketplace-contracts",
-    "version": "1.0.0",
-    "description": "Smart Contracts for Uniswap Decentralized Marketplace",
-    "scripts": {
-        "test": "npx hardhat test",
-        "compile": "npx hardhat compile",
-        "deploy": "npx hardhat run scripts/deploy.js",
-        "deploy:testnet": "npx hardhat run scripts/deploy.js --network testnet"
-    },
-    "dependencies": {
-        "@nomicfoundation/hardhat-toolbox": "^5.0.0",
-        "@openzeppelin/contracts": "^5.2.0",
-        "@chainlink/contracts": "^0.8.0",
-        "@uniswap/v3-periphery": "^1.4.4",
-        "chai": "^4.3.7",
-        "dotenv": "^16.4.7",
-        "hardhat": "^2.22.0"
-    },
-    "devDependencies": {
-        "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
-        "@nomicfoundation/hardhat-ethers": "^3.0.0",
-        "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
-        "@nomicfoundation/hardhat-verify": "^2.0.0",
-        "@typechain/ethers-v6": "^0.5.0",
-        "@typechain/hardhat": "^9.0.0",
-        "ethers": "^6.4.0",
-        "hardhat-gas-reporter": "^1.0.8",
-        "solidity-coverage": "^0.8.0",
-        "typechain": "^8.3.0"
-    }
+  "name": "phase3_smart_contract",
+  "version": "1.0.0",
+  "main": "hardhat.config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "@openzeppelin/contracts": "^5.0.2",
+    "@uniswap/v3-core": "^1.0.1",
+    "@uniswap/v3-sdk": "^3.9.3",
+    "dotenv": "^16.4.7",
+    "ethers": "^6.13.5",
+    "hardhat": "^2.22.19"
+  }
 }
