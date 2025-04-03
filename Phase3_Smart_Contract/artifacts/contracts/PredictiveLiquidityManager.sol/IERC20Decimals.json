@@ -1,7 +1,7 @@
 {
   "_format": "hh-sol-artifact-1",
   "contractName": "IERC20Decimals",
-  "sourceName": "contracts/PredictiveLiquidityManagerFinal.sol",
+  "sourceName": "contracts/PredictiveLiquidityManager.sol",
   "abi": [
     {
       "inputs": [],

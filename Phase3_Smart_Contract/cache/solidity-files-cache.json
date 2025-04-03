@@ -87,10 +87,10 @@
         "SafeMath"
       ]
     },
-    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\PredictiveLiquidityManagerFinal.sol": {
-      "lastModificationDate": 1743605958038,
-      "contentHash": "197c2cf961815e78b769ee346e62aa53",
-      "sourceName": "contracts/PredictiveLiquidityManagerFinal.sol",
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\PredictiveLiquidityManager.sol": {
+      "lastModificationDate": 1743672818922,
+      "contentHash": "7d88d055fddddb291de4cbdca488e4e9",
+      "sourceName": "contracts/PredictiveLiquidityManager.sol",
       "solcConfig": {
         "version": "0.7.6",
         "settings": {
@@ -133,7 +133,6 @@
         "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3MintCallback.sol",
         "@uniswap/v3-core/contracts/libraries/TickMath.sol",
         "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol",
-        "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol",
         "@uniswap/v3-periphery/contracts/interfaces/external/IWETH9.sol"
       ],
       "versionPragmas": [
@@ -141,7 +140,7 @@
       ],
       "artifacts": [
         "IERC20Decimals",
-        "PredictiveLiquidityManagerFinal"
+        "PredictiveLiquidityManager"
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@openzeppelin\\contracts\\access\\Ownable.sol": {
@@ -230,6 +229,48 @@
         "ReentrancyGuard"
       ]
     },
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\IERC20.sol": {
+      "lastModificationDate": 1743593492813,
+      "contentHash": "e0a41531d159d3a32f84b7a3ecf9fabb",
+      "sourceName": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.6.0 <0.8.0"
+      ],
+      "artifacts": [
+        "IERC20"
+      ]
+    },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\SafeERC20.sol": {
       "lastModificationDate": 1743593495888,
       "contentHash": "33e22842646d746e5c4124c2fdc051aa",
@@ -274,48 +315,6 @@
       ],
       "artifacts": [
         "SafeERC20"
-      ]
-    },
-    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@openzeppelin\\contracts\\token\\ERC20\\IERC20.sol": {
-      "lastModificationDate": 1743593492813,
-      "contentHash": "e0a41531d159d3a32f84b7a3ecf9fabb",
-      "sourceName": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-      "solcConfig": {
-        "version": "0.7.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.6.0 <0.8.0"
-      ],
-      "artifacts": [
-        "IERC20"
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-core\\contracts\\interfaces\\IUniswapV3Pool.sol": {
@@ -499,50 +498,6 @@
       ],
       "artifacts": [
         "INonfungiblePositionManager"
-      ]
-    },
-    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-periphery\\contracts\\interfaces\\ISwapRouter.sol": {
-      "lastModificationDate": 1743593491346,
-      "contentHash": "ffd42687b3db01d30c24213d961fcf9f",
-      "sourceName": "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol",
-      "solcConfig": {
-        "version": "0.7.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [
-        "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol"
-      ],
-      "versionPragmas": [
-        ">=0.7.5"
-      ],
-      "artifacts": [
-        "ISwapRouter"
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-core\\contracts\\interfaces\\callback\\IUniswapV3MintCallback.sol": {
@@ -799,48 +754,6 @@
         "IUniswapV3PoolState"
       ]
     },
-    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-core\\contracts\\interfaces\\pool\\IUniswapV3PoolDerivedState.sol": {
-      "lastModificationDate": 1743593482447,
-      "contentHash": "25b71180ec9f5132a158334971ee2ace",
-      "sourceName": "@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolDerivedState.sol",
-      "solcConfig": {
-        "version": "0.7.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.5.0"
-      ],
-      "artifacts": [
-        "IUniswapV3PoolDerivedState"
-      ]
-    },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-core\\contracts\\interfaces\\pool\\IUniswapV3PoolActions.sol": {
       "lastModificationDate": 1743593482329,
       "contentHash": "83d338eb1394008c808a20ac7c5bab0c",
@@ -881,6 +794,48 @@
       ],
       "artifacts": [
         "IUniswapV3PoolActions"
+      ]
+    },
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-core\\contracts\\interfaces\\pool\\IUniswapV3PoolDerivedState.sol": {
+      "lastModificationDate": 1743593482447,
+      "contentHash": "25b71180ec9f5132a158334971ee2ace",
+      "sourceName": "@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolDerivedState.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.5.0"
+      ],
+      "artifacts": [
+        "IUniswapV3PoolDerivedState"
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-core\\contracts\\interfaces\\pool\\IUniswapV3PoolOwnerActions.sol": {
@@ -1055,6 +1010,48 @@
         "IERC721Enumerable"
       ]
     },
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-periphery\\contracts\\interfaces\\IPoolInitializer.sol": {
+      "lastModificationDate": 1743593490805,
+      "contentHash": "11600b3ed90d17aa07e53a77430a6d6c",
+      "sourceName": "@uniswap/v3-periphery/contracts/interfaces/IPoolInitializer.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [],
+      "versionPragmas": [
+        ">=0.7.5"
+      ],
+      "artifacts": [
+        "IPoolInitializer"
+      ]
+    },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-periphery\\contracts\\interfaces\\IERC721Permit.sol": {
       "lastModificationDate": 1743593490614,
       "contentHash": "9073d26f60e6253b2dfbc103c78cf70d",
@@ -1097,48 +1094,6 @@
       ],
       "artifacts": [
         "IERC721Permit"
-      ]
-    },
-    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-periphery\\contracts\\interfaces\\IPoolInitializer.sol": {
-      "lastModificationDate": 1743593490805,
-      "contentHash": "11600b3ed90d17aa07e53a77430a6d6c",
-      "sourceName": "@uniswap/v3-periphery/contracts/interfaces/IPoolInitializer.sol",
-      "solcConfig": {
-        "version": "0.7.6",
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "outputSelection": {
-            "*": {
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata",
-                "devdoc",
-                "userdoc",
-                "storageLayout",
-                "evm.gasEstimates"
-              ],
-              "": [
-                "ast"
-              ]
-            }
-          },
-          "metadata": {
-            "useLiteralContent": true
-          }
-        }
-      },
-      "imports": [],
-      "versionPragmas": [
-        ">=0.7.5"
-      ],
-      "artifacts": [
-        "IPoolInitializer"
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-periphery\\contracts\\interfaces\\IPeripheryPayments.sol": {
@@ -1353,6 +1308,100 @@
         "IERC165"
       ]
     },
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\TokenOperationsManager.sol": {
+      "lastModificationDate": 1743672866071,
+      "contentHash": "60887753fc58c21b6d3097a1fff9bb33",
+      "sourceName": "contracts/TokenOperationsManager.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
+        "@openzeppelin/contracts/math/SafeMath.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol",
+        "@uniswap/v3-periphery/contracts/interfaces/external/IWETH9.sol"
+      ],
+      "versionPragmas": [
+        "^0.7.6"
+      ],
+      "artifacts": [
+        "TokenOperationsManager"
+      ]
+    },
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-periphery\\contracts\\interfaces\\ISwapRouter.sol": {
+      "lastModificationDate": 1743593491346,
+      "contentHash": "ffd42687b3db01d30c24213d961fcf9f",
+      "sourceName": "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol"
+      ],
+      "versionPragmas": [
+        ">=0.7.5"
+      ],
+      "artifacts": [
+        "ISwapRouter"
+      ]
+    },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-core\\contracts\\interfaces\\callback\\IUniswapV3SwapCallback.sol": {
       "lastModificationDate": 1743593483046,
       "contentHash": "a8ba2d37b0107911ae0e3b0e123cbd83",
@@ -1393,6 +1442,55 @@
       ],
       "artifacts": [
         "IUniswapV3SwapCallback"
+      ]
+    },
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\TokenOperationsManagerOptimized.sol": {
+      "lastModificationDate": 1743690146506,
+      "contentHash": "9f65619cf745123eff4cac75bd007435",
+      "sourceName": "contracts/TokenOperationsManagerOptimized.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
+        "@openzeppelin/contracts/math/SafeMath.sol",
+        "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol",
+        "@uniswap/v3-periphery/contracts/interfaces/external/IWETH9.sol"
+      ],
+      "versionPragmas": [
+        "^0.7.6"
+      ],
+      "artifacts": [
+        "TokenOperationsManagerOptimized"
       ]
     }
   }

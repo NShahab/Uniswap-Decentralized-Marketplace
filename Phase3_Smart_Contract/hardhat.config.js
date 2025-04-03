@@ -30,11 +30,9 @@ module.exports = {
             url: SEPOLIA_RPC_URL,
             accounts: PRIVATE_KEY !== "" ? [PRIVATE_KEY] : [],
             chainId: 11155111,
-            gas: 8000000,             // افزایش به 8 میلیون
-            gasPrice: "auto",
-            maxFeePerGas: 100000000000,  // 100 gwei
-            maxPriorityFeePerGas: 5000000000,  // 5 gwei
-            timeout: 180000           // افزایش به 3 دقیقه
+            gas: 3000000,              // کاهش به 3 میلیون
+            gasPrice: 30000000000,     // 30 gwei
+            timeout: 120000            // کاهش به 2 دقیقه
         }
         // Add other networks if needed
     },
@@ -52,4 +50,7 @@ module.exports = {
         cache: "./cache",
         artifacts: "./artifacts"
     },
+    mocha: {
+        timeout: 180000 // 3 minutes
+    }
 };
