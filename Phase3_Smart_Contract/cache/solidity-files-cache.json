@@ -1309,8 +1309,8 @@
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\TokenOperationsManager.sol": {
-      "lastModificationDate": 1743672866071,
-      "contentHash": "60887753fc58c21b6d3097a1fff9bb33",
+      "lastModificationDate": 1743691999219,
+      "contentHash": "eab084632082b15d3a98ef9cd1e35706",
       "sourceName": "contracts/TokenOperationsManager.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -1491,6 +1491,111 @@
       ],
       "artifacts": [
         "TokenOperationsManagerOptimized"
+      ]
+    },
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\BaselineLiquidityManager.sol": {
+      "lastModificationDate": 1743698899635,
+      "contentHash": "5578bb8142319a864ff7e1e91dece082",
+      "sourceName": "contracts/BaselineLiquidityManager.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
+        "@openzeppelin/contracts/math/SafeMath.sol",
+        "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "./libraries/SqrtMath.sol",
+        "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol",
+        "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol",
+        "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3MintCallback.sol",
+        "@uniswap/v3-core/contracts/libraries/TickMath.sol",
+        "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol",
+        "@uniswap/v3-periphery/contracts/interfaces/external/IWETH9.sol"
+      ],
+      "versionPragmas": [
+        "^0.7.6"
+      ],
+      "artifacts": [
+        "BaselineLiquidityManager",
+        "IERC20Decimals"
+      ]
+    },
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\BaselineMinimal.sol": {
+      "lastModificationDate": 1743878129348,
+      "contentHash": "ae587c292409d643f2429cca5f462d9f",
+      "sourceName": "contracts/BaselineMinimal.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/access/Ownable.sol",
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
+        "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol",
+        "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol",
+        "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol"
+      ],
+      "versionPragmas": [
+        "^0.7.6"
+      ],
+      "artifacts": [
+        "BaselineMinimal"
       ]
     }
   }
