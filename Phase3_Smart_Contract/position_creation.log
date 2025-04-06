@@ -1,0 +1,24 @@
+2025-04-06 20:02:57,977 - INFO - Starting position creation process at 2025-04-06 20:02:57.977758
+2025-04-06 20:02:59,499 - INFO - Received predicted price: 1763.6992676103116
+2025-04-06 20:03:00,888 - INFO - No active position found. Creating new position...
+2025-04-06 20:03:01,661 - ERROR - Error creating position: 'SignedTransaction' object has no attribute 'rawTransaction'
+2025-04-06 20:12:59,074 - INFO - Starting position creation process at 2025-04-06 20:12:59.074383
+2025-04-06 20:13:18,389 - ERROR - Error fetching prediction: HTTPConnectionPool(host='95.216.156.73', port=5000): Max retries exceeded with url: /predict_price?symbol=ETHUSDT&interval=4h (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001FFD6A0C830>: Failed to establish a new connection: [WinError 10053] An established connection was aborted by the software in your host machine'))
+2025-04-06 20:13:18,400 - ERROR - Error creating position: HTTPConnectionPool(host='95.216.156.73', port=5000): Max retries exceeded with url: /predict_price?symbol=ETHUSDT&interval=4h (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000001FFD6A0C830>: Failed to establish a new connection: [WinError 10053] An established connection was aborted by the software in your host machine'))
+2025-04-06 20:13:55,506 - INFO - Starting position creation process at 2025-04-06 20:13:55.505964
+2025-04-06 20:13:56,262 - INFO - Received predicted price: 1763.5212066864967
+2025-04-06 20:13:57,802 - INFO - No active position found. Creating new position...
+2025-04-06 20:13:58,802 - INFO - Transaction sent. Hash: 417396dafa6ae6e55ea146a05e2bfe95f8a515a2c73d546be0a29a28156cb965
+2025-04-06 20:15:59,340 - ERROR - Error creating position: Transaction HexBytes('0x417396dafa6ae6e55ea146a05e2bfe95f8a515a2c73d546be0a29a28156cb965') is not in the chain after 120 seconds
+2025-04-06 20:22:05,705 - INFO - Starting position creation process at 2025-04-06 20:22:05.705552
+2025-04-06 20:22:09,084 - ERROR - Error fetching prediction: HTTPConnectionPool(host='95.216.156.73', port=5000): Max retries exceeded with url: /predict_price?symbol=ETHUSDT&interval=4h (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002225A71C830>: Failed to establish a new connection: [WinError 10053] An established connection was aborted by the software in your host machine'))
+2025-04-06 20:22:09,086 - ERROR - Error creating position: HTTPConnectionPool(host='95.216.156.73', port=5000): Max retries exceeded with url: /predict_price?symbol=ETHUSDT&interval=4h (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002225A71C830>: Failed to establish a new connection: [WinError 10053] An established connection was aborted by the software in your host machine'))
+2025-04-06 20:22:48,125 - INFO - Starting position creation process at 2025-04-06 20:22:48.125046
+2025-04-06 20:22:48,843 - INFO - Received predicted price: 1763.3777923858165
+2025-04-06 20:22:50,308 - INFO - No active position found. Creating new position...
+2025-04-06 20:22:50,807 - ERROR - Error creating position: 'SignedTransaction' object has no attribute 'rawTransaction'
+2025-04-06 20:24:48,637 - INFO - Starting position creation process at 2025-04-06 20:24:48.637206
+2025-04-06 20:24:49,337 - INFO - Received predicted price: 1763.301399421692
+2025-04-06 20:24:50,894 - INFO - No active position found. Creating new position...
+2025-04-06 20:24:51,656 - INFO - Transaction sent. Hash: 2e16a0ae2e49e0badf7cb6282c60d8a9f18ac56d6db2f51737c7f25d57afde35
+2025-04-06 20:24:59,313 - ERROR - Transaction failed!

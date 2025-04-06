@@ -1550,8 +1550,8 @@
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\BaselineMinimal.sol": {
-      "lastModificationDate": 1743878129348,
-      "contentHash": "ae587c292409d643f2429cca5f462d9f",
+      "lastModificationDate": 1743950576064,
+      "contentHash": "7d9a5c5d003068456d4d1b7da5bde360",
       "sourceName": "contracts/BaselineMinimal.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -1589,13 +1589,60 @@
         "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
         "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol",
         "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol",
-        "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol"
+        "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol",
+        "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol",
+        "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol"
       ],
       "versionPragmas": [
         "^0.7.6"
       ],
       "artifacts": [
-        "BaselineMinimal"
+        "BaselineMinimal",
+        "IWETH"
+      ]
+    },
+    "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\node_modules\\@uniswap\\v3-periphery\\contracts\\libraries\\TransferHelper.sol": {
+      "lastModificationDate": 1743593491905,
+      "contentHash": "f0616d1842da6584f8454c9b323d777f",
+      "sourceName": "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol",
+      "solcConfig": {
+        "version": "0.7.6",
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "devdoc",
+                "userdoc",
+                "storageLayout",
+                "evm.gasEstimates"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          },
+          "metadata": {
+            "useLiteralContent": true
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/IERC20.sol"
+      ],
+      "versionPragmas": [
+        ">=0.6.0"
+      ],
+      "artifacts": [
+        "TransferHelper"
       ]
     }
   }
