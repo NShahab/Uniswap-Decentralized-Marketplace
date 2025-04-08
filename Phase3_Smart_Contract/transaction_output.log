@@ -7,6 +7,7 @@
 2025-04-08 21:07:53,877 - INFO - - Token0: 0
 2025-04-08 21:07:53,878 - INFO - - Token1: 0
 2025-04-08 21:07:53,880 - INFO - - WETH: 0
+2025-04-08 21:07:53,979 - - WETH: 0
 2025-04-08 21:07:53,979 - INFO - - WETH: 0
 2025-04-08 21:07:53,980 - INFO - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:07:54,015 - INFO - Preparing to send tokens to contract...
@@ -19,6 +20,7 @@
 2025-04-08 21:07:57,704 - INFO - - Token0: 0
 2025-04-08 21:07:57,705 - INFO - - Token1: 0
 2025-04-08 21:07:57,705 - INFO - - WETH: 0
+2025-04-08 21:07:57,753 - - WETH: 0
 2025-04-08 21:07:57,753 - INFO - - WETH: 0
 2025-04-08 21:07:59,427 - INFO - Received predicted price: 1539.195397449732
 2025-04-08 21:08:00,183 - INFO - No active position found. Creating new position...
@@ -29,333 +31,490 @@
 2025-04-08 21:15:42,199 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 21:15:42,200 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
 2025-04-08 21:15:42,202 - INFO - Starting scheduled job to run every 1.0 hour(s)
+2025-04-08 21:15:42,202 - Starting scheduled job to run every 1.0 hour(s)
 2025-04-08 21:15:42,202 - INFO - Starting scheduled job to run every 1.0 hour(s)
 2025-04-08 21:15:42,203 - INFO - Starting position creation process at 2025-04-08 21:15:42.203003
+2025-04-08 21:15:42,203 - === Starting position creation process at 2025-04-08 21:15:42.203590 ===
 2025-04-08 21:15:42,203 - INFO - === Starting position creation process at 2025-04-08 21:15:42.203590 ===
 2025-04-08 21:15:42,212 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 21:15:42,217 - === Starting new position creation ===
 2025-04-08 21:15:42,217 - INFO - === Starting new position creation ===
 2025-04-08 21:15:43,689 - INFO - Contract balances before creating position:
 2025-04-08 21:15:43,691 - INFO - - Token0: 0
 2025-04-08 21:15:43,692 - INFO - - Token1: 0
 2025-04-08 21:15:43,693 - INFO - - WETH: 0
+2025-04-08 21:15:43,694 - Contract balances before creating position:
 2025-04-08 21:15:43,694 - INFO - Contract balances before creating position:
+2025-04-08 21:15:43,696 - - Token0: 0
 2025-04-08 21:15:43,696 - INFO - - Token0: 0
+2025-04-08 21:15:46,111 - - Token1: 0
 2025-04-08 21:15:46,111 - INFO - - Token1: 0
+2025-04-08 21:15:46,112 - - WETH: 0
 2025-04-08 21:15:46,112 - INFO - - WETH: 0
 2025-04-08 21:15:46,114 - INFO - Contract needs tokens. Sending USDC and ETH...
+2025-04-08 21:15:46,115 - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:15:46,115 - INFO - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:15:46,140 - INFO - Preparing to send tokens to contract...
+2025-04-08 21:15:46,140 - === Starting token transfer to contract ===
 2025-04-08 21:15:46,140 - INFO - === Starting token transfer to contract ===
 2025-04-08 21:15:46,142 - INFO - Sending 0.01 ETH to contract...
+2025-04-08 21:15:46,143 - Sending 0.01 ETH to contract
 2025-04-08 21:15:46,143 - INFO - Sending 0.01 ETH to contract
 2025-04-08 21:15:47,275 - INFO - ETH transaction sent. Hash: 6e14d378d43a2fd038037cef9b29188eb767c96c1dab6337ec666690b0303365
+2025-04-08 21:15:47,277 - ETH transaction sent. Hash: 6e14d378d43a2fd038037cef9b29188eb767c96c1dab6337ec666690b0303365
 2025-04-08 21:15:47,277 - INFO - ETH transaction sent. Hash: 6e14d378d43a2fd038037cef9b29188eb767c96c1dab6337ec666690b0303365
 2025-04-08 21:15:48,046 - INFO - USDC balance: 110.0 USDC
+2025-04-08 21:15:48,047 - USDC balance: 110.0 USDC
 2025-04-08 21:15:48,047 - INFO - USDC balance: 110.0 USDC
 2025-04-08 21:15:48,049 - INFO - Sending 10.0 USDC to contract...
+2025-04-08 21:15:48,050 - Sending 10.0 USDC to contract
 2025-04-08 21:15:48,050 - INFO - Sending 10.0 USDC to contract
 2025-04-08 21:15:48,829 - INFO - USDC transaction sent. Hash: 9db2cdd27df2f38e1719c8cebbb83e9f5efa60912ce1c82e10e37a9837180a8a
+2025-04-08 21:15:48,830 - USDC transaction sent. Hash: 9db2cdd27df2f38e1719c8cebbb83e9f5efa60912ce1c82e10e37a9837180a8a
 2025-04-08 21:15:48,830 - INFO - USDC transaction sent. Hash: 9db2cdd27df2f38e1719c8cebbb83e9f5efa60912ce1c82e10e37a9837180a8a
+2025-04-08 21:15:48,832 - === Token transfer to contract completed successfully ===
 2025-04-08 21:15:48,832 - INFO - === Token transfer to contract completed successfully ===
 2025-04-08 21:15:49,582 - INFO - Contract balances after sending tokens:
 2025-04-08 21:15:49,583 - INFO - - Token0: 0
 2025-04-08 21:15:49,584 - INFO - - Token1: 0
 2025-04-08 21:15:49,585 - INFO - - WETH: 0
+2025-04-08 21:15:49,586 - Contract balances after sending tokens:
 2025-04-08 21:15:49,586 - INFO - Contract balances after sending tokens:
+2025-04-08 21:15:49,588 - - Token0: 0
 2025-04-08 21:15:49,588 - INFO - - Token0: 0
+2025-04-08 21:15:49,590 - - Token1: 0
 2025-04-08 21:15:49,590 - INFO - - Token1: 0
+2025-04-08 21:15:49,591 - - WETH: 0
 2025-04-08 21:15:49,591 - INFO - - WETH: 0
 2025-04-08 21:15:50,348 - INFO - Received predicted price: 1539.0184724807739
+2025-04-08 21:15:50,349 - Received predicted price: 1539.0184724807739
 2025-04-08 21:15:50,349 - INFO - Received predicted price: 1539.0184724807739
 2025-04-08 21:15:51,106 - INFO - No active position found. Creating new position...
+2025-04-08 21:15:51,108 - No active position found. Creating new position...
 2025-04-08 21:15:51,108 - INFO - No active position found. Creating new position...
 2025-04-08 21:15:51,110 - INFO - Converted price with 18 decimals: 1539018472480773767168
+2025-04-08 21:15:51,111 - Converted price with 18 decimals: 1539018472480773767168
 2025-04-08 21:15:51,111 - INFO - Converted price with 18 decimals: 1539018472480773767168
 2025-04-08 21:15:51,789 - INFO - Transaction sent. Hash: caad88dff0044133db3d94e64288b1996e2ca56ae195ffb796bc4d08e91a684a
+2025-04-08 21:15:51,791 - Transaction sent. Hash: caad88dff0044133db3d94e64288b1996e2ca56ae195ffb796bc4d08e91a684a
 2025-04-08 21:15:51,791 - INFO - Transaction sent. Hash: caad88dff0044133db3d94e64288b1996e2ca56ae195ffb796bc4d08e91a684a
 2025-04-08 21:16:01,380 - ERROR - Transaction failed!
+2025-04-08 21:16:01,382 - Transaction failed!
 2025-04-08 21:16:01,382 - ERROR - Transaction failed!
+2025-04-08 21:16:01,383 - === Position creation operation completed ===
 2025-04-08 21:16:01,383 - INFO - === Position creation operation completed ===
 2025-04-08 21:16:01,433 - INFO - Position creation process completed successfully
+2025-04-08 21:16:01,434 - === Position creation process completed successfully ===
 2025-04-08 21:16:01,434 - INFO - === Position creation process completed successfully ===
 2025-04-08 21:16:01,438 - INFO - Waiting 3580.76 seconds until next run...
+2025-04-08 21:16:01,441 - Waiting 3580.76 seconds until next run...
 2025-04-08 21:16:01,441 - INFO - Waiting 3580.76 seconds until next run...
 2025-04-08 21:17:30,362 - INFO - Process terminated by user
+2025-04-08 21:17:30,363 - Process terminated by user
 2025-04-08 21:17:30,363 - INFO - Process terminated by user
 2025-04-08 21:22:21,431 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 21:22:21,432 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 21:22:21,432 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
 2025-04-08 21:22:21,437 - INFO - Starting position creation process at 2025-04-08 21:22:21.437221
+2025-04-08 21:22:21,439 - === Starting position creation process at 2025-04-08 21:22:21.439037 ===
 2025-04-08 21:22:21,439 - INFO - === Starting position creation process at 2025-04-08 21:22:21.439037 ===
 2025-04-08 21:22:21,453 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 21:22:21,461 - === Starting new position creation ===
 2025-04-08 21:22:21,461 - INFO - === Starting new position creation ===
 2025-04-08 21:22:23,338 - INFO - Contract balances before creating position:
 2025-04-08 21:22:23,339 - INFO - - Token0: 0
 2025-04-08 21:22:23,340 - INFO - - Token1: 0
 2025-04-08 21:22:23,340 - INFO - - WETH: 0
+2025-04-08 21:22:23,341 - Contract balances before creating position:
 2025-04-08 21:22:23,341 - INFO - Contract balances before creating position:
+2025-04-08 21:22:23,341 - - Token0: 0
 2025-04-08 21:22:23,341 - INFO - - Token0: 0
+2025-04-08 21:22:23,342 - - Token1: 0
 2025-04-08 21:22:23,342 - INFO - - Token1: 0
+2025-04-08 21:22:23,342 - - WETH: 0
 2025-04-08 21:22:23,342 - INFO - - WETH: 0
 2025-04-08 21:22:25,760 - INFO - Contract needs tokens. Sending USDC and ETH...
+2025-04-08 21:22:25,761 - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:22:25,761 - INFO - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:22:25,772 - INFO - Preparing to send tokens to contract...
+2025-04-08 21:22:25,773 - === Starting token transfer to contract ===
 2025-04-08 21:22:25,773 - INFO - === Starting token transfer to contract ===
 2025-04-08 21:22:25,774 - INFO - Sending 0.01 ETH to contract...
+2025-04-08 21:22:25,775 - Sending 0.01 ETH to contract
 2025-04-08 21:22:25,775 - INFO - Sending 0.01 ETH to contract
 2025-04-08 21:22:26,847 - INFO - ETH transaction sent. Hash: 53a96280523dcca8470eb30439f9708515fcdd74463ecab22d2730288924f015
+2025-04-08 21:22:26,848 - ETH transaction sent. Hash: 53a96280523dcca8470eb30439f9708515fcdd74463ecab22d2730288924f015
 2025-04-08 21:22:26,848 - INFO - ETH transaction sent. Hash: 53a96280523dcca8470eb30439f9708515fcdd74463ecab22d2730288924f015
 2025-04-08 21:22:27,592 - INFO - USDC balance: 110.0 USDC
+2025-04-08 21:22:27,593 - USDC balance: 110.0 USDC
 2025-04-08 21:22:27,593 - INFO - USDC balance: 110.0 USDC
 2025-04-08 21:22:27,593 - INFO - Sending 10.0 USDC to contract...
+2025-04-08 21:22:27,594 - Sending 10.0 USDC to contract
 2025-04-08 21:22:27,594 - INFO - Sending 10.0 USDC to contract
 2025-04-08 21:22:28,314 - INFO - USDC transaction sent. Hash: 4893c06bd535a089a6ee58ed5f826de810a970c04182e78097dca032f4f94256
+2025-04-08 21:22:28,314 - USDC transaction sent. Hash: 4893c06bd535a089a6ee58ed5f826de810a970c04182e78097dca032f4f94256
 2025-04-08 21:22:28,314 - INFO - USDC transaction sent. Hash: 4893c06bd535a089a6ee58ed5f826de810a970c04182e78097dca032f4f94256
+2025-04-08 21:22:28,315 - === Token transfer to contract completed successfully ===
 2025-04-08 21:22:28,315 - INFO - === Token transfer to contract completed successfully ===
 2025-04-08 21:22:28,316 - INFO - Waiting for token transfers to be confirmed...
+2025-04-08 21:22:28,316 - Waiting for token transfers to be confirmed...
 2025-04-08 21:22:28,316 - INFO - Waiting for token transfers to be confirmed...
 2025-04-08 21:22:59,038 - INFO - Contract balances after sending tokens:
 2025-04-08 21:22:59,039 - INFO - - Token0: 0
 2025-04-08 21:22:59,039 - INFO - - Token1: 0
 2025-04-08 21:22:59,040 - INFO - - WETH: 0
+2025-04-08 21:22:59,041 - Contract balances after sending tokens:
 2025-04-08 21:22:59,041 - INFO - Contract balances after sending tokens:
+2025-04-08 21:22:59,042 - - Token0: 0
 2025-04-08 21:22:59,042 - INFO - - Token0: 0
+2025-04-08 21:22:59,042 - - Token1: 0
 2025-04-08 21:22:59,042 - INFO - - Token1: 0
+2025-04-08 21:22:59,043 - - WETH: 0
 2025-04-08 21:22:59,043 - INFO - - WETH: 0
 2025-04-08 21:22:59,777 - INFO - Received predicted price: 1538.7719702768327
+2025-04-08 21:22:59,778 - Received predicted price: 1538.7719702768327
 2025-04-08 21:22:59,778 - INFO - Received predicted price: 1538.7719702768327
 2025-04-08 21:23:00,484 - INFO - No active position found. Creating new position...
+2025-04-08 21:23:00,485 - No active position found. Creating new position...
 2025-04-08 21:23:00,485 - INFO - No active position found. Creating new position...
 2025-04-08 21:23:00,486 - INFO - Converted price with 18 decimals: 1538771970276832575488
+2025-04-08 21:23:00,486 - Converted price with 18 decimals: 1538771970276832575488
 2025-04-08 21:23:00,486 - INFO - Converted price with 18 decimals: 1538771970276832575488
 2025-04-08 21:23:01,243 - INFO - Transaction sent. Hash: 7b4aba2e656f5aba0abd2770231713f046ee1aac53b7008620399f2b0e710848
+2025-04-08 21:23:01,244 - Transaction sent. Hash: 7b4aba2e656f5aba0abd2770231713f046ee1aac53b7008620399f2b0e710848
 2025-04-08 21:23:01,244 - INFO - Transaction sent. Hash: 7b4aba2e656f5aba0abd2770231713f046ee1aac53b7008620399f2b0e710848
 2025-04-08 21:23:13,831 - ERROR - Transaction failed!
+2025-04-08 21:23:13,832 - Transaction failed!
 2025-04-08 21:23:13,832 - ERROR - Transaction failed!
+2025-04-08 21:23:13,833 - === Position creation operation completed ===
 2025-04-08 21:23:13,833 - INFO - === Position creation operation completed ===
 2025-04-08 21:23:13,834 - INFO - Position creation process completed successfully
+2025-04-08 21:23:13,834 - === Position creation process completed successfully ===
 2025-04-08 21:23:13,834 - INFO - === Position creation process completed successfully ===
 2025-04-08 21:26:32,517 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 21:26:32,518 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 21:26:32,518 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
 2025-04-08 21:26:32,520 - INFO - Starting position creation process at 2025-04-08 21:26:32.520468
+2025-04-08 21:26:32,520 - === Starting position creation process at 2025-04-08 21:26:32.520952 ===
 2025-04-08 21:26:32,520 - INFO - === Starting position creation process at 2025-04-08 21:26:32.520952 ===
 2025-04-08 21:26:32,530 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 21:26:32,535 - === Starting new position creation ===
 2025-04-08 21:26:32,535 - INFO - === Starting new position creation ===
 2025-04-08 21:26:33,932 - INFO - Contract balances before creating position:
 2025-04-08 21:26:33,933 - INFO - - Token0: 0
 2025-04-08 21:26:33,934 - INFO - - Token1: 0
 2025-04-08 21:26:33,935 - INFO - - WETH: 0
+2025-04-08 21:26:33,937 - Contract balances before creating position:
 2025-04-08 21:26:33,937 - INFO - Contract balances before creating position:
+2025-04-08 21:26:33,939 - - Token0: 0
 2025-04-08 21:26:33,939 - INFO - - Token0: 0
+2025-04-08 21:26:33,940 - - Token1: 0
 2025-04-08 21:26:33,940 - INFO - - Token1: 0
+2025-04-08 21:26:33,941 - - WETH: 0
 2025-04-08 21:26:33,941 - INFO - - WETH: 0
 2025-04-08 21:26:33,942 - INFO - Contract needs tokens. Sending USDC and ETH...
+2025-04-08 21:26:33,942 - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:26:33,942 - INFO - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:26:33,953 - INFO - Preparing to send tokens to contract...
+2025-04-08 21:26:33,953 - === Starting token transfer to contract ===
 2025-04-08 21:26:33,953 - INFO - === Starting token transfer to contract ===
 2025-04-08 21:26:35,325 - INFO - Initial WETH balance: 0 WETH
+2025-04-08 21:26:35,326 - Initial WETH balance: 0 WETH
 2025-04-08 21:26:35,326 - INFO - Initial WETH balance: 0 WETH
 2025-04-08 21:26:35,327 - INFO - Converting 0.01 ETH to WETH...
+2025-04-08 21:26:35,327 - Converting 0.01 ETH to WETH...
 2025-04-08 21:26:35,327 - INFO - Converting 0.01 ETH to WETH...
 2025-04-08 21:26:36,108 - INFO - WETH deposit transaction sent. Hash: 9a2c8d8bd37c3ebc42ccea5819deb740bef44649ca663e5360828b007c5d4d5d
+2025-04-08 21:26:36,109 - WETH deposit transaction sent. Hash: 9a2c8d8bd37c3ebc42ccea5819deb740bef44649ca663e5360828b007c5d4d5d
 2025-04-08 21:26:36,109 - INFO - WETH deposit transaction sent. Hash: 9a2c8d8bd37c3ebc42ccea5819deb740bef44649ca663e5360828b007c5d4d5d
 2025-04-08 21:26:36,111 - INFO - Waiting for WETH deposit confirmation...
 2025-04-08 21:26:50,113 - INFO - New WETH balance: 0.01 WETH
+2025-04-08 21:26:50,114 - New WETH balance: 0.01 WETH
 2025-04-08 21:26:50,114 - INFO - New WETH balance: 0.01 WETH
 2025-04-08 21:26:50,115 - INFO - Sending 0.01 WETH to contract...
+2025-04-08 21:26:50,117 - Sending 0.01 WETH to contract...
 2025-04-08 21:26:50,117 - INFO - Sending 0.01 WETH to contract...
 2025-04-08 21:26:50,909 - INFO - WETH transfer transaction sent. Hash: f534615093dde5fe5b95459d6d3d07abc804161feb61c2a80ea1234e312ae03b
+2025-04-08 21:26:50,911 - WETH transfer transaction sent. Hash: f534615093dde5fe5b95459d6d3d07abc804161feb61c2a80ea1234e312ae03b
 2025-04-08 21:26:50,911 - INFO - WETH transfer transaction sent. Hash: f534615093dde5fe5b95459d6d3d07abc804161feb61c2a80ea1234e312ae03b
 2025-04-08 21:26:51,727 - INFO - USDC balance: 110.0 USDC
+2025-04-08 21:26:51,728 - USDC balance: 110.0 USDC
 2025-04-08 21:26:51,728 - INFO - USDC balance: 110.0 USDC
 2025-04-08 21:26:51,730 - INFO - Sending 10.0 USDC to contract...
+2025-04-08 21:26:51,731 - Sending 10.0 USDC to contract
 2025-04-08 21:26:51,731 - INFO - Sending 10.0 USDC to contract
 2025-04-08 21:26:52,539 - INFO - USDC transaction sent. Hash: 867a057e2ad02df09148aa62489882dad50eb404f34ad342ba76cc6b158c9c55
+2025-04-08 21:26:52,541 - USDC transaction sent. Hash: 867a057e2ad02df09148aa62489882dad50eb404f34ad342ba76cc6b158c9c55
 2025-04-08 21:26:52,541 - INFO - USDC transaction sent. Hash: 867a057e2ad02df09148aa62489882dad50eb404f34ad342ba76cc6b158c9c55
+2025-04-08 21:26:52,543 - === Token transfer to contract completed successfully ===
 2025-04-08 21:26:52,543 - INFO - === Token transfer to contract completed successfully ===
 2025-04-08 21:26:52,544 - INFO - Waiting for token transfers to be confirmed...
+2025-04-08 21:26:52,545 - Waiting for token transfers to be confirmed...
 2025-04-08 21:26:52,545 - INFO - Waiting for token transfers to be confirmed...
 2025-04-08 21:27:23,257 - INFO - Contract balances after sending tokens:
 2025-04-08 21:27:23,257 - INFO - - Token0: 0
 2025-04-08 21:27:23,258 - INFO - - Token1: 0
 2025-04-08 21:27:23,258 - INFO - - WETH: 0
+2025-04-08 21:27:23,259 - Contract balances after sending tokens:
 2025-04-08 21:27:23,259 - INFO - Contract balances after sending tokens:
+2025-04-08 21:27:23,259 - - Token0: 0
 2025-04-08 21:27:23,259 - INFO - - Token0: 0
+2025-04-08 21:27:23,259 - - Token1: 0
 2025-04-08 21:27:23,259 - INFO - - Token1: 0
+2025-04-08 21:27:23,260 - - WETH: 0
 2025-04-08 21:27:23,260 - INFO - - WETH: 0
 2025-04-08 21:27:23,896 - INFO - Received predicted price: 1538.739879552126
+2025-04-08 21:27:23,897 - Received predicted price: 1538.739879552126
 2025-04-08 21:27:23,897 - INFO - Received predicted price: 1538.739879552126
 2025-04-08 21:27:24,609 - INFO - No active position found. Creating new position...
+2025-04-08 21:27:24,610 - No active position found. Creating new position...
 2025-04-08 21:27:24,610 - INFO - No active position found. Creating new position...
 2025-04-08 21:27:24,611 - INFO - Converted price with 18 decimals: 1538739879552126025728
+2025-04-08 21:27:24,612 - Converted price with 18 decimals: 1538739879552126025728
 2025-04-08 21:27:24,612 - INFO - Converted price with 18 decimals: 1538739879552126025728
 2025-04-08 21:27:25,389 - INFO - Transaction sent. Hash: 4b5ae984bf248a4dd6212fecdc50b4f8791b22e49012c1f81ed380c06ea8bbd4
+2025-04-08 21:27:25,391 - Transaction sent. Hash: 4b5ae984bf248a4dd6212fecdc50b4f8791b22e49012c1f81ed380c06ea8bbd4
 2025-04-08 21:27:25,391 - INFO - Transaction sent. Hash: 4b5ae984bf248a4dd6212fecdc50b4f8791b22e49012c1f81ed380c06ea8bbd4
 2025-04-08 21:27:50,713 - ERROR - Transaction failed!
+2025-04-08 21:27:50,714 - Transaction failed!
 2025-04-08 21:27:50,714 - ERROR - Transaction failed!
+2025-04-08 21:27:50,715 - === Position creation operation completed ===
 2025-04-08 21:27:50,715 - INFO - === Position creation operation completed ===
 2025-04-08 21:27:50,717 - INFO - Position creation process completed successfully
+2025-04-08 21:27:50,718 - === Position creation process completed successfully ===
 2025-04-08 21:27:50,718 - INFO - === Position creation process completed successfully ===
 2025-04-08 21:30:48,226 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 21:30:48,227 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 21:30:48,228 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14
 2025-04-08 21:30:48,231 - INFO - Starting position creation process at 2025-04-08 21:30:48.231421
+2025-04-08 21:30:48,232 - === Starting position creation process at 2025-04-08 21:30:48.232283 ===
 2025-04-08 21:30:48,232 - INFO - === Starting position creation process at 2025-04-08 21:30:48.232283 ===
 2025-04-08 21:30:48,242 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 21:30:48,251 - === Starting new position creation ===
 2025-04-08 21:30:48,251 - INFO - === Starting new position creation ===
 2025-04-08 21:30:49,842 - INFO - Contract balances before creating position:
 2025-04-08 21:30:49,843 - INFO - - Token0: 0
 2025-04-08 21:30:49,843 - INFO - - Token1: 0
 2025-04-08 21:30:49,844 - INFO - - WETH: 0
+2025-04-08 21:30:49,845 - Contract balances before creating position:
 2025-04-08 21:30:49,845 - INFO - Contract balances before creating position:
+2025-04-08 21:30:49,845 - - Token0: 0
 2025-04-08 21:30:49,845 - INFO - - Token0: 0
+2025-04-08 21:30:49,845 - - Token1: 0
 2025-04-08 21:30:49,845 - INFO - - Token1: 0
+2025-04-08 21:30:49,846 - - WETH: 0
 2025-04-08 21:30:49,846 - INFO - - WETH: 0
 2025-04-08 21:30:49,846 - INFO - Contract needs tokens. Sending USDC and ETH...
+2025-04-08 21:30:49,847 - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:30:49,847 - INFO - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:30:49,855 - INFO - Preparing to send tokens to contract...
+2025-04-08 21:30:49,856 - === Starting token transfer to contract ===
 2025-04-08 21:30:49,856 - INFO - === Starting token transfer to contract ===
 2025-04-08 21:30:49,856 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
 2025-04-08 21:30:52,590 - INFO - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
+2025-04-08 21:30:52,591 - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 21:30:52,591 - INFO - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 21:30:52,592 - WARNING - WETH_ADDRESS 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14 does not match either token0 or token1 in the contract
+2025-04-08 21:30:52,592 - WETH_ADDRESS 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14 does not match either token0 or token1 in the contract
 2025-04-08 21:30:52,592 - WARNING - WETH_ADDRESS 0xfFf9976782d46CC05630D1f6eBAb18b2324d6B14 does not match either token0 or token1 in the contract
 2025-04-08 21:30:53,690 - INFO - Initial WETH balance: 0 WETH
+2025-04-08 21:30:53,691 - Initial WETH balance: 0 WETH
 2025-04-08 21:30:53,691 - INFO - Initial WETH balance: 0 WETH
 2025-04-08 21:30:53,692 - INFO - Converting 0.01 ETH to WETH...
+2025-04-08 21:30:53,693 - Converting 0.01 ETH to WETH...
 2025-04-08 21:30:53,693 - INFO - Converting 0.01 ETH to WETH...
 2025-04-08 21:30:54,692 - INFO - WETH deposit transaction sent. Hash: 4074d0124a20cd51d2725e925776bc26e117bee4fd3273a736edcaf273102cf1
+2025-04-08 21:30:54,694 - WETH deposit transaction sent. Hash: 4074d0124a20cd51d2725e925776bc26e117bee4fd3273a736edcaf273102cf1
 2025-04-08 21:30:54,694 - INFO - WETH deposit transaction sent. Hash: 4074d0124a20cd51d2725e925776bc26e117bee4fd3273a736edcaf273102cf1
 2025-04-08 21:30:54,697 - INFO - Waiting for WETH deposit confirmation...
 2025-04-08 21:31:01,800 - INFO - New WETH balance: 0.01 WETH
+2025-04-08 21:31:01,801 - New WETH balance: 0.01 WETH
 2025-04-08 21:31:01,801 - INFO - New WETH balance: 0.01 WETH
 2025-04-08 21:31:01,803 - INFO - Approving contract to spend 0.01 WETH...
+2025-04-08 21:31:01,804 - Approving contract to spend 0.01 WETH...
 2025-04-08 21:31:01,804 - INFO - Approving contract to spend 0.01 WETH...
 2025-04-08 21:31:02,554 - INFO - WETH approval transaction sent. Hash: b02d1626338a5f421c980edc0c66b1cb14272312db011fac62a5c2e0fe9337d0
+2025-04-08 21:31:02,554 - WETH approval transaction sent. Hash: b02d1626338a5f421c980edc0c66b1cb14272312db011fac62a5c2e0fe9337d0
 2025-04-08 21:31:02,554 - INFO - WETH approval transaction sent. Hash: b02d1626338a5f421c980edc0c66b1cb14272312db011fac62a5c2e0fe9337d0
 2025-04-08 21:31:02,555 - INFO - Waiting for WETH approval confirmation...
 2025-04-08 21:31:13,135 - INFO - Sending 0.01 WETH to contract...
+2025-04-08 21:31:13,136 - Sending 0.01 WETH to contract...
 2025-04-08 21:31:13,136 - INFO - Sending 0.01 WETH to contract...
 2025-04-08 21:31:13,893 - INFO - WETH transfer transaction sent. Hash: c05ac0bf6dc0b9914d4fb0b05ad156f18bd135710cdd7248a4461d78edb9ac46
+2025-04-08 21:31:13,895 - WETH transfer transaction sent. Hash: c05ac0bf6dc0b9914d4fb0b05ad156f18bd135710cdd7248a4461d78edb9ac46
 2025-04-08 21:31:13,895 - INFO - WETH transfer transaction sent. Hash: c05ac0bf6dc0b9914d4fb0b05ad156f18bd135710cdd7248a4461d78edb9ac46
 2025-04-08 21:31:13,896 - INFO - Waiting for WETH transfer confirmation...
 2025-04-08 21:31:25,706 - INFO - USDC balance: 110.0 USDC
+2025-04-08 21:31:25,707 - USDC balance: 110.0 USDC
 2025-04-08 21:31:25,707 - INFO - USDC balance: 110.0 USDC
 2025-04-08 21:31:25,707 - INFO - Approving contract to spend 10.0 USDC...
+2025-04-08 21:31:25,707 - Approving contract to spend 10.0 USDC...
 2025-04-08 21:31:25,707 - INFO - Approving contract to spend 10.0 USDC...
 2025-04-08 21:31:26,456 - INFO - USDC approval transaction sent. Hash: 36fb9c0556377c9ef23adada3d21299a009db1c2b36f9b29c7129351ec550bff
+2025-04-08 21:31:26,456 - USDC approval transaction sent. Hash: 36fb9c0556377c9ef23adada3d21299a009db1c2b36f9b29c7129351ec550bff
 2025-04-08 21:31:26,456 - INFO - USDC approval transaction sent. Hash: 36fb9c0556377c9ef23adada3d21299a009db1c2b36f9b29c7129351ec550bff
 2025-04-08 21:31:26,457 - INFO - Waiting for USDC approval confirmation...
 2025-04-08 21:31:37,287 - INFO - Sending 10.0 USDC to contract...
+2025-04-08 21:31:37,288 - Sending 10.0 USDC to contract
 2025-04-08 21:31:37,288 - INFO - Sending 10.0 USDC to contract
 2025-04-08 21:31:38,036 - INFO - USDC transaction sent. Hash: ce7b932454a29bfb1cb7217e006d4e6e800d8c86197bfa27acb83a7a08840fff
+2025-04-08 21:31:38,037 - USDC transaction sent. Hash: ce7b932454a29bfb1cb7217e006d4e6e800d8c86197bfa27acb83a7a08840fff
 2025-04-08 21:31:38,037 - INFO - USDC transaction sent. Hash: ce7b932454a29bfb1cb7217e006d4e6e800d8c86197bfa27acb83a7a08840fff
 2025-04-08 21:31:38,039 - INFO - Waiting for USDC transfer confirmation...
+2025-04-08 21:31:49,455 - === Token transfer to contract completed successfully ===
 2025-04-08 21:31:49,455 - INFO - === Token transfer to contract completed successfully ===
 2025-04-08 21:31:49,456 - INFO - Waiting for token transfers to be confirmed...
+2025-04-08 21:31:49,457 - Waiting for token transfers to be confirmed...
 2025-04-08 21:31:49,457 - INFO - Waiting for token transfers to be confirmed...
 2025-04-08 21:32:20,829 - INFO - Contract balances after sending tokens:
 2025-04-08 21:32:20,830 - INFO - - Token0: 10000000
 2025-04-08 21:32:20,831 - INFO - - Token1: 0
 2025-04-08 21:32:20,832 - INFO - - WETH: 0
+2025-04-08 21:32:20,833 - Contract balances after sending tokens:
 2025-04-08 21:32:20,833 - INFO - Contract balances after sending tokens:
+2025-04-08 21:32:20,834 - - Token0: 10000000
 2025-04-08 21:32:20,834 - INFO - - Token0: 10000000
+2025-04-08 21:32:20,834 - - Token1: 0
 2025-04-08 21:32:20,834 - INFO - - Token1: 0
+2025-04-08 21:32:20,835 - - WETH: 0
 2025-04-08 21:32:20,835 - INFO - - WETH: 0
 2025-04-08 21:32:21,554 - INFO - Received predicted price: 1538.7092087709905
+2025-04-08 21:32:21,556 - Received predicted price: 1538.7092087709905
 2025-04-08 21:32:21,556 - INFO - Received predicted price: 1538.7092087709905
 2025-04-08 21:32:22,273 - INFO - No active position found. Creating new position...
+2025-04-08 21:32:22,274 - No active position found. Creating new position...
 2025-04-08 21:32:22,274 - INFO - No active position found. Creating new position...
 2025-04-08 21:32:22,275 - INFO - Converted price with 18 decimals: 1538709208770990571520
+2025-04-08 21:32:22,275 - Converted price with 18 decimals: 1538709208770990571520
 2025-04-08 21:32:22,275 - INFO - Converted price with 18 decimals: 1538709208770990571520
 2025-04-08 21:32:23,019 - INFO - Transaction sent. Hash: 5f6c3d19b84e0e7ae9da10eba12e3365fd71610a97f654567295e0881d119a29
+2025-04-08 21:32:23,020 - Transaction sent. Hash: 5f6c3d19b84e0e7ae9da10eba12e3365fd71610a97f654567295e0881d119a29
 2025-04-08 21:32:23,020 - INFO - Transaction sent. Hash: 5f6c3d19b84e0e7ae9da10eba12e3365fd71610a97f654567295e0881d119a29
 2025-04-08 21:32:26,262 - ERROR - Transaction failed!
+2025-04-08 21:32:26,263 - Transaction failed!
 2025-04-08 21:32:26,263 - ERROR - Transaction failed!
 2025-04-08 21:32:26,503 - ERROR - Error debugging transaction: Object of type HexBytes is not JSON serializable
+2025-04-08 21:32:26,504 - Error debugging transaction: Object of type HexBytes is not JSON serializable
 2025-04-08 21:32:26,504 - ERROR - Error debugging transaction: Object of type HexBytes is not JSON serializable
+2025-04-08 21:32:26,506 - === Position creation operation completed ===
 2025-04-08 21:32:26,506 - INFO - === Position creation operation completed ===
 2025-04-08 21:32:26,508 - INFO - Position creation process completed successfully
+2025-04-08 21:32:26,509 - === Position creation process completed successfully ===
 2025-04-08 21:32:26,509 - INFO - === Position creation process completed successfully ===
 2025-04-08 21:40:10,952 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 21:40:10,953 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 21:40:10,953 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 21:40:10,955 - INFO - Starting position creation process at 2025-04-08 21:40:10.955881
+2025-04-08 21:40:10,956 - === Starting position creation process at 2025-04-08 21:40:10.956458 ===
 2025-04-08 21:40:10,956 - INFO - === Starting position creation process at 2025-04-08 21:40:10.956458 ===
 2025-04-08 21:40:10,965 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 21:40:10,975 - === Starting new position creation ===
 2025-04-08 21:40:10,975 - INFO - === Starting new position creation ===
 2025-04-08 21:40:13,536 - INFO - Contract balances before creating position:
 2025-04-08 21:40:13,625 - INFO - - Token0: 10000000
 2025-04-08 21:40:13,625 - INFO - - Token1: 0
 2025-04-08 21:40:13,626 - INFO - - WETH: 0
+2025-04-08 21:40:13,627 - Contract balances before creating position:
 2025-04-08 21:40:13,627 - INFO - Contract balances before creating position:
+2025-04-08 21:40:13,628 - - Token0: 10000000
 2025-04-08 21:40:13,628 - INFO - - Token0: 10000000
+2025-04-08 21:40:13,629 - - Token1: 0
 2025-04-08 21:40:13,629 - INFO - - Token1: 0
+2025-04-08 21:40:13,630 - - WETH: 0
 2025-04-08 21:40:13,630 - INFO - - WETH: 0
 2025-04-08 21:40:13,630 - INFO - Contract needs tokens. Sending USDC and ETH...
+2025-04-08 21:40:13,631 - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:40:13,631 - INFO - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 21:40:13,650 - INFO - Preparing to send tokens to contract...
+2025-04-08 21:40:13,650 - === Starting token transfer to contract ===
 2025-04-08 21:40:13,650 - INFO - === Starting token transfer to contract ===
 2025-04-08 21:40:13,653 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
 2025-04-08 21:40:16,687 - INFO - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
+2025-04-08 21:40:16,688 - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 21:40:16,688 - INFO - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 21:40:17,358 - INFO - Initial WETH balance: 0 WETH
+2025-04-08 21:40:17,359 - Initial WETH balance: 0 WETH
 2025-04-08 21:40:17,359 - INFO - Initial WETH balance: 0 WETH
 2025-04-08 21:40:17,359 - INFO - Converting 0.01 ETH to WETH...
+2025-04-08 21:40:17,360 - Converting 0.01 ETH to WETH...
 2025-04-08 21:40:17,360 - INFO - Converting 0.01 ETH to WETH...
 2025-04-08 21:40:18,064 - INFO - WETH deposit transaction sent. Hash: 213616ea38cdf6b5a5611e598a1af40163d0fb6f0dc122b69ac996566087ee04
+2025-04-08 21:40:18,064 - WETH deposit transaction sent. Hash: 213616ea38cdf6b5a5611e598a1af40163d0fb6f0dc122b69ac996566087ee04
 2025-04-08 21:40:18,064 - INFO - WETH deposit transaction sent. Hash: 213616ea38cdf6b5a5611e598a1af40163d0fb6f0dc122b69ac996566087ee04
 2025-04-08 21:40:18,065 - INFO - Waiting for WETH deposit confirmation...
 2025-04-08 21:40:25,782 - INFO - New WETH balance: 0.01 WETH
+2025-04-08 21:40:25,783 - New WETH balance: 0.01 WETH
 2025-04-08 21:40:25,783 - INFO - New WETH balance: 0.01 WETH
 2025-04-08 21:40:25,785 - INFO - Approving contract to spend 0.01 WETH...
+2025-04-08 21:40:25,786 - Approving contract to spend 0.01 WETH...
 2025-04-08 21:40:25,786 - INFO - Approving contract to spend 0.01 WETH...
 2025-04-08 21:40:26,533 - INFO - WETH approval transaction sent. Hash: 4f4cb556231f2dc686a90627dc6dc5e047839718c725b50da67b9fc4be992b64
+2025-04-08 21:40:26,535 - WETH approval transaction sent. Hash: 4f4cb556231f2dc686a90627dc6dc5e047839718c725b50da67b9fc4be992b64
 2025-04-08 21:40:26,535 - INFO - WETH approval transaction sent. Hash: 4f4cb556231f2dc686a90627dc6dc5e047839718c725b50da67b9fc4be992b64
 2025-04-08 21:40:26,537 - INFO - Waiting for WETH approval confirmation...
 2025-04-08 21:40:37,134 - INFO - Sending 0.01 WETH to contract...
+2025-04-08 21:40:37,135 - Sending 0.01 WETH to contract...
 2025-04-08 21:40:37,135 - INFO - Sending 0.01 WETH to contract...
 2025-04-08 21:40:37,872 - INFO - WETH transfer transaction sent. Hash: f65275af8fa7d601bc26baa10b49697deeafb51ac9ab4f94489a9c5b41b96466
+2025-04-08 21:40:37,872 - WETH transfer transaction sent. Hash: f65275af8fa7d601bc26baa10b49697deeafb51ac9ab4f94489a9c5b41b96466
 2025-04-08 21:40:37,872 - INFO - WETH transfer transaction sent. Hash: f65275af8fa7d601bc26baa10b49697deeafb51ac9ab4f94489a9c5b41b96466
 2025-04-08 21:40:37,873 - INFO - Waiting for WETH transfer confirmation...
 2025-04-08 21:40:49,865 - INFO - USDC balance: 100.0 USDC
+2025-04-08 21:40:49,867 - USDC balance: 100.0 USDC
 2025-04-08 21:40:49,867 - INFO - USDC balance: 100.0 USDC
 2025-04-08 21:40:49,868 - INFO - Approving contract to spend 10.0 USDC...
+2025-04-08 21:40:49,869 - Approving contract to spend 10.0 USDC...
 2025-04-08 21:40:49,869 - INFO - Approving contract to spend 10.0 USDC...
 2025-04-08 21:40:50,649 - INFO - USDC approval transaction sent. Hash: 49ad581fbcf8a4dbba2cadfd228c95eafd880b09f0f1452515d4f84cc1d87b25
+2025-04-08 21:40:50,650 - USDC approval transaction sent. Hash: 49ad581fbcf8a4dbba2cadfd228c95eafd880b09f0f1452515d4f84cc1d87b25
 2025-04-08 21:40:50,650 - INFO - USDC approval transaction sent. Hash: 49ad581fbcf8a4dbba2cadfd228c95eafd880b09f0f1452515d4f84cc1d87b25
 2025-04-08 21:40:50,652 - INFO - Waiting for USDC approval confirmation...
 2025-04-08 21:41:01,629 - INFO - Sending 10.0 USDC to contract...
+2025-04-08 21:41:01,630 - Sending 10.0 USDC to contract
 2025-04-08 21:41:01,630 - INFO - Sending 10.0 USDC to contract
 2025-04-08 21:41:02,438 - INFO - USDC transaction sent. Hash: eeb9e80a7a8d14bcff8c2b17f13c2b0ed93fca38fb76a23c1160a6fc154bad75
+2025-04-08 21:41:02,440 - USDC transaction sent. Hash: eeb9e80a7a8d14bcff8c2b17f13c2b0ed93fca38fb76a23c1160a6fc154bad75
 2025-04-08 21:41:02,440 - INFO - USDC transaction sent. Hash: eeb9e80a7a8d14bcff8c2b17f13c2b0ed93fca38fb76a23c1160a6fc154bad75
 2025-04-08 21:41:02,442 - INFO - Waiting for USDC transfer confirmation...
+2025-04-08 21:41:13,387 - === Token transfer to contract completed successfully ===
 2025-04-08 21:41:13,387 - INFO - === Token transfer to contract completed successfully ===
 2025-04-08 21:41:13,389 - INFO - Waiting for token transfers to be confirmed...
+2025-04-08 21:41:13,391 - Waiting for token transfers to be confirmed...
 2025-04-08 21:41:13,391 - INFO - Waiting for token transfers to be confirmed...
 2025-04-08 21:41:45,027 - INFO - Contract balances after sending tokens:
 2025-04-08 21:41:45,028 - INFO - - Token0: 20000000
 2025-04-08 21:41:45,029 - INFO - - Token1: 10000000000000000
 2025-04-08 21:41:45,030 - INFO - - WETH: 10000000000000000
+2025-04-08 21:41:45,032 - Contract balances after sending tokens:
 2025-04-08 21:41:45,032 - INFO - Contract balances after sending tokens:
+2025-04-08 21:41:45,033 - - Token0: 20000000
 2025-04-08 21:41:45,033 - INFO - - Token0: 20000000
+2025-04-08 21:41:45,034 - - Token1: 10000000000000000
 2025-04-08 21:41:45,034 - INFO - - Token1: 10000000000000000
+2025-04-08 21:41:45,036 - - WETH: 10000000000000000
 2025-04-08 21:41:45,036 - INFO - - WETH: 10000000000000000
 2025-04-08 21:41:45,731 - INFO - Received predicted price: 1538.4797458899022
+2025-04-08 21:41:45,732 - Received predicted price: 1538.4797458899022
 2025-04-08 21:41:45,732 - INFO - Received predicted price: 1538.4797458899022
 2025-04-08 21:41:46,456 - INFO - No active position found. Creating new position...
+2025-04-08 21:41:46,457 - No active position found. Creating new position...
 2025-04-08 21:41:46,457 - INFO - No active position found. Creating new position...
 2025-04-08 21:41:46,459 - INFO - Converted price with 18 decimals: 1538479745889902264320
+2025-04-08 21:41:46,460 - Converted price with 18 decimals: 1538479745889902264320
 2025-04-08 21:41:46,460 - INFO - Converted price with 18 decimals: 1538479745889902264320
 2025-04-08 21:41:47,627 - INFO - Transaction sent. Hash: 08f1077f7176f2c5361b8534118c7215239ac86d54a8701c0689fa9b3d05bc0a
+2025-04-08 21:41:47,627 - Transaction sent. Hash: 08f1077f7176f2c5361b8534118c7215239ac86d54a8701c0689fa9b3d05bc0a
 2025-04-08 21:41:47,627 - INFO - Transaction sent. Hash: 08f1077f7176f2c5361b8534118c7215239ac86d54a8701c0689fa9b3d05bc0a
 2025-04-08 21:42:01,750 - ERROR - Transaction failed!
+2025-04-08 21:42:01,752 - Transaction failed!
 2025-04-08 21:42:01,752 - ERROR - Transaction failed!
 2025-04-08 21:42:01,997 - ERROR - Error debugging transaction: Object of type HexBytes is not JSON serializable
+2025-04-08 21:42:01,999 - Error debugging transaction: Object of type HexBytes is not JSON serializable
 2025-04-08 21:42:01,999 - ERROR - Error debugging transaction: Object of type HexBytes is not JSON serializable
+2025-04-08 21:42:02,001 - === Position creation operation completed ===
 2025-04-08 21:42:02,001 - INFO - === Position creation operation completed ===
 2025-04-08 21:42:02,002 - INFO - Position creation process completed successfully
+2025-04-08 21:42:02,004 - === Position creation process completed successfully ===
 2025-04-08 21:42:02,004 - INFO - === Position creation process completed successfully ===
 2025-04-08 21:47:04,111 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 21:47:04,111 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
@@ -376,300 +535,456 @@
 2025-04-08 22:05:19,006 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 22:05:19,008 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:05:19,017 - INFO - Starting position creation process at 2025-04-08 22:05:19.017126
+2025-04-08 22:05:19,019 - === Starting position creation process at 2025-04-08 22:05:19.019655 ===
 2025-04-08 22:05:19,019 - INFO - === Starting position creation process at 2025-04-08 22:05:19.019655 ===
 2025-04-08 22:05:19,045 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 22:05:19,057 - === Starting new position creation ===
 2025-04-08 22:05:19,057 - INFO - === Starting new position creation ===
 2025-04-08 22:05:20,544 - INFO - Contract balances before creating position:
 2025-04-08 22:05:20,546 - INFO - - Token0: 20000000
 2025-04-08 22:05:20,547 - INFO - - Token1: 10000000000000000
 2025-04-08 22:05:20,548 - INFO - - WETH: 10000000000000000
+2025-04-08 22:05:20,549 - Contract balances before creating position:
 2025-04-08 22:05:20,549 - INFO - Contract balances before creating position:
+2025-04-08 22:05:20,550 - - Token0: 20000000
 2025-04-08 22:05:20,550 - INFO - - Token0: 20000000
+2025-04-08 22:05:20,551 - - Token1: 10000000000000000
 2025-04-08 22:05:20,551 - INFO - - Token1: 10000000000000000
+2025-04-08 22:05:20,553 - - WETH: 10000000000000000
 2025-04-08 22:05:20,553 - INFO - - WETH: 10000000000000000
 2025-04-08 22:05:21,324 - INFO - Received predicted price: 1538.0983490467072
+2025-04-08 22:05:21,325 - Received predicted price: 1538.0983490467072
 2025-04-08 22:05:21,325 - INFO - Received predicted price: 1538.0983490467072
 2025-04-08 22:05:22,128 - INFO - No active position found. Creating new position...
+2025-04-08 22:05:22,129 - No active position found. Creating new position...
 2025-04-08 22:05:22,129 - INFO - No active position found. Creating new position...
 2025-04-08 22:05:22,131 - INFO - Trying with price value: 1
+2025-04-08 22:05:22,132 - Trying with price value: 1
 2025-04-08 22:05:22,132 - INFO - Trying with price value: 1
 2025-04-08 22:05:23,054 - INFO - Simulation successful with price value: 1
+2025-04-08 22:05:23,055 - Simulation successful with price value: 1
 2025-04-08 22:05:23,055 - INFO - Simulation successful with price value: 1
 2025-04-08 22:05:24,057 - INFO - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
+2025-04-08 22:05:24,059 - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:05:24,059 - INFO - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:05:25,105 - INFO - Transaction sent. Hash: 8861f0dbca557d169909ea4a1dd2a182e6f72198e90f89e9ff763e9187bfc46a
+2025-04-08 22:05:25,106 - Transaction sent. Hash: 8861f0dbca557d169909ea4a1dd2a182e6f72198e90f89e9ff763e9187bfc46a
 2025-04-08 22:05:25,106 - INFO - Transaction sent. Hash: 8861f0dbca557d169909ea4a1dd2a182e6f72198e90f89e9ff763e9187bfc46a
 2025-04-08 22:05:25,108 - INFO - Waiting for transaction confirmation...
+2025-04-08 22:05:25,109 - Waiting for transaction confirmation...
 2025-04-08 22:05:25,109 - INFO - Waiting for transaction confirmation...
 2025-04-08 22:05:38,417 - INFO - Position created successfully!
+2025-04-08 22:05:38,418 - Position created successfully!
 2025-04-08 22:05:38,418 - INFO - Position created successfully!
 2025-04-08 22:05:39,156 - INFO - New position details:
 2025-04-08 22:05:39,158 - INFO - - Token ID: 195345
 2025-04-08 22:05:39,159 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:05:39,160 - INFO - - Lower Tick: -138300
 2025-04-08 22:05:39,161 - INFO - - Upper Tick: -138060
+2025-04-08 22:05:39,162 - New position details:
 2025-04-08 22:05:39,162 - INFO - New position details:
+2025-04-08 22:05:39,164 - - Token ID: 195345
 2025-04-08 22:05:39,164 - INFO - - Token ID: 195345
+2025-04-08 22:05:39,165 - - Liquidity: 834119781342025699508
 2025-04-08 22:05:39,165 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:05:39,167 - - Lower Tick: -138300
 2025-04-08 22:05:39,167 - INFO - - Lower Tick: -138300
+2025-04-08 22:05:39,168 - - Upper Tick: -138060
 2025-04-08 22:05:39,168 - INFO - - Upper Tick: -138060
 2025-04-08 22:05:39,423 - WARNING - Could not get current pool price: ("The function '_getCurrentSqrtPriceAndTick' was not found in this ", "contract's abi.")
+2025-04-08 22:05:39,425 - Could not get current pool price: ("The function '_getCurrentSqrtPriceAndTick' was not found in this ", "contract's abi.")
 2025-04-08 22:05:39,425 - WARNING - Could not get current pool price: ("The function '_getCurrentSqrtPriceAndTick' was not found in this ", "contract's abi.")
 2025-04-08 22:05:39,428 - ERROR - Error creating position: Object of type Decimal is not JSON serializable
+2025-04-08 22:05:39,429 - Error creating position: Object of type Decimal is not JSON serializable
 2025-04-08 22:05:39,429 - ERROR - Error creating position: Object of type Decimal is not JSON serializable
 2025-04-08 22:05:39,431 - INFO - Position creation process completed successfully
+2025-04-08 22:05:39,432 - === Position creation process completed successfully ===
 2025-04-08 22:05:39,432 - INFO - === Position creation process completed successfully ===
 2025-04-08 22:07:40,103 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:07:40,104 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 22:07:40,104 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:07:40,106 - INFO - Starting position creation process at 2025-04-08 22:07:40.106622
+2025-04-08 22:07:40,107 - === Starting position creation process at 2025-04-08 22:07:40.107069 ===
 2025-04-08 22:07:40,107 - INFO - === Starting position creation process at 2025-04-08 22:07:40.107069 ===
 2025-04-08 22:07:40,114 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 22:07:40,120 - === Starting new position creation ===
 2025-04-08 22:07:40,120 - INFO - === Starting new position creation ===
 2025-04-08 22:07:41,589 - INFO - Contract balances before creating position:
 2025-04-08 22:07:41,590 - INFO - - Token0: 20000000
 2025-04-08 22:07:41,591 - INFO - - Token1: 0
 2025-04-08 22:07:41,593 - INFO - - WETH: 0
+2025-04-08 22:07:41,594 - Contract balances before creating position:
 2025-04-08 22:07:41,594 - INFO - Contract balances before creating position:
+2025-04-08 22:07:41,595 - - Token0: 20000000
 2025-04-08 22:07:41,595 - INFO - - Token0: 20000000
+2025-04-08 22:07:41,597 - - Token1: 0
 2025-04-08 22:07:41,597 - INFO - - Token1: 0
+2025-04-08 22:07:41,598 - - WETH: 0
 2025-04-08 22:07:41,598 - INFO - - WETH: 0
 2025-04-08 22:07:41,599 - INFO - Contract needs tokens. Sending USDC and ETH...
+2025-04-08 22:07:41,600 - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 22:07:41,600 - INFO - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 22:07:41,618 - INFO - Preparing to send tokens to contract...
+2025-04-08 22:07:41,618 - === Starting token transfer to contract ===
 2025-04-08 22:07:41,618 - INFO - === Starting token transfer to contract ===
 2025-04-08 22:07:41,619 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
 2025-04-08 22:07:43,656 - INFO - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
+2025-04-08 22:07:43,658 - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:07:43,658 - INFO - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:07:44,409 - INFO - Initial WETH balance: 0 WETH
+2025-04-08 22:07:44,410 - Initial WETH balance: 0 WETH
 2025-04-08 22:07:44,410 - INFO - Initial WETH balance: 0 WETH
 2025-04-08 22:07:44,412 - INFO - Converting 0.01 ETH to WETH...
+2025-04-08 22:07:44,413 - Converting 0.01 ETH to WETH...
 2025-04-08 22:07:44,413 - INFO - Converting 0.01 ETH to WETH...
 2025-04-08 22:07:45,207 - INFO - WETH deposit transaction sent. Hash: a07a90e6bdd33458a43c01050a449eea5adf1c27d227d430c90b85e30d99706d
+2025-04-08 22:07:45,208 - WETH deposit transaction sent. Hash: a07a90e6bdd33458a43c01050a449eea5adf1c27d227d430c90b85e30d99706d
 2025-04-08 22:07:45,208 - INFO - WETH deposit transaction sent. Hash: a07a90e6bdd33458a43c01050a449eea5adf1c27d227d430c90b85e30d99706d
 2025-04-08 22:07:45,210 - INFO - Waiting for WETH deposit confirmation...
 2025-04-08 22:07:49,990 - INFO - New WETH balance: 0.01 WETH
+2025-04-08 22:07:49,991 - New WETH balance: 0.01 WETH
 2025-04-08 22:07:49,991 - INFO - New WETH balance: 0.01 WETH
 2025-04-08 22:07:49,993 - INFO - Approving contract to spend 0.01 WETH...
+2025-04-08 22:07:49,994 - Approving contract to spend 0.01 WETH...
 2025-04-08 22:07:49,994 - INFO - Approving contract to spend 0.01 WETH...
 2025-04-08 22:07:50,759 - INFO - WETH approval transaction sent. Hash: f507e68d93af26b0df6e8825e8c0fe476388045ea68c27cd97a0026c6f28e5e4
+2025-04-08 22:07:50,761 - WETH approval transaction sent. Hash: f507e68d93af26b0df6e8825e8c0fe476388045ea68c27cd97a0026c6f28e5e4
 2025-04-08 22:07:50,761 - INFO - WETH approval transaction sent. Hash: f507e68d93af26b0df6e8825e8c0fe476388045ea68c27cd97a0026c6f28e5e4
 2025-04-08 22:07:50,763 - INFO - Waiting for WETH approval confirmation...
 2025-04-08 22:08:01,326 - INFO - Sending 0.01 WETH to contract...
+2025-04-08 22:08:01,326 - Sending 0.01 WETH to contract...
 2025-04-08 22:08:01,326 - INFO - Sending 0.01 WETH to contract...
 2025-04-08 22:08:02,094 - INFO - WETH transfer transaction sent. Hash: 8a81d573181a0deb4ac4990e367fc62d89613566e2f1fffbc7a9145d792bad53
+2025-04-08 22:08:02,095 - WETH transfer transaction sent. Hash: 8a81d573181a0deb4ac4990e367fc62d89613566e2f1fffbc7a9145d792bad53
 2025-04-08 22:08:02,095 - INFO - WETH transfer transaction sent. Hash: 8a81d573181a0deb4ac4990e367fc62d89613566e2f1fffbc7a9145d792bad53
 2025-04-08 22:08:02,097 - INFO - Waiting for WETH transfer confirmation...
 2025-04-08 22:08:14,042 - INFO - USDC balance: 90.0 USDC
+2025-04-08 22:08:14,042 - USDC balance: 90.0 USDC
 2025-04-08 22:08:14,042 - INFO - USDC balance: 90.0 USDC
 2025-04-08 22:08:14,042 - INFO - Approving contract to spend 10.0 USDC...
+2025-04-08 22:08:14,043 - Approving contract to spend 10.0 USDC...
 2025-04-08 22:08:14,043 - INFO - Approving contract to spend 10.0 USDC...
 2025-04-08 22:08:14,783 - INFO - USDC approval transaction sent. Hash: 8544e11e15442a3e1d752655c21af38c1ba1b10831ac9ea9102840092d7d350b
+2025-04-08 22:08:14,784 - USDC approval transaction sent. Hash: 8544e11e15442a3e1d752655c21af38c1ba1b10831ac9ea9102840092d7d350b
 2025-04-08 22:08:14,784 - INFO - USDC approval transaction sent. Hash: 8544e11e15442a3e1d752655c21af38c1ba1b10831ac9ea9102840092d7d350b
 2025-04-08 22:08:14,784 - INFO - Waiting for USDC approval confirmation...
 2025-04-08 22:08:25,334 - INFO - Sending 10.0 USDC to contract...
+2025-04-08 22:08:25,335 - Sending 10.0 USDC to contract
 2025-04-08 22:08:25,335 - INFO - Sending 10.0 USDC to contract
 2025-04-08 22:08:26,098 - INFO - USDC transaction sent. Hash: d1499e1aedb10a4fb64015cb61cad704c53eebb4aa182a966808790c2148d9ff
+2025-04-08 22:08:26,100 - USDC transaction sent. Hash: d1499e1aedb10a4fb64015cb61cad704c53eebb4aa182a966808790c2148d9ff
 2025-04-08 22:08:26,100 - INFO - USDC transaction sent. Hash: d1499e1aedb10a4fb64015cb61cad704c53eebb4aa182a966808790c2148d9ff
 2025-04-08 22:08:26,102 - INFO - Waiting for USDC transfer confirmation...
+2025-04-08 22:08:37,640 - === Token transfer to contract completed successfully ===
 2025-04-08 22:08:37,640 - INFO - === Token transfer to contract completed successfully ===
 2025-04-08 22:08:37,642 - INFO - Waiting for token transfers to be confirmed...
+2025-04-08 22:08:37,643 - Waiting for token transfers to be confirmed...
 2025-04-08 22:08:37,643 - INFO - Waiting for token transfers to be confirmed...
 2025-04-08 22:09:09,017 - INFO - Contract balances after sending tokens:
 2025-04-08 22:09:09,018 - INFO - - Token0: 30000000
 2025-04-08 22:09:09,020 - INFO - - Token1: 10000000000000000
 2025-04-08 22:09:09,021 - INFO - - WETH: 10000000000000000
+2025-04-08 22:09:09,022 - Contract balances after sending tokens:
 2025-04-08 22:09:09,022 - INFO - Contract balances after sending tokens:
+2025-04-08 22:09:09,024 - - Token0: 30000000
 2025-04-08 22:09:09,024 - INFO - - Token0: 30000000
+2025-04-08 22:09:09,025 - - Token1: 10000000000000000
 2025-04-08 22:09:09,025 - INFO - - Token1: 10000000000000000
+2025-04-08 22:09:09,026 - - WETH: 10000000000000000
 2025-04-08 22:09:09,026 - INFO - - WETH: 10000000000000000
 2025-04-08 22:09:09,719 - INFO - Received predicted price: 1537.9750979447365
+2025-04-08 22:09:09,719 - Received predicted price: 1537.9750979447365
 2025-04-08 22:09:09,719 - INFO - Received predicted price: 1537.9750979447365
 2025-04-08 22:09:10,474 - INFO - Active position exists:
 2025-04-08 22:09:10,474 - INFO - - Token ID: 195345
 2025-04-08 22:09:10,475 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:09:10,475 - INFO - - Lower Tick: -138300
 2025-04-08 22:09:10,475 - INFO - - Upper Tick: -138060
+2025-04-08 22:09:10,476 - Active position exists:
 2025-04-08 22:09:10,476 - INFO - Active position exists:
+2025-04-08 22:09:10,476 - - Token ID: 195345
 2025-04-08 22:09:10,476 - INFO - - Token ID: 195345
+2025-04-08 22:09:10,477 - - Liquidity: 834119781342025699508
 2025-04-08 22:09:10,477 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:09:10,477 - - Lower Tick: -138300
 2025-04-08 22:09:10,477 - INFO - - Lower Tick: -138300
+2025-04-08 22:09:10,477 - - Upper Tick: -138060
 2025-04-08 22:09:10,477 - INFO - - Upper Tick: -138060
+2025-04-08 22:09:10,478 - === Position creation operation completed ===
 2025-04-08 22:09:10,478 - INFO - === Position creation operation completed ===
 2025-04-08 22:09:10,478 - INFO - Position creation process completed successfully
+2025-04-08 22:09:10,479 - === Position creation process completed successfully ===
 2025-04-08 22:09:10,479 - INFO - === Position creation process completed successfully ===
 2025-04-08 22:14:36,308 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:14:36,309 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 22:14:36,310 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:14:36,311 - INFO - Starting position creation process at 2025-04-08 22:14:36.311825
+2025-04-08 22:14:36,312 - === Starting position creation process at 2025-04-08 22:14:36.312286 ===
 2025-04-08 22:14:36,312 - INFO - === Starting position creation process at 2025-04-08 22:14:36.312286 ===
 2025-04-08 22:14:36,321 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 22:14:36,327 - === Starting new position creation ===
 2025-04-08 22:14:36,327 - INFO - === Starting new position creation ===
 2025-04-08 22:14:37,867 - INFO - Contract balances before creating position:
 2025-04-08 22:14:37,869 - INFO - - Token0: 30000000
 2025-04-08 22:14:37,870 - INFO - - Token1: 10000000000000000
 2025-04-08 22:14:37,871 - INFO - - WETH: 10000000000000000
+2025-04-08 22:14:37,873 - Contract balances before creating position:
 2025-04-08 22:14:37,873 - INFO - Contract balances before creating position:
+2025-04-08 22:14:37,874 - - Token0: 30000000
 2025-04-08 22:14:37,874 - INFO - - Token0: 30000000
+2025-04-08 22:14:37,875 - - Token1: 10000000000000000
 2025-04-08 22:14:37,875 - INFO - - Token1: 10000000000000000
+2025-04-08 22:14:37,877 - - WETH: 10000000000000000
 2025-04-08 22:14:37,877 - INFO - - WETH: 10000000000000000
 2025-04-08 22:14:37,878 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
+2025-04-08 22:14:37,880 - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:14:37,880 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:14:38,744 - INFO - Received predicted price from API: 1537.8680341994764
+2025-04-08 22:14:38,745 - Received predicted price from API: 1537.8680341994764
 2025-04-08 22:14:38,745 - INFO - Received predicted price from API: 1537.8680341994764
 2025-04-08 22:14:38,746 - INFO - Received predicted price: 1537.8680341994764
+2025-04-08 22:14:38,747 - Received predicted price: 1537.8680341994764
 2025-04-08 22:14:38,747 - INFO - Received predicted price: 1537.8680341994764
 2025-04-08 22:14:39,499 - INFO - Active position exists:
 2025-04-08 22:14:39,500 - INFO - - Token ID: 195345
 2025-04-08 22:14:39,501 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:14:39,503 - INFO - - Lower Tick: -138300
 2025-04-08 22:14:39,504 - INFO - - Upper Tick: -138060
+2025-04-08 22:14:39,505 - Active position exists:
 2025-04-08 22:14:39,505 - INFO - Active position exists:
+2025-04-08 22:14:39,507 - - Token ID: 195345
 2025-04-08 22:14:39,507 - INFO - - Token ID: 195345
+2025-04-08 22:14:39,508 - - Liquidity: 834119781342025699508
 2025-04-08 22:14:39,508 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:14:39,509 - - Lower Tick: -138300
 2025-04-08 22:14:39,509 - INFO - - Lower Tick: -138300
+2025-04-08 22:14:39,511 - - Upper Tick: -138060
 2025-04-08 22:14:39,511 - INFO - - Upper Tick: -138060
+2025-04-08 22:14:39,512 - === Position creation operation completed ===
 2025-04-08 22:14:39,512 - INFO - === Position creation operation completed ===
 2025-04-08 22:14:39,514 - INFO - Position creation process completed successfully
+2025-04-08 22:14:39,515 - === Position creation process completed successfully ===
 2025-04-08 22:14:39,515 - INFO - === Position creation process completed successfully ===
 2025-04-08 22:19:30,490 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:19:30,492 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 22:19:30,492 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:19:30,495 - INFO - Starting position creation process at 2025-04-08 22:19:30.495713
+2025-04-08 22:19:30,496 - === Starting position creation process at 2025-04-08 22:19:30.496409 ===
 2025-04-08 22:19:30,496 - INFO - === Starting position creation process at 2025-04-08 22:19:30.496409 ===
 2025-04-08 22:19:30,511 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 22:19:30,521 - === Starting new position creation ===
 2025-04-08 22:19:30,521 - INFO - === Starting new position creation ===
 2025-04-08 22:19:31,855 - INFO - Contract balances before creating position:
 2025-04-08 22:19:31,857 - INFO - - Token0: 30000000
 2025-04-08 22:19:31,858 - INFO - - Token1: 10000000000000000
 2025-04-08 22:19:31,859 - INFO - - WETH: 10000000000000000
+2025-04-08 22:19:31,861 - Contract balances before creating position:
 2025-04-08 22:19:31,861 - INFO - Contract balances before creating position:
+2025-04-08 22:19:31,862 - - Token0: 30000000
 2025-04-08 22:19:31,862 - INFO - - Token0: 30000000
+2025-04-08 22:19:31,864 - - Token1: 10000000000000000
 2025-04-08 22:19:31,864 - INFO - - Token1: 10000000000000000
+2025-04-08 22:19:31,865 - - WETH: 10000000000000000
 2025-04-08 22:19:31,865 - INFO - - WETH: 10000000000000000
 2025-04-08 22:19:31,867 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
+2025-04-08 22:19:31,869 - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:19:31,869 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:19:32,586 - INFO - Received predicted price from API: 1537.7342755150796
+2025-04-08 22:19:34,286 - Received predicted price from API: 1537.7342755150796
 2025-04-08 22:19:34,286 - INFO - Received predicted price from API: 1537.7342755150796
 2025-04-08 22:19:34,288 - INFO - Received predicted price: 1537.7342755150796
+2025-04-08 22:19:34,290 - Received predicted price: 1537.7342755150796
 2025-04-08 22:19:34,290 - INFO - Received predicted price: 1537.7342755150796
 2025-04-08 22:19:35,037 - INFO - Active position exists:
 2025-04-08 22:19:35,038 - INFO - - Token ID: 195345
 2025-04-08 22:19:35,040 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:19:35,041 - INFO - - Lower Tick: -138300
 2025-04-08 22:19:35,042 - INFO - - Upper Tick: -138060
+2025-04-08 22:19:35,043 - Active position exists:
 2025-04-08 22:19:35,043 - INFO - Active position exists:
+2025-04-08 22:19:35,044 - - Token ID: 195345
 2025-04-08 22:19:35,044 - INFO - - Token ID: 195345
+2025-04-08 22:19:35,046 - - Liquidity: 834119781342025699508
 2025-04-08 22:19:35,046 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:19:35,047 - - Lower Tick: -138300
 2025-04-08 22:19:35,047 - INFO - - Lower Tick: -138300
+2025-04-08 22:19:35,048 - - Upper Tick: -138060
 2025-04-08 22:19:35,048 - INFO - - Upper Tick: -138060
+2025-04-08 22:19:35,049 - === Position creation operation completed ===
 2025-04-08 22:19:35,049 - INFO - === Position creation operation completed ===
 2025-04-08 22:19:35,051 - INFO - Position creation process completed successfully
+2025-04-08 22:19:35,053 - === Position creation process completed successfully ===
 2025-04-08 22:19:35,053 - INFO - === Position creation process completed successfully ===
 2025-04-08 22:25:06,588 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:25:06,589 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 22:25:06,590 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:25:06,592 - INFO - Starting position creation process at 2025-04-08 22:25:06.592129
+2025-04-08 22:25:06,592 - === Starting position creation process at 2025-04-08 22:25:06.592629 ===
 2025-04-08 22:25:06,592 - INFO - === Starting position creation process at 2025-04-08 22:25:06.592629 ===
 2025-04-08 22:25:06,600 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 22:25:06,607 - === Starting new position creation ===
 2025-04-08 22:25:06,607 - INFO - === Starting new position creation ===
 2025-04-08 22:25:07,960 - INFO - Contract balances before creating position:
 2025-04-08 22:25:07,962 - INFO - - Token0: 30000000
 2025-04-08 22:25:07,963 - INFO - - Token1: 10000000000000000
 2025-04-08 22:25:07,964 - INFO - - WETH: 10000000000000000
+2025-04-08 22:25:07,965 - Contract balances before creating position:
 2025-04-08 22:25:07,965 - INFO - Contract balances before creating position:
+2025-04-08 22:25:07,966 - - Token0: 30000000
 2025-04-08 22:25:07,966 - INFO - - Token0: 30000000
+2025-04-08 22:25:07,968 - - Token1: 10000000000000000
 2025-04-08 22:25:07,968 - INFO - - Token1: 10000000000000000
+2025-04-08 22:25:07,969 - - WETH: 10000000000000000
 2025-04-08 22:25:07,969 - INFO - - WETH: 10000000000000000
 2025-04-08 22:25:07,970 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
+2025-04-08 22:25:07,972 - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:25:07,972 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:25:08,705 - INFO - Received predicted price from API: 1537.6487949121
+2025-04-08 22:25:08,705 - Received predicted price from API: 1537.6487949121
 2025-04-08 22:25:08,705 - INFO - Received predicted price from API: 1537.6487949121
 2025-04-08 22:25:08,706 - INFO - Received predicted price: 1537.6487949121
+2025-04-08 22:25:08,707 - Received predicted price: 1537.6487949121
 2025-04-08 22:25:08,707 - INFO - Received predicted price: 1537.6487949121
 2025-04-08 22:25:09,537 - INFO - Active position exists:
 2025-04-08 22:25:09,538 - INFO - - Token ID: 195345
 2025-04-08 22:25:09,538 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:25:09,538 - INFO - - Lower Tick: -138300
 2025-04-08 22:25:09,539 - INFO - - Upper Tick: -138060
+2025-04-08 22:25:09,539 - Active position exists:
 2025-04-08 22:25:09,539 - INFO - Active position exists:
+2025-04-08 22:25:09,539 - - Token ID: 195345
 2025-04-08 22:25:09,539 - INFO - - Token ID: 195345
+2025-04-08 22:25:09,540 - - Liquidity: 834119781342025699508
 2025-04-08 22:25:09,540 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:25:09,540 - - Lower Tick: -138300
 2025-04-08 22:25:09,540 - INFO - - Lower Tick: -138300
+2025-04-08 22:25:09,541 - - Upper Tick: -138060
 2025-04-08 22:25:09,541 - INFO - - Upper Tick: -138060
+2025-04-08 22:25:09,541 - === Position creation operation completed ===
 2025-04-08 22:25:09,541 - INFO - === Position creation operation completed ===
 2025-04-08 22:25:09,542 - INFO - Position creation process completed successfully
+2025-04-08 22:25:09,542 - === Position creation process completed successfully ===
 2025-04-08 22:25:09,542 - INFO - === Position creation process completed successfully ===
 2025-04-08 22:27:42,133 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:27:42,135 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 22:27:42,136 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:27:42,139 - INFO - Starting position creation process at 2025-04-08 22:27:42.139412
+2025-04-08 22:27:42,140 - === Starting position creation process at 2025-04-08 22:27:42.140265 ===
 2025-04-08 22:27:42,140 - INFO - === Starting position creation process at 2025-04-08 22:27:42.140265 ===
 2025-04-08 22:27:42,156 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 22:27:42,166 - === Starting new position creation ===
 2025-04-08 22:27:42,166 - INFO - === Starting new position creation ===
 2025-04-08 22:27:43,590 - INFO - Contract balances before creating position:
 2025-04-08 22:27:43,591 - INFO - - Token0: 30000000
 2025-04-08 22:27:43,591 - INFO - - Token1: 10000000000000000
 2025-04-08 22:27:43,592 - INFO - - WETH: 10000000000000000
+2025-04-08 22:27:43,592 - Contract balances before creating position:
 2025-04-08 22:27:43,592 - INFO - Contract balances before creating position:
+2025-04-08 22:27:43,592 - - Token0: 30000000
 2025-04-08 22:27:43,592 - INFO - - Token0: 30000000
+2025-04-08 22:27:43,593 - - Token1: 10000000000000000
 2025-04-08 22:27:43,593 - INFO - - Token1: 10000000000000000
+2025-04-08 22:27:43,593 - - WETH: 10000000000000000
 2025-04-08 22:27:43,593 - INFO - - WETH: 10000000000000000
 2025-04-08 22:27:43,594 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
+2025-04-08 22:27:43,594 - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:27:43,594 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:27:44,328 - INFO - Received predicted price from API: 1537.6002328419686
+2025-04-08 22:27:44,328 - Received predicted price from API: 1537.6002328419686
 2025-04-08 22:27:44,328 - INFO - Received predicted price from API: 1537.6002328419686
 2025-04-08 22:27:44,329 - INFO - Received predicted price: 1537.6002328419686
+2025-04-08 22:27:44,330 - Received predicted price: 1537.6002328419686
 2025-04-08 22:27:44,330 - INFO - Received predicted price: 1537.6002328419686
 2025-04-08 22:27:45,108 - INFO - Active position exists:
 2025-04-08 22:27:45,109 - INFO - - Token ID: 195345
 2025-04-08 22:27:45,131 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:27:45,132 - INFO - - Lower Tick: -138300
 2025-04-08 22:27:45,132 - INFO - - Upper Tick: -138060
+2025-04-08 22:27:45,132 - Active position exists:
 2025-04-08 22:27:45,132 - INFO - Active position exists:
+2025-04-08 22:27:45,133 - - Token ID: 195345
 2025-04-08 22:27:45,133 - INFO - - Token ID: 195345
+2025-04-08 22:27:45,133 - - Liquidity: 834119781342025699508
 2025-04-08 22:27:45,133 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:27:45,134 - - Lower Tick: -138300
 2025-04-08 22:27:45,134 - INFO - - Lower Tick: -138300
+2025-04-08 22:27:45,135 - - Upper Tick: -138060
 2025-04-08 22:27:45,135 - INFO - - Upper Tick: -138060
 2025-04-08 22:27:45,136 - INFO - Attempting to update existing position with new price...
+2025-04-08 22:27:45,137 - Attempting to update existing position with new price...
 2025-04-08 22:27:45,137 - INFO - Attempting to update existing position with new price...
 2025-04-08 22:27:45,137 - INFO - Checking pool settings and debugging...
+2025-04-08 22:27:45,137 - Checking pool settings and debugging...
 2025-04-08 22:27:45,137 - INFO - Checking pool settings and debugging...
 2025-04-08 22:27:45,886 - INFO - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
+2025-04-08 22:27:45,887 - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:27:45,887 - INFO - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:27:46,808 - INFO - Pool fee: 3000
+2025-04-08 22:27:46,809 - Pool fee: 3000
 2025-04-08 22:27:46,809 - INFO - Pool fee: 3000
 2025-04-08 22:27:47,582 - INFO - Tick spacing: 60
+2025-04-08 22:27:47,582 - Tick spacing: 60
 2025-04-08 22:27:47,582 - INFO - Tick spacing: 60
 2025-04-08 22:27:48,319 - INFO - Active position ticks: [-138300, -138060]
+2025-04-08 22:27:48,320 - Active position ticks: [-138300, -138060]
 2025-04-08 22:27:48,320 - INFO - Active position ticks: [-138300, -138060]
 2025-04-08 22:27:48,320 - INFO - Estimated appropriate price based on position: 1
+2025-04-08 22:27:48,321 - Estimated appropriate price based on position: 1
 2025-04-08 22:27:48,321 - INFO - Estimated appropriate price based on position: 1
 2025-04-08 22:27:48,322 - INFO - Using price value: 1 (known to work with contract)
+2025-04-08 22:27:48,323 - Using price value: 1 (known to work with contract)
 2025-04-08 22:27:48,323 - INFO - Using price value: 1 (known to work with contract)
 2025-04-08 22:27:49,099 - INFO - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
+2025-04-08 22:27:49,100 - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:27:49,100 - INFO - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:27:49,832 - INFO - Transaction sent. Hash: e760df4aeed5015ab4b967137bebb1234ed07bfa7ef4714e424b2dd71fd0435c
+2025-04-08 22:27:49,833 - Transaction sent. Hash: e760df4aeed5015ab4b967137bebb1234ed07bfa7ef4714e424b2dd71fd0435c
 2025-04-08 22:27:49,833 - INFO - Transaction sent. Hash: e760df4aeed5015ab4b967137bebb1234ed07bfa7ef4714e424b2dd71fd0435c
 2025-04-08 22:27:49,835 - INFO - Waiting for transaction confirmation...
+2025-04-08 22:27:49,836 - Waiting for transaction confirmation...
 2025-04-08 22:27:49,836 - INFO - Waiting for transaction confirmation...
 2025-04-08 22:28:01,298 - INFO - Position created successfully!
+2025-04-08 22:28:01,299 - Position created successfully!
 2025-04-08 22:28:01,299 - INFO - Position created successfully!
 2025-04-08 22:28:02,053 - INFO - New position details:
 2025-04-08 22:28:02,053 - INFO - - Token ID: 195345
 2025-04-08 22:28:02,054 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:28:02,054 - INFO - - Lower Tick: -138300
 2025-04-08 22:28:02,055 - INFO - - Upper Tick: -138060
+2025-04-08 22:28:02,055 - New position details:
 2025-04-08 22:28:02,055 - INFO - New position details:
+2025-04-08 22:28:02,055 - - Token ID: 195345
 2025-04-08 22:28:02,055 - INFO - - Token ID: 195345
+2025-04-08 22:28:02,056 - - Liquidity: 834119781342025699508
 2025-04-08 22:28:02,056 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:28:02,056 - - Lower Tick: -138300
 2025-04-08 22:28:02,056 - INFO - - Lower Tick: -138300
+2025-04-08 22:28:02,057 - - Upper Tick: -138060
 2025-04-08 22:28:02,057 - INFO - - Upper Tick: -138060
 2025-04-08 22:28:02,309 - WARNING - Could not get price with _getCurrentSqrtPriceAndTick: ("The function '_getCurrentSqrtPriceAndTick' was not found in this ", "contract's abi.")
 2025-04-08 22:28:03,039 - INFO - Pool address for price check: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:28:03,763 - INFO - Successfully created position with ID: 195345
+2025-04-08 22:28:03,764 - Successfully created position with ID: 195345
 2025-04-08 22:28:03,764 - INFO - Successfully created position with ID: 195345
 2025-04-08 22:28:03,765 - INFO - FINAL RESULT: {
+  "timestamp": "2025-04-08T22:28:03.765563",
+  "transaction_hash": "e760df4aeed5015ab4b967137bebb1234ed07bfa7ef4714e424b2dd71fd0435c",
+  "predicted_price": {
+    "original": 1537.6002328419686,
+    "used_value": 1
+  },
+  "gas_used": 53137,
+  "gas_price": 20000000000,
+  "total_gas_cost_eth": 0.00106274,
+  "position": {
+    "token_id": 195345,
+    "liquidity": 834119781342025699508,
+    "lower_tick": -138300,
+    "upper_tick": -138060,
+    "is_active": true
+  }
+}
+2025-04-08 22:28:03,774 - FINAL RESULT: {
   "timestamp": "2025-04-08T22:28:03.765563",
   "transaction_hash": "e760df4aeed5015ab4b967137bebb1234ed07bfa7ef4714e424b2dd71fd0435c",
   "predicted_price": {
@@ -712,93 +1027,148 @@
 2025-04-08 22:28:03,785 - INFO - Full CSV path: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:28:03,786 - INFO - Current dir CSV path: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:28:03,787 - INFO - Result saved to D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.json
+2025-04-08 22:28:03,788 - Result saved to D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.json
 2025-04-08 22:28:03,788 - INFO - Result saved to D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.json
 2025-04-08 22:28:03,789 - INFO - CSV file exists: False
 2025-04-08 22:28:03,791 - INFO - Wrote CSV header
 2025-04-08 22:28:03,791 - INFO - Wrote CSV row data
 2025-04-08 22:28:03,792 - INFO - Result also saved to CSV file: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
+2025-04-08 22:28:03,792 - Result also saved to CSV file: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:28:03,792 - INFO - Result also saved to CSV file: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:28:03,794 - INFO - Also saved a copy to current directory: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
+2025-04-08 22:28:03,794 - Also saved a copy to current directory: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:28:03,794 - INFO - Also saved a copy to current directory: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:28:03,795 - INFO - Current dir CSV file exists, size: 545 bytes
 2025-04-08 22:28:03,811 - INFO - CSV file contains 3 lines (showing up to 5)
 2025-04-08 22:28:03,812 - INFO - CSV line: timestamp,transaction_hash,original_predicted_price,used_price_value,gas_used,gas_price,total_gas_cost_eth,token_id,liquidity,lower_tick,upper_tick,is_active
 2025-04-08 22:28:03,813 - INFO - CSV line: 2025-04-08T22:28:03.765563,e760df4aeed5015ab4b967137bebb1234ed07bfa7ef4714e424b2dd71fd0435c,1537.6002328419686,1,53137,20000000000,0.00106274,195345,834119781342025699508,-138300,-138060,True
 2025-04-08 22:28:03,813 - INFO - CSV line: 2025-04-08T22:28:03.765563,e760df4aeed5015ab4b967137bebb1234ed07bfa7ef4714e424b2dd71fd0435c,1537.6002328419686,1,53137,20000000000,0.00106274,195345,834119781342025699508,-138300,-138060,True
+2025-04-08 22:28:03,814 - === Position creation operation completed ===
 2025-04-08 22:28:03,814 - INFO - === Position creation operation completed ===
 2025-04-08 22:28:03,815 - INFO - Position creation process completed successfully
+2025-04-08 22:28:03,815 - === Position creation process completed successfully ===
 2025-04-08 22:28:03,815 - INFO - === Position creation process completed successfully ===
 2025-04-08 22:31:46,737 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:31:46,737 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 22:31:46,738 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:31:46,743 - INFO - Starting position creation process at 2025-04-08 22:31:46.743617
+2025-04-08 22:31:46,745 - === Starting position creation process at 2025-04-08 22:31:46.745396 ===
 2025-04-08 22:31:46,745 - INFO - === Starting position creation process at 2025-04-08 22:31:46.745396 ===
 2025-04-08 22:31:46,763 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 22:31:46,776 - === Starting new position creation ===
 2025-04-08 22:31:46,776 - INFO - === Starting new position creation ===
 2025-04-08 22:31:48,214 - INFO - Contract balances before creating position:
 2025-04-08 22:31:48,214 - INFO - - Token0: 30000000
 2025-04-08 22:31:48,214 - INFO - - Token1: 10000000000000000
 2025-04-08 22:31:48,215 - INFO - - WETH: 10000000000000000
+2025-04-08 22:31:48,215 - Contract balances before creating position:
 2025-04-08 22:31:48,215 - INFO - Contract balances before creating position:
+2025-04-08 22:31:48,216 - - Token0: 30000000
 2025-04-08 22:31:48,216 - INFO - - Token0: 30000000
+2025-04-08 22:31:48,216 - - Token1: 10000000000000000
 2025-04-08 22:31:48,216 - INFO - - Token1: 10000000000000000
+2025-04-08 22:31:48,216 - - WETH: 10000000000000000
 2025-04-08 22:31:48,216 - INFO - - WETH: 10000000000000000
 2025-04-08 22:31:48,217 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
+2025-04-08 22:31:48,217 - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:31:48,217 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:31:48,897 - INFO - Received predicted price from API: 1537.5777977335454
+2025-04-08 22:31:48,897 - Received predicted price from API: 1537.5777977335454
 2025-04-08 22:31:48,897 - INFO - Received predicted price from API: 1537.5777977335454
 2025-04-08 22:31:48,898 - INFO - Received predicted price: 1537.5777977335454
+2025-04-08 22:31:48,899 - Received predicted price: 1537.5777977335454
 2025-04-08 22:31:48,899 - INFO - Received predicted price: 1537.5777977335454
 2025-04-08 22:31:49,616 - INFO - Active position exists:
 2025-04-08 22:31:49,617 - INFO - - Token ID: 195345
 2025-04-08 22:31:49,617 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:31:49,618 - INFO - - Lower Tick: -138300
 2025-04-08 22:31:49,618 - INFO - - Upper Tick: -138060
+2025-04-08 22:31:49,618 - Active position exists:
 2025-04-08 22:31:49,618 - INFO - Active position exists:
+2025-04-08 22:31:49,619 - - Token ID: 195345
 2025-04-08 22:31:49,619 - INFO - - Token ID: 195345
+2025-04-08 22:31:49,619 - - Liquidity: 834119781342025699508
 2025-04-08 22:31:49,619 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:31:49,619 - - Lower Tick: -138300
 2025-04-08 22:31:49,619 - INFO - - Lower Tick: -138300
+2025-04-08 22:31:49,620 - - Upper Tick: -138060
 2025-04-08 22:31:49,620 - INFO - - Upper Tick: -138060
 2025-04-08 22:31:49,620 - INFO - Attempting to update existing position with new predicted price...
+2025-04-08 22:31:49,620 - Attempting to update existing position with new predicted price...
 2025-04-08 22:31:49,620 - INFO - Attempting to update existing position with new predicted price...
 2025-04-08 22:31:49,621 - INFO - Checking pool settings and debugging...
+2025-04-08 22:31:49,621 - Checking pool settings and debugging...
 2025-04-08 22:31:49,621 - INFO - Checking pool settings and debugging...
 2025-04-08 22:31:52,482 - INFO - Token decimals - Token0: 6, Token1: 18
+2025-04-08 22:31:52,483 - Token decimals - Token0: 6, Token1: 18
 2025-04-08 22:31:52,483 - INFO - Token decimals - Token0: 6, Token1: 18
 2025-04-08 22:31:53,209 - INFO - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
+2025-04-08 22:31:53,210 - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:31:53,210 - INFO - Pool address: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:31:53,934 - INFO - Pool fee: 3000
+2025-04-08 22:31:53,935 - Pool fee: 3000
 2025-04-08 22:31:53,935 - INFO - Pool fee: 3000
 2025-04-08 22:31:54,650 - INFO - Tick spacing: 60
+2025-04-08 22:31:54,651 - Tick spacing: 60
 2025-04-08 22:31:54,651 - INFO - Tick spacing: 60
 2025-04-08 22:31:55,369 - INFO - Active position ticks: [-138300, -138060]
+2025-04-08 22:31:55,369 - Active position ticks: [-138300, -138060]
 2025-04-08 22:31:55,369 - INFO - Active position ticks: [-138300, -138060]
 2025-04-08 22:31:55,370 - INFO - Using price value 1 which is known to work with the contract
+2025-04-08 22:31:55,370 - Using price value 1 which is known to work with the contract
 2025-04-08 22:31:55,370 - INFO - Using price value 1 which is known to work with the contract
 2025-04-08 22:31:55,371 - WARNING - Could not convert price to tick: ("The function '_priceToTick' was not found in this ", "contract's abi.")
 2025-04-08 22:31:55,372 - INFO - Using price value: 1 (known to work with contract)
+2025-04-08 22:31:55,373 - Using price value: 1 (known to work with contract)
 2025-04-08 22:31:55,373 - INFO - Using price value: 1 (known to work with contract)
 2025-04-08 22:31:56,087 - INFO - Transaction sent. Hash: b8b0a1cf560203a6f895dde323ccc46668ae0e379b5913b178c2c652b5031bd5
+2025-04-08 22:31:56,088 - Transaction sent. Hash: b8b0a1cf560203a6f895dde323ccc46668ae0e379b5913b178c2c652b5031bd5
 2025-04-08 22:31:56,088 - INFO - Transaction sent. Hash: b8b0a1cf560203a6f895dde323ccc46668ae0e379b5913b178c2c652b5031bd5
 2025-04-08 22:31:56,090 - INFO - Waiting for transaction confirmation...
+2025-04-08 22:31:56,091 - Waiting for transaction confirmation...
 2025-04-08 22:31:56,091 - INFO - Waiting for transaction confirmation...
 2025-04-08 22:32:01,760 - INFO - Position created successfully!
+2025-04-08 22:32:01,761 - Position created successfully!
 2025-04-08 22:32:01,761 - INFO - Position created successfully!
 2025-04-08 22:32:02,484 - INFO - New position details:
 2025-04-08 22:32:02,544 - INFO - - Token ID: 195345
 2025-04-08 22:32:02,545 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:32:02,545 - INFO - - Lower Tick: -138300
 2025-04-08 22:32:02,546 - INFO - - Upper Tick: -138060
+2025-04-08 22:32:02,546 - New position details:
 2025-04-08 22:32:02,546 - INFO - New position details:
+2025-04-08 22:32:02,547 - - Token ID: 195345
 2025-04-08 22:32:02,547 - INFO - - Token ID: 195345
+2025-04-08 22:32:02,547 - - Liquidity: 834119781342025699508
 2025-04-08 22:32:02,547 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:32:02,548 - - Lower Tick: -138300
 2025-04-08 22:32:02,548 - INFO - - Lower Tick: -138300
+2025-04-08 22:32:02,548 - - Upper Tick: -138060
 2025-04-08 22:32:02,548 - INFO - - Upper Tick: -138060
 2025-04-08 22:32:02,772 - WARNING - Could not get price with _getCurrentSqrtPriceAndTick: ("The function '_getCurrentSqrtPriceAndTick' was not found in this ", "contract's abi.")
 2025-04-08 22:32:03,485 - INFO - Pool address for price check: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:32:04,220 - INFO - Successfully created position with ID: 195345
+2025-04-08 22:32:04,220 - Successfully created position with ID: 195345
 2025-04-08 22:32:04,220 - INFO - Successfully created position with ID: 195345
 2025-04-08 22:32:04,221 - INFO - FINAL RESULT: {
+  "timestamp": "2025-04-08T22:32:04.221451",
+  "transaction_hash": "b8b0a1cf560203a6f895dde323ccc46668ae0e379b5913b178c2c652b5031bd5",
+  "predicted_price": {
+    "original": 1537.5777977335454,
+    "used_value": 1
+  },
+  "gas_used": 53137,
+  "gas_price": 20000000000,
+  "total_gas_cost_eth": 0.00106274,
+  "position": {
+    "token_id": 195345,
+    "liquidity": 834119781342025699508,
+    "lower_tick": -138300,
+    "upper_tick": -138060,
+    "is_active": true
+  }
+}
+2025-04-08 22:32:04,226 - FINAL RESULT: {
   "timestamp": "2025-04-08T22:32:04.221451",
   "transaction_hash": "b8b0a1cf560203a6f895dde323ccc46668ae0e379b5913b178c2c652b5031bd5",
   "predicted_price": {
@@ -841,12 +1211,15 @@
 2025-04-08 22:32:04,231 - INFO - Full CSV path: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:32:04,232 - INFO - Current dir CSV path: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:32:04,233 - INFO - Result saved to D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.json
+2025-04-08 22:32:04,234 - Result saved to D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.json
 2025-04-08 22:32:04,234 - INFO - Result saved to D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.json
 2025-04-08 22:32:04,235 - INFO - CSV file exists: True
 2025-04-08 22:32:04,235 - INFO - Wrote CSV row data
 2025-04-08 22:32:04,236 - INFO - Result also saved to CSV file: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
+2025-04-08 22:32:04,237 - Result also saved to CSV file: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:32:04,237 - INFO - Result also saved to CSV file: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:32:04,239 - INFO - Also saved a copy to current directory: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
+2025-04-08 22:32:04,240 - Also saved a copy to current directory: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:32:04,240 - INFO - Also saved a copy to current directory: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:32:04,240 - INFO - Current dir CSV file exists, size: 931 bytes
 2025-04-08 22:32:04,251 - INFO - CSV file contains 5 lines (showing up to 5)
@@ -855,65 +1228,110 @@
 2025-04-08 22:32:04,253 - INFO - CSV line: 2025-04-08T22:28:03.765563,e760df4aeed5015ab4b967137bebb1234ed07bfa7ef4714e424b2dd71fd0435c,1537.6002328419686,1,53137,20000000000,0.00106274,195345,834119781342025699508,-138300,-138060,True
 2025-04-08 22:32:04,253 - INFO - CSV line: 2025-04-08T22:32:04.221451,b8b0a1cf560203a6f895dde323ccc46668ae0e379b5913b178c2c652b5031bd5,1537.5777977335454,1,53137,20000000000,0.00106274,195345,834119781342025699508,-138300,-138060,True
 2025-04-08 22:32:04,254 - INFO - CSV line: 2025-04-08T22:32:04.221451,b8b0a1cf560203a6f895dde323ccc46668ae0e379b5913b178c2c652b5031bd5,1537.5777977335454,1,53137,20000000000,0.00106274,195345,834119781342025699508,-138300,-138060,True
+2025-04-08 22:32:04,255 - === Position creation operation completed ===
 2025-04-08 22:32:04,255 - INFO - === Position creation operation completed ===
 2025-04-08 22:32:04,256 - INFO - Position creation process completed successfully
+2025-04-08 22:32:04,256 - === Position creation process completed successfully ===
 2025-04-08 22:32:04,256 - INFO - === Position creation process completed successfully ===
 2025-04-08 22:33:55,043 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:33:55,043 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 22:33:55,044 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:33:55,047 - INFO - Starting position creation process at 2025-04-08 22:33:55.046963
+2025-04-08 22:33:55,047 - === Starting position creation process at 2025-04-08 22:33:55.047518 ===
 2025-04-08 22:33:55,047 - INFO - === Starting position creation process at 2025-04-08 22:33:55.047518 ===
 2025-04-08 22:33:55,059 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 22:33:55,067 - === Starting new position creation ===
 2025-04-08 22:33:55,067 - INFO - === Starting new position creation ===
 2025-04-08 22:33:56,713 - INFO - Contract balances before creating position:
 2025-04-08 22:33:56,714 - INFO - - Token0: 30000000
 2025-04-08 22:33:56,714 - INFO - - Token1: 10000000000000000
 2025-04-08 22:33:56,715 - INFO - - WETH: 10000000000000000
+2025-04-08 22:33:56,715 - Contract balances before creating position:
 2025-04-08 22:33:56,715 - INFO - Contract balances before creating position:
+2025-04-08 22:33:56,716 - - Token0: 30000000
 2025-04-08 22:33:56,716 - INFO - - Token0: 30000000
+2025-04-08 22:33:56,717 - - Token1: 10000000000000000
 2025-04-08 22:33:56,717 - INFO - - Token1: 10000000000000000
+2025-04-08 22:33:56,718 - - WETH: 10000000000000000
 2025-04-08 22:33:56,718 - INFO - - WETH: 10000000000000000
 2025-04-08 22:33:56,719 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
+2025-04-08 22:33:56,719 - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:33:56,719 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:33:57,437 - INFO - Received predicted price from API: 1537.5780817222596
+2025-04-08 22:33:57,437 - Received predicted price from API: 1537.5780817222596
 2025-04-08 22:33:57,437 - INFO - Received predicted price from API: 1537.5780817222596
 2025-04-08 22:33:57,438 - INFO - Received predicted price: 1537.5780817222596
+2025-04-08 22:33:57,438 - Received predicted price: 1537.5780817222596
 2025-04-08 22:33:57,438 - INFO - Received predicted price: 1537.5780817222596
 2025-04-08 22:33:58,223 - INFO - Active position exists:
 2025-04-08 22:33:58,224 - INFO - - Token ID: 195345
 2025-04-08 22:33:58,224 - INFO - - Liquidity: 834119781342025699508
 2025-04-08 22:33:58,225 - INFO - - Lower Tick: -138300
 2025-04-08 22:33:58,225 - INFO - - Upper Tick: -138060
+2025-04-08 22:33:58,225 - Active position exists:
 2025-04-08 22:33:58,225 - INFO - Active position exists:
+2025-04-08 22:33:58,226 - - Token ID: 195345
 2025-04-08 22:33:58,226 - INFO - - Token ID: 195345
+2025-04-08 22:33:58,226 - - Liquidity: 834119781342025699508
 2025-04-08 22:33:58,226 - INFO - - Liquidity: 834119781342025699508
+2025-04-08 22:33:58,227 - - Lower Tick: -138300
 2025-04-08 22:33:58,227 - INFO - - Lower Tick: -138300
+2025-04-08 22:33:58,227 - - Upper Tick: -138060
 2025-04-08 22:33:58,227 - INFO - - Upper Tick: -138060
 2025-04-08 22:33:58,227 - INFO - Attempting to update existing position with new predicted price...
+2025-04-08 22:33:58,228 - Attempting to update existing position with new predicted price...
 2025-04-08 22:33:58,228 - INFO - Attempting to update existing position with new predicted price...
 2025-04-08 22:33:58,228 - INFO - Using actual predicted price value: 1537
+2025-04-08 22:33:58,229 - Using actual predicted price value: 1537
 2025-04-08 22:33:58,229 - INFO - Using actual predicted price value: 1537
 2025-04-08 22:33:59,223 - INFO - Transaction sent. Hash: 271ef903fbdce4935db2d3915d37061fc2b812aa3a3c5c8500b4acc44437bc3a
+2025-04-08 22:33:59,225 - Transaction sent. Hash: 271ef903fbdce4935db2d3915d37061fc2b812aa3a3c5c8500b4acc44437bc3a
 2025-04-08 22:33:59,225 - INFO - Transaction sent. Hash: 271ef903fbdce4935db2d3915d37061fc2b812aa3a3c5c8500b4acc44437bc3a
 2025-04-08 22:33:59,227 - INFO - Waiting for transaction confirmation...
+2025-04-08 22:33:59,228 - Waiting for transaction confirmation...
 2025-04-08 22:33:59,228 - INFO - Waiting for transaction confirmation...
 2025-04-08 22:34:01,094 - INFO - Position created successfully!
+2025-04-08 22:34:01,094 - Position created successfully!
 2025-04-08 22:34:01,094 - INFO - Position created successfully!
 2025-04-08 22:34:01,782 - INFO - New position details:
 2025-04-08 22:34:01,782 - INFO - - Token ID: 195348
 2025-04-08 22:34:01,784 - INFO - - Liquidity: 42551181973283521207
 2025-04-08 22:34:01,785 - INFO - - Lower Tick: -64920
 2025-04-08 22:34:01,785 - INFO - - Upper Tick: -64680
+2025-04-08 22:34:01,786 - New position details:
 2025-04-08 22:34:01,786 - INFO - New position details:
+2025-04-08 22:34:01,787 - - Token ID: 195348
 2025-04-08 22:34:01,787 - INFO - - Token ID: 195348
+2025-04-08 22:34:01,788 - - Liquidity: 42551181973283521207
 2025-04-08 22:34:01,788 - INFO - - Liquidity: 42551181973283521207
+2025-04-08 22:34:01,789 - - Lower Tick: -64920
 2025-04-08 22:34:01,789 - INFO - - Lower Tick: -64920
+2025-04-08 22:34:01,790 - - Upper Tick: -64680
 2025-04-08 22:34:01,790 - INFO - - Upper Tick: -64680
 2025-04-08 22:34:02,010 - WARNING - Could not get price with _getCurrentSqrtPriceAndTick: ("The function '_getCurrentSqrtPriceAndTick' was not found in this ", "contract's abi.")
 2025-04-08 22:34:02,779 - INFO - Pool address for price check: 0xC31a3878E3B0739866F8fC52b97Ae9611aBe427c
 2025-04-08 22:34:03,474 - INFO - Successfully created position with ID: 195348
+2025-04-08 22:34:03,476 - Successfully created position with ID: 195348
 2025-04-08 22:34:03,476 - INFO - Successfully created position with ID: 195348
 2025-04-08 22:34:03,477 - INFO - FINAL RESULT: {
+  "timestamp": "2025-04-08T22:34:03.477188",
+  "transaction_hash": "271ef903fbdce4935db2d3915d37061fc2b812aa3a3c5c8500b4acc44437bc3a",
+  "predicted_price": {
+    "original": 1537.5780817222596,
+    "used_value": 1537
+  },
+  "gas_used": 505365,
+  "gas_price": 20000000000,
+  "total_gas_cost_eth": 0.0101073,
+  "position": {
+    "token_id": 195348,
+    "liquidity": 42551181973283521207,
+    "lower_tick": -64920,
+    "upper_tick": -64680,
+    "is_active": true
+  }
+}
+2025-04-08 22:34:03,481 - FINAL RESULT: {
   "timestamp": "2025-04-08T22:34:03.477188",
   "transaction_hash": "271ef903fbdce4935db2d3915d37061fc2b812aa3a3c5c8500b4acc44437bc3a",
   "predicted_price": {
@@ -956,12 +1374,15 @@
 2025-04-08 22:34:03,490 - INFO - Full CSV path: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:34:03,491 - INFO - Current dir CSV path: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:34:03,493 - INFO - Result saved to D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.json
+2025-04-08 22:34:03,494 - Result saved to D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.json
 2025-04-08 22:34:03,494 - INFO - Result saved to D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.json
 2025-04-08 22:34:03,551 - INFO - CSV file exists: True
 2025-04-08 22:34:03,552 - INFO - Wrote CSV row data
 2025-04-08 22:34:03,552 - INFO - Result also saved to CSV file: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
+2025-04-08 22:34:03,553 - Result also saved to CSV file: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:34:03,553 - INFO - Result also saved to CSV file: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:34:03,554 - INFO - Also saved a copy to current directory: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
+2025-04-08 22:34:03,554 - Also saved a copy to current directory: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:34:03,554 - INFO - Also saved a copy to current directory: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\position_results.csv
 2025-04-08 22:34:03,555 - INFO - Current dir CSV file exists, size: 1317 bytes
 2025-04-08 22:34:03,573 - INFO - CSV file contains 5 lines (showing up to 5)
@@ -970,105 +1391,153 @@
 2025-04-08 22:34:03,575 - INFO - CSV line: 2025-04-08T22:28:03.765563,e760df4aeed5015ab4b967137bebb1234ed07bfa7ef4714e424b2dd71fd0435c,1537.6002328419686,1,53137,20000000000,0.00106274,195345,834119781342025699508,-138300,-138060,True
 2025-04-08 22:34:03,576 - INFO - CSV line: 2025-04-08T22:32:04.221451,b8b0a1cf560203a6f895dde323ccc46668ae0e379b5913b178c2c652b5031bd5,1537.5777977335454,1,53137,20000000000,0.00106274,195345,834119781342025699508,-138300,-138060,True
 2025-04-08 22:34:03,576 - INFO - CSV line: 2025-04-08T22:32:04.221451,b8b0a1cf560203a6f895dde323ccc46668ae0e379b5913b178c2c652b5031bd5,1537.5777977335454,1,53137,20000000000,0.00106274,195345,834119781342025699508,-138300,-138060,True
+2025-04-08 22:34:03,577 - === Position creation operation completed ===
 2025-04-08 22:34:03,577 - INFO - === Position creation operation completed ===
 2025-04-08 22:34:03,577 - INFO - Position creation process completed successfully
+2025-04-08 22:34:03,578 - === Position creation process completed successfully ===
 2025-04-08 22:34:03,578 - INFO - === Position creation process completed successfully ===
 2025-04-08 22:42:32,067 - INFO - Loaded environment: RPC URL: https://sepolia.infu..., API URL: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:42:32,068 - INFO - Contract address: 0xe4CbeF27cebD83f1D6646BC73e22f06239451f0f
 2025-04-08 22:42:32,068 - INFO - Token addresses - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:42:32,070 - INFO - Starting position creation process at 2025-04-08 22:42:32.070617
+2025-04-08 22:42:32,071 - === Starting position creation process at 2025-04-08 22:42:32.071012 ===
 2025-04-08 22:42:32,071 - INFO - === Starting position creation process at 2025-04-08 22:42:32.071012 ===
 2025-04-08 22:42:32,081 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-08 22:42:32,086 - === Starting new position creation ===
 2025-04-08 22:42:32,086 - INFO - === Starting new position creation ===
 2025-04-08 22:42:33,402 - INFO - Contract balances before creating position:
 2025-04-08 22:42:33,402 - INFO - - Token0: 30000000
 2025-04-08 22:42:33,403 - INFO - - Token1: 0
 2025-04-08 22:42:33,403 - INFO - - WETH: 0
+2025-04-08 22:42:33,404 - Contract balances before creating position:
 2025-04-08 22:42:33,404 - INFO - Contract balances before creating position:
+2025-04-08 22:42:33,404 - - Token0: 30000000
 2025-04-08 22:42:33,404 - INFO - - Token0: 30000000
+2025-04-08 22:42:33,404 - - Token1: 0
 2025-04-08 22:42:33,404 - INFO - - Token1: 0
+2025-04-08 22:42:33,405 - - WETH: 0
 2025-04-08 22:42:33,405 - INFO - - WETH: 0
 2025-04-08 22:42:33,405 - INFO - Contract needs tokens. Sending USDC and ETH...
+2025-04-08 22:42:33,406 - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 22:42:33,406 - INFO - Contract needs tokens. Sending USDC and ETH...
 2025-04-08 22:42:33,412 - INFO - Preparing to send tokens to contract...
+2025-04-08 22:42:33,413 - === Starting token transfer to contract ===
 2025-04-08 22:42:33,413 - INFO - === Starting token transfer to contract ===
 2025-04-08 22:42:33,414 - INFO - Loading ABI from: D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\..\artifacts\contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
 2025-04-08 22:42:35,372 - INFO - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
+2025-04-08 22:42:35,373 - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:42:35,373 - INFO - Contract token addresses - Token0: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238, Token1: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9
 2025-04-08 22:42:36,101 - INFO - Initial WETH balance: 0 WETH
+2025-04-08 22:42:36,101 - Initial WETH balance: 0 WETH
 2025-04-08 22:42:36,101 - INFO - Initial WETH balance: 0 WETH
 2025-04-08 22:42:36,102 - INFO - Converting 0.01 ETH to WETH...
+2025-04-08 22:42:36,102 - Converting 0.01 ETH to WETH...
 2025-04-08 22:42:36,102 - INFO - Converting 0.01 ETH to WETH...
 2025-04-08 22:42:36,821 - INFO - WETH deposit transaction sent. Hash: 599b7533b0dc0acb949950ed1f030a36f07789ccf01676d192deb7be7d30638f
+2025-04-08 22:42:36,822 - WETH deposit transaction sent. Hash: 599b7533b0dc0acb949950ed1f030a36f07789ccf01676d192deb7be7d30638f
 2025-04-08 22:42:36,822 - INFO - WETH deposit transaction sent. Hash: 599b7533b0dc0acb949950ed1f030a36f07789ccf01676d192deb7be7d30638f
 2025-04-08 22:42:36,822 - INFO - Waiting for WETH deposit confirmation...
 2025-04-08 22:42:50,553 - INFO - New WETH balance: 0.01 WETH
+2025-04-08 22:42:50,554 - New WETH balance: 0.01 WETH
 2025-04-08 22:42:50,554 - INFO - New WETH balance: 0.01 WETH
 2025-04-08 22:42:50,555 - INFO - Approving contract to spend 0.01 WETH...
+2025-04-08 22:42:50,556 - Approving contract to spend 0.01 WETH...
 2025-04-08 22:42:50,556 - INFO - Approving contract to spend 0.01 WETH...
 2025-04-08 22:42:51,322 - INFO - WETH approval transaction sent. Hash: f856e702782d0057bdc0121a9b5f5ec21456ad86f4a7074ba5b3b4106e752429
+2025-04-08 22:42:51,323 - WETH approval transaction sent. Hash: f856e702782d0057bdc0121a9b5f5ec21456ad86f4a7074ba5b3b4106e752429
 2025-04-08 22:42:51,323 - INFO - WETH approval transaction sent. Hash: f856e702782d0057bdc0121a9b5f5ec21456ad86f4a7074ba5b3b4106e752429
 2025-04-08 22:42:51,327 - INFO - Waiting for WETH approval confirmation...
 2025-04-08 22:43:01,421 - INFO - Sending 0.01 WETH to contract...
+2025-04-08 22:43:01,422 - Sending 0.01 WETH to contract...
 2025-04-08 22:43:01,422 - INFO - Sending 0.01 WETH to contract...
 2025-04-08 22:43:02,305 - INFO - WETH transfer transaction sent. Hash: e1d81e86685f4c3b054ba9da19507cc73269d81bd97fca0e94f97e4666c2fb11
+2025-04-08 22:43:02,306 - WETH transfer transaction sent. Hash: e1d81e86685f4c3b054ba9da19507cc73269d81bd97fca0e94f97e4666c2fb11
 2025-04-08 22:43:02,306 - INFO - WETH transfer transaction sent. Hash: e1d81e86685f4c3b054ba9da19507cc73269d81bd97fca0e94f97e4666c2fb11
 2025-04-08 22:43:02,307 - INFO - Waiting for WETH transfer confirmation...
 2025-04-08 22:43:13,985 - INFO - USDC balance: 80.0 USDC
+2025-04-08 22:43:13,986 - USDC balance: 80.0 USDC
 2025-04-08 22:43:13,986 - INFO - USDC balance: 80.0 USDC
 2025-04-08 22:43:13,986 - INFO - Approving contract to spend 10.0 USDC...
+2025-04-08 22:43:13,987 - Approving contract to spend 10.0 USDC...
 2025-04-08 22:43:13,987 - INFO - Approving contract to spend 10.0 USDC...
 2025-04-08 22:43:14,768 - INFO - USDC approval transaction sent. Hash: b27ca5299c82ed27f8f825d9e0052d3649abe78567915abc03472fe8228ceda6
+2025-04-08 22:43:14,769 - USDC approval transaction sent. Hash: b27ca5299c82ed27f8f825d9e0052d3649abe78567915abc03472fe8228ceda6
 2025-04-08 22:43:14,769 - INFO - USDC approval transaction sent. Hash: b27ca5299c82ed27f8f825d9e0052d3649abe78567915abc03472fe8228ceda6
 2025-04-08 22:43:14,769 - INFO - Waiting for USDC approval confirmation...
 2025-04-08 22:43:25,149 - INFO - Sending 10.0 USDC to contract...
+2025-04-08 22:43:25,150 - Sending 10.0 USDC to contract
 2025-04-08 22:43:25,150 - INFO - Sending 10.0 USDC to contract
 2025-04-08 22:43:26,166 - INFO - USDC transaction sent. Hash: 95e12500413845342da4633a930c6c75f06f75ba2f6fc2d2de7e98e7c22adda4
+2025-04-08 22:43:26,168 - USDC transaction sent. Hash: 95e12500413845342da4633a930c6c75f06f75ba2f6fc2d2de7e98e7c22adda4
 2025-04-08 22:43:26,168 - INFO - USDC transaction sent. Hash: 95e12500413845342da4633a930c6c75f06f75ba2f6fc2d2de7e98e7c22adda4
 2025-04-08 22:43:26,169 - INFO - Waiting for USDC transfer confirmation...
+2025-04-08 22:43:37,434 - === Token transfer to contract completed successfully ===
 2025-04-08 22:43:37,434 - INFO - === Token transfer to contract completed successfully ===
 2025-04-08 22:43:37,435 - INFO - Waiting for token transfers to be confirmed...
+2025-04-08 22:43:37,436 - Waiting for token transfers to be confirmed...
 2025-04-08 22:43:37,436 - INFO - Waiting for token transfers to be confirmed...
 2025-04-08 22:44:08,791 - INFO - Contract balances after sending tokens:
 2025-04-08 22:44:08,793 - INFO - - Token0: 40000000
 2025-04-08 22:44:08,794 - INFO - - Token1: 10000000000000000
 2025-04-08 22:44:08,795 - INFO - - WETH: 10000000000000000
+2025-04-08 22:44:08,796 - Contract balances after sending tokens:
 2025-04-08 22:44:08,796 - INFO - Contract balances after sending tokens:
+2025-04-08 22:44:08,798 - - Token0: 40000000
 2025-04-08 22:44:08,798 - INFO - - Token0: 40000000
+2025-04-08 22:44:08,799 - - Token1: 10000000000000000
 2025-04-08 22:44:08,799 - INFO - - Token1: 10000000000000000
+2025-04-08 22:44:08,800 - - WETH: 10000000000000000
 2025-04-08 22:44:08,800 - INFO - - WETH: 10000000000000000
 2025-04-08 22:44:08,801 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
+2025-04-08 22:44:08,803 - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:44:08,803 - INFO - Fetching price prediction from API: http://95.216.156.73:5000/predict_price?symbol=ETHUSDT&interval=4h
 2025-04-08 22:44:09,515 - INFO - Received predicted price from API: 1537.3608303558826
+2025-04-08 22:44:09,516 - Received predicted price from API: 1537.3608303558826
 2025-04-08 22:44:09,516 - INFO - Received predicted price from API: 1537.3608303558826
 2025-04-08 22:44:09,517 - INFO - Received predicted price: 1537.3608303558826
+2025-04-08 22:44:09,518 - Received predicted price: 1537.3608303558826
 2025-04-08 22:44:09,518 - INFO - Received predicted price: 1537.3608303558826
 2025-04-08 22:44:10,233 - INFO - Active position exists:
 2025-04-08 22:44:10,233 - INFO - - Token ID: 195348
 2025-04-08 22:44:10,234 - INFO - - Liquidity: 42551181973283521207
 2025-04-08 22:44:10,234 - INFO - - Lower Tick: -64920
 2025-04-08 22:44:10,234 - INFO - - Upper Tick: -64680
+2025-04-08 22:44:10,235 - Active position exists:
 2025-04-08 22:44:10,235 - INFO - Active position exists:
+2025-04-08 22:44:10,235 - - Token ID: 195348
 2025-04-08 22:44:10,235 - INFO - - Token ID: 195348
+2025-04-08 22:44:10,236 - - Liquidity: 42551181973283521207
 2025-04-08 22:44:10,236 - INFO - - Liquidity: 42551181973283521207
+2025-04-08 22:44:10,236 - - Lower Tick: -64920
 2025-04-08 22:44:10,236 - INFO - - Lower Tick: -64920
+2025-04-08 22:44:10,237 - - Upper Tick: -64680
 2025-04-08 22:44:10,237 - INFO - - Upper Tick: -64680
 2025-04-08 22:44:10,237 - INFO - Attempting to update existing position with new predicted price...
+2025-04-08 22:44:10,238 - Attempting to update existing position with new predicted price...
 2025-04-08 22:44:10,238 - INFO - Attempting to update existing position with new predicted price...
 2025-04-08 22:44:10,239 - INFO - Original predicted price: 1537.3608303558826 (ETH/USDC)
 2025-04-08 22:44:10,239 - INFO - Inverse price: 0.0006504653821370684 (USDC/ETH)
 2025-04-08 22:44:10,239 - INFO - Price in Wei format: 650465382137068
+2025-04-08 22:44:10,240 - Original predicted price: 1537.3608303558826 (ETH/USDC)
 2025-04-08 22:44:10,240 - INFO - Original predicted price: 1537.3608303558826 (ETH/USDC)
+2025-04-08 22:44:10,240 - Inverse price: 0.0006504653821370684 (USDC/ETH)
 2025-04-08 22:44:10,240 - INFO - Inverse price: 0.0006504653821370684 (USDC/ETH)
+2025-04-08 22:44:10,241 - Price in Wei format: 650465382137068
 2025-04-08 22:44:10,241 - INFO - Price in Wei format: 650465382137068
 2025-04-08 22:44:10,947 - INFO - Transaction sent. Hash: 8ad0bc682cc57562d589c704882ed9c98366b5015d0e9ea4051bf3c8420302dc
+2025-04-08 22:44:10,948 - Transaction sent. Hash: 8ad0bc682cc57562d589c704882ed9c98366b5015d0e9ea4051bf3c8420302dc
 2025-04-08 22:44:10,948 - INFO - Transaction sent. Hash: 8ad0bc682cc57562d589c704882ed9c98366b5015d0e9ea4051bf3c8420302dc
 2025-04-08 22:44:10,949 - INFO - Waiting for transaction confirmation...
+2025-04-08 22:44:10,949 - Waiting for transaction confirmation...
 2025-04-08 22:44:10,949 - INFO - Waiting for transaction confirmation...
 2025-04-08 22:44:14,234 - ERROR - Transaction failed!
+2025-04-08 22:44:14,235 - Transaction failed!
 2025-04-08 22:44:14,235 - ERROR - Transaction failed!
 2025-04-08 22:44:14,477 - ERROR - Error debugging transaction: Object of type HexBytes is not JSON serializable
+2025-04-08 22:44:14,478 - Error debugging transaction: Object of type HexBytes is not JSON serializable
 2025-04-08 22:44:14,478 - ERROR - Error debugging transaction: Object of type HexBytes is not JSON serializable
+2025-04-08 22:44:14,479 - === Position creation operation completed ===
 2025-04-08 22:44:14,479 - INFO - === Position creation operation completed ===
 2025-04-08 22:44:14,480 - INFO - Position creation process completed successfully
+2025-04-08 22:44:14,481 - === Position creation process completed successfully ===
 2025-04-08 22:44:14,481 - INFO - === Position creation process completed successfully ===
