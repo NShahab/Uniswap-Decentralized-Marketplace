@@ -1,5 +1,4 @@
 import os
-import json
 import requests
 import time
 import argparse
@@ -10,6 +9,9 @@ from dotenv import load_dotenv
 import logging
 from datetime import datetime
 from web3.exceptions import TimeExhausted, ContractLogicError
+import json
+import traceback
+import sys
 
 # Setup logging
 logging.basicConfig(
@@ -30,10 +32,16 @@ SEPOLIA_RPC_URL = os.getenv("SEPOLIA_RPC_URL")
 PRIVATE_KEY = os.getenv("PRIVATE_KEY")
 PREDICTION_API_URL = os.getenv("PREDICTION_API_URL")
 
-# Contract addresses
-PREDICTIVE_MANAGER_ADDRESS = os.getenv("PREDICTIVE_LIQUIDITY_MANAGER_ADDRESS")
-USDC_ADDRESS = os.getenv("USDC_ADDRESS")
-WETH_ADDRESS = os.getenv("WETH_ADDRESS")
+# Initialize Web3
+w3 = Web3(Web3.HTTPProvider(SEPOLIA_RPC_URL)) if SEPOLIA_RPC_URL else None
+
+# Contract addresses - convert to checksum format
+PREDICTIVE_MANAGER_ADDRESS = w3.to_checksum_address(os.getenv("PREDICTIVE_LIQUIDITY_MANAGER_ADDRESS")) if w3 and os.getenv("PREDICTIVE_LIQUIDITY_MANAGER_ADDRESS") else None
+USDC_ADDRESS = w3.to_checksum_address(os.getenv("USDC_ADDRESS")) if w3 and os.getenv("USDC_ADDRESS") else None
+WETH_ADDRESS = w3.to_checksum_address(os.getenv("WETH_ADDRESS")) if w3 and os.getenv("WETH_ADDRESS") else None
+
+# CSV file path
+CSV_FILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "position_results.csv")
 
 # Setup separate logger for outputs
 output_logger = logging.getLogger('output')
@@ -42,15 +50,14 @@ output_handler.setFormatter(logging.Formatter('%(asctime)s - %(message)s'))
 output_logger.addHandler(output_handler)
 output_logger.setLevel(logging.INFO)
 
-logging.info(f"Loaded environment: RPC URL: {SEPOLIA_RPC_URL[:20]}..., API URL: {PREDICTION_API_URL}")
+logging.info(f"Loaded environment: RPC URL: {SEPOLIA_RPC_URL[:20] if SEPOLIA_RPC_URL else 'Not set'}...")
 logging.info(f"Contract address: {PREDICTIVE_MANAGER_ADDRESS}")
 logging.info(f"Token addresses - USDC: {USDC_ADDRESS}, WETH: {WETH_ADDRESS}")
+logging.info(f"Results will be saved to CSV: {CSV_FILE_PATH}")
 
 def load_contract_abi(contract_name):
     """Load contract ABI from artifacts"""
-    # Get the directory of the current script
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    # Navigate to the artifacts directory from the current script location
     artifacts_path = os.path.join(current_dir, "..", "artifacts", "contracts", 
                                  f"{contract_name}.sol", f"{contract_name}.json")
     
@@ -64,43 +71,56 @@ def load_contract_abi(contract_name):
         raise
 
 def get_predicted_price():
-    """Get predicted price from API"""
+    """Get the predicted ETH price from API or use a fallback"""
+    # Try to get current price from coinbase API
     try:
-        logging.info(f"Fetching price prediction from API: {PREDICTION_API_URL}")
-        output_logger.info(f"Fetching price prediction from API: {PREDICTION_API_URL}")
-        
-        response = requests.get(PREDICTION_API_URL)
-        response.raise_for_status()
-        data = response.json()
-        predicted_price = data.get('predicted_price')
-        if predicted_price is None:
-            raise ValueError("No predicted price in API response")
-        
-        logging.info(f"Received predicted price from API: {predicted_price}")
-        output_logger.info(f"Received predicted price from API: {predicted_price}")
-        return predicted_price
+        response = requests.get('https://api.coinbase.com/v2/prices/ETH-USD/spot')
+        if response.status_code == 200:
+            data = response.json()
+            price = float(data['data']['amount'])
+            logging.info(f"Coinbase API ETH price: {price} USD")
+            output_logger.info(f"Coinbase API ETH price: {price} USD")
+            
+            # Invert the price for Uniswap (WETH/USDC)
+            inverted_price = 1.0 / price
+            logging.info(f"Inverted price (USDC/WETH): {inverted_price}")
+            output_logger.info(f"Inverted price (USDC/WETH): {inverted_price}")
+            
+            # Return both the original ETH/USDC price and the inverted price
+            return {
+                "original": price,
+                "inverted": inverted_price
+            }
     except Exception as e:
-        logging.error(f"Error fetching prediction: {str(e)}")
-        output_logger.error(f"Error fetching prediction: {str(e)}")
-        # Return a fallback value
-        fallback_price = 1538.0
-        logging.warning(f"Using fallback price: {fallback_price}")
-        output_logger.warning(f"Using fallback price: {fallback_price}")
-        return fallback_price
+        logging.warning(f"Error getting price from Coinbase: {str(e)}")
+        output_logger.warning(f"Failed to get price from Coinbase: {str(e)}")
+    
+    # Fallback: use a fixed price
+    fallback_price = 1800.0  # ETH/USDC
+    inverted_fallback = 1.0 / fallback_price  # USDC/WETH
+    
+    logging.warning(f"Using fallback price: {fallback_price} USD")
+    output_logger.warning(f"Using fallback price: {fallback_price} USD")
+    logging.info(f"Inverted fallback price (USDC/WETH): {inverted_fallback}")
+    output_logger.info(f"Inverted fallback price (USDC/WETH): {inverted_fallback}")
+    
+    return {
+        "original": fallback_price,
+        "inverted": inverted_fallback
+    }
 
 def send_tokens_to_contract():
-    """Send USDC and ETH to the contract"""
-    w3 = Web3(Web3.HTTPProvider(SEPOLIA_RPC_URL))
+    """Send USDC and WETH to the contract"""
+    if not w3:
+        logging.error("Web3 not initialized. Check your RPC URL.")
+        return None
+    
     account = Account.from_key(PRIVATE_KEY)
     
     # Ensure required addresses are set
-    if not USDC_ADDRESS:
-        logging.error("USDC_ADDRESS is not set in .env file")
-        raise ValueError("USDC_ADDRESS is required")
-    
-    if not WETH_ADDRESS:
-        logging.error("WETH_ADDRESS is not set in .env file")
-        raise ValueError("WETH_ADDRESS is required")
+    if not all([USDC_ADDRESS, WETH_ADDRESS, PREDICTIVE_MANAGER_ADDRESS]):
+        logging.error("Required addresses are not set in .env file")
+        raise ValueError("All addresses are required")
     
     logging.info("Preparing to send tokens to contract...")
     output_logger.info("=== Starting token transfer to contract ===")
@@ -130,829 +150,674 @@ def send_tokens_to_contract():
     except Exception as e:
         logging.error(f"Error checking token addresses: {str(e)}")
         output_logger.error(f"Error checking token addresses: {str(e)}")
+        return None
     
-    # 1. Convert ETH to WETH first
-    eth_amount = w3.to_wei(0.01, 'ether')  # 0.01 ETH as an example
-    
-    # WETH ABI for deposit function
+    # WETH ABI for conversion and transfer
     weth_abi = [
-        {
-            "constant": False,
-            "inputs": [],
-            "name": "deposit",
-            "outputs": [],
-            "payable": True,
-            "stateMutability": "payable",
-            "type": "function"
-        },
-        {
-            "constant": True,
-            "inputs": [{"name": "owner", "type": "address"}],
-            "name": "balanceOf",
-            "outputs": [{"name": "", "type": "uint256"}],
-            "payable": False,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": False,
-            "inputs": [
-                {"name": "dst", "type": "address"},
-                {"name": "wad", "type": "uint256"}
-            ],
-            "name": "transfer",
-            "outputs": [{"name": "", "type": "bool"}],
-            "payable": False,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "constant": False,
-            "inputs": [
-                {"name": "guy", "type": "address"},
-                {"name": "wad", "type": "uint256"}
-            ],
-            "name": "approve",
-            "outputs": [{"name": "", "type": "bool"}],
-            "payable": False,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        }
+        {"constant": False, "inputs": [], "name": "deposit", "outputs": [], 
+         "payable": True, "stateMutability": "payable", "type": "function"},
+        {"constant": True, "inputs": [{"name": "owner", "type": "address"}], 
+         "name": "balanceOf", "outputs": [{"name": "", "type": "uint256"}], 
+         "payable": False, "stateMutability": "view", "type": "function"},
+        {"constant": False, "inputs": [{"name": "dst", "type": "address"}, 
+                                     {"name": "wad", "type": "uint256"}], 
+         "name": "transfer", "outputs": [{"name": "", "type": "bool"}], 
+         "payable": False, "stateMutability": "nonpayable", "type": "function"},
+        {"constant": False, "inputs": [{"name": "guy", "type": "address"}, 
+                                     {"name": "wad", "type": "uint256"}], 
+         "name": "approve", "outputs": [{"name": "", "type": "bool"}], 
+         "payable": False, "stateMutability": "nonpayable", "type": "function"}
+    ]
+    
+    # ERC20 ABI for USDC
+    erc20_abi = [
+        {"constant": True, "inputs": [{"name": "owner", "type": "address"}], 
+         "name": "balanceOf", "outputs": [{"name": "", "type": "uint256"}], 
+         "payable": False, "stateMutability": "view", "type": "function"},
+        {"constant": False, "inputs": [{"name": "to", "type": "address"}, 
+                                     {"name": "value", "type": "uint256"}], 
+         "name": "transfer", "outputs": [{"name": "", "type": "bool"}], 
+         "payable": False, "stateMutability": "nonpayable", "type": "function"}
     ]
     
     weth_contract = w3.eth.contract(address=WETH_ADDRESS, abi=weth_abi)
-    
-    # Check initial WETH balance
-    initial_weth = weth_contract.functions.balanceOf(account.address).call()
-    logging.info(f"Initial WETH balance: {w3.from_wei(initial_weth, 'ether')} WETH")
-    output_logger.info(f"Initial WETH balance: {w3.from_wei(initial_weth, 'ether')} WETH")
-
-    # Convert ETH to WETH by calling deposit
-    logging.info(f"Converting {w3.from_wei(eth_amount, 'ether')} ETH to WETH...")
-    output_logger.info(f"Converting {w3.from_wei(eth_amount, 'ether')} ETH to WETH...")
-    
-    weth_tx = weth_contract.functions.deposit().build_transaction({
-        'from': account.address,
-        'value': eth_amount,
-        'gas': 100000,
-        'gasPrice': w3.to_wei(20, 'gwei'),
-        'nonce': w3.eth.get_transaction_count(account.address),
-    })
-    
-    # Sign and send WETH deposit transaction
-    signed_weth_tx = w3.eth.account.sign_transaction(weth_tx, PRIVATE_KEY)
-    weth_tx_hash = w3.eth.send_raw_transaction(signed_weth_tx.raw_transaction)
-    logging.info(f"WETH deposit transaction sent. Hash: {weth_tx_hash.hex()}")
-    output_logger.info(f"WETH deposit transaction sent. Hash: {weth_tx_hash.hex()}")
-    
-    # Wait for WETH deposit to be confirmed
-    try:
-        logging.info("Waiting for WETH deposit confirmation...")
-        w3.eth.wait_for_transaction_receipt(weth_tx_hash, timeout=120)
-        
-        # Check new WETH balance
-        new_weth = weth_contract.functions.balanceOf(account.address).call()
-        logging.info(f"New WETH balance: {w3.from_wei(new_weth, 'ether')} WETH")
-        output_logger.info(f"New WETH balance: {w3.from_wei(new_weth, 'ether')} WETH")
-        
-        # Approve WETH spending by the contract before sending
-        logging.info(f"Approving contract to spend {w3.from_wei(eth_amount, 'ether')} WETH...")
-        output_logger.info(f"Approving contract to spend {w3.from_wei(eth_amount, 'ether')} WETH...")
-        
-        weth_approve_tx = weth_contract.functions.approve(
-            PREDICTIVE_MANAGER_ADDRESS,
-            eth_amount
-        ).build_transaction({
-            'from': account.address,
-            'gas': 100000,
-            'gasPrice': w3.to_wei(20, 'gwei'),
-            'nonce': w3.eth.get_transaction_count(account.address),
-        })
-        
-        # Sign and send WETH approve transaction
-        signed_weth_approve_tx = w3.eth.account.sign_transaction(weth_approve_tx, PRIVATE_KEY)
-        weth_approve_hash = w3.eth.send_raw_transaction(signed_weth_approve_tx.raw_transaction)
-        logging.info(f"WETH approval transaction sent. Hash: {weth_approve_hash.hex()}")
-        output_logger.info(f"WETH approval transaction sent. Hash: {weth_approve_hash.hex()}")
-        
-        # Wait for approval to be confirmed
-        logging.info("Waiting for WETH approval confirmation...")
-        w3.eth.wait_for_transaction_receipt(weth_approve_hash, timeout=120)
-        
-        # Send WETH to contract
-        logging.info(f"Sending {w3.from_wei(eth_amount, 'ether')} WETH to contract...")
-        output_logger.info(f"Sending {w3.from_wei(eth_amount, 'ether')} WETH to contract...")
-        
-        weth_transfer_tx = weth_contract.functions.transfer(
-            PREDICTIVE_MANAGER_ADDRESS,
-            eth_amount
-        ).build_transaction({
-            'from': account.address,
-            'gas': 100000,
-            'gasPrice': w3.to_wei(20, 'gwei'),
-            'nonce': w3.eth.get_transaction_count(account.address),
-        })
-        
-        # Sign and send WETH transfer transaction
-        signed_weth_transfer_tx = w3.eth.account.sign_transaction(weth_transfer_tx, PRIVATE_KEY)
-        weth_transfer_hash = w3.eth.send_raw_transaction(signed_weth_transfer_tx.raw_transaction)
-        logging.info(f"WETH transfer transaction sent. Hash: {weth_transfer_hash.hex()}")
-        output_logger.info(f"WETH transfer transaction sent. Hash: {weth_transfer_hash.hex()}")
-        
-        # Wait for WETH transfer to be confirmed
-        logging.info("Waiting for WETH transfer confirmation...")
-        w3.eth.wait_for_transaction_receipt(weth_transfer_hash, timeout=120)
-        
-    except Exception as e:
-        logging.error(f"Error with WETH deposit or transfer: {str(e)}")
-        output_logger.error(f"Error with WETH deposit or transfer: {str(e)}")
-        return False
-    
-    # 2. Send USDC to contract
-    # Load USDC contract
-    erc20_abi = [
-        {
-            "constant": False,
-            "inputs": [
-                {"name": "_to", "type": "address"},
-                {"name": "_value", "type": "uint256"}
-            ],
-            "name": "transfer",
-            "outputs": [{"name": "", "type": "bool"}],
-            "payable": False,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        },
-        {
-            "constant": True,
-            "inputs": [{"name": "_owner", "type": "address"}],
-            "name": "balanceOf",
-            "outputs": [{"name": "balance", "type": "uint256"}],
-            "payable": False,
-            "stateMutability": "view",
-            "type": "function"
-        },
-        {
-            "constant": False,
-            "inputs": [
-                {"name": "_spender", "type": "address"},
-                {"name": "_value", "type": "uint256"}
-            ],
-            "name": "approve",
-            "outputs": [{"name": "", "type": "bool"}],
-            "payable": False,
-            "stateMutability": "nonpayable",
-            "type": "function"
-        }
-    ]
-    
     usdc_contract = w3.eth.contract(address=USDC_ADDRESS, abi=erc20_abi)
     
-    # Check USDC balance
-    usdc_balance = usdc_contract.functions.balanceOf(account.address).call()
-    usdc_amount = 10 * (10 ** 6)  # 10 USDC (assuming USDC has 6 decimals)
-    
-    logging.info(f"USDC balance: {usdc_balance / (10 ** 6)} USDC")
-    output_logger.info(f"USDC balance: {usdc_balance / (10 ** 6)} USDC")
-    
-    if usdc_balance < usdc_amount:
-        logging.error(f"Insufficient USDC balance. Need {usdc_amount / (10 ** 6)} USDC.")
-        output_logger.error(f"Insufficient USDC balance. Need {usdc_amount / (10 ** 6)} USDC.")
-        return False
-    
-    # Approve USDC spending by the contract before sending
-    logging.info(f"Approving contract to spend {usdc_amount / (10 ** 6)} USDC...")
-    output_logger.info(f"Approving contract to spend {usdc_amount / (10 ** 6)} USDC...")
-    
-    usdc_approve_tx = usdc_contract.functions.approve(
-        PREDICTIVE_MANAGER_ADDRESS,
-        usdc_amount
-    ).build_transaction({
-        'from': account.address,
-        'gas': 100000,
-        'gasPrice': w3.to_wei(20, 'gwei'),
-        'nonce': w3.eth.get_transaction_count(account.address),
-    })
-    
-    # Sign and send USDC approve transaction
-    signed_usdc_approve_tx = w3.eth.account.sign_transaction(usdc_approve_tx, PRIVATE_KEY)
-    usdc_approve_hash = w3.eth.send_raw_transaction(signed_usdc_approve_tx.raw_transaction)
-    logging.info(f"USDC approval transaction sent. Hash: {usdc_approve_hash.hex()}")
-    output_logger.info(f"USDC approval transaction sent. Hash: {usdc_approve_hash.hex()}")
-    
-    # Wait for approval to be confirmed
-    logging.info("Waiting for USDC approval confirmation...")
-    w3.eth.wait_for_transaction_receipt(usdc_approve_hash, timeout=120)
-    
-    # Send USDC
-    logging.info(f"Sending {usdc_amount / (10 ** 6)} USDC to contract...")
-    output_logger.info(f"Sending {usdc_amount / (10 ** 6)} USDC to contract")
-    
-    usdc_tx = usdc_contract.functions.transfer(
-        PREDICTIVE_MANAGER_ADDRESS, 
-        usdc_amount
-    ).build_transaction({
-        'from': account.address,
-        'gas': 100000,
-        'gasPrice': w3.to_wei(20, 'gwei'),
-        'nonce': w3.eth.get_transaction_count(account.address),
-    })
-    
-    # Sign and send USDC transaction
-    signed_usdc_tx = w3.eth.account.sign_transaction(usdc_tx, PRIVATE_KEY)
-    usdc_tx_hash = w3.eth.send_raw_transaction(signed_usdc_tx.raw_transaction)
-    logging.info(f"USDC transaction sent. Hash: {usdc_tx_hash.hex()}")
-    output_logger.info(f"USDC transaction sent. Hash: {usdc_tx_hash.hex()}")
-    
-    # Wait for USDC transfer to be confirmed
-    logging.info("Waiting for USDC transfer confirmation...")
-    w3.eth.wait_for_transaction_receipt(usdc_tx_hash, timeout=120)
-    
-    output_logger.info("=== Token transfer to contract completed successfully ===")
-    return True
-
-def debug_transaction(w3, contract, account_address, price_in_wei):
-    """Simulate the transaction to identify potential errors before sending it"""
-    logging.info("Simulating transaction before sending...")
-    output_logger.info("Simulating transaction before sending...")
-    
     try:
-        # Try calling the function locally first to check for errors
-        contract.functions.updatePredictionAndAdjust(
-            price_in_wei
-        ).call({
-            'from': account_address,
-            'gas': 5000000
+        # Get current gas price and increase it by 50%
+        current_gas_price = w3.eth.gas_price
+        gas_price = int(current_gas_price * 1.5)  # 50% higher gas price
+        logging.info(f"Using gas price: {w3.from_wei(gas_price, 'gwei')} gwei (50% above current)")
+        
+        # 1. Convert ETH to WETH - INCREASED AMOUNT TO 0.05 ETH (5x MORE)
+        eth_amount = w3.to_wei(0.05, 'ether')  # 0.05 ETH (was 0.01)
+        
+        logging.info(f"Converting {w3.from_wei(eth_amount, 'ether')} ETH to WETH...")
+        tx_hash = weth_contract.functions.deposit().build_transaction({
+            'from': account.address,
+            'value': eth_amount,
+            'nonce': w3.eth.get_transaction_count(account.address),
+            'gas': 100000,
+            'gasPrice': gas_price
         })
-        logging.info("Simulation successful! Transaction should work.")
-        output_logger.info("Simulation successful! Transaction should work.")
-        return True
-    except ContractLogicError as e:
-        error_msg = str(e)
-        logging.error(f"Simulation failed with error: {error_msg}")
-        output_logger.error(f"Simulation failed with error: {error_msg}")
         
-        # Try to extract revert reason from the error message
-        if "revert" in error_msg.lower():
-            # Common error patterns
-            if "insufficient liquidity" in error_msg.lower():
-                suggestion = "The pool might not have enough liquidity. Try with a smaller amount or a different price range."
-            elif "price out of range" in error_msg.lower() or "tick" in error_msg.lower():
-                suggestion = "The predicted price might be outside the acceptable range for the pool."
-            elif "slippage" in error_msg.lower():
-                suggestion = "Increase slippage tolerance or try a smaller amount."
-            elif "balance" in error_msg.lower() or "allowance" in error_msg.lower():
-                suggestion = "Check token balances and allowances. Make sure the contract has enough tokens."
-            else:
-                suggestion = "Check contract parameters and try again with different values."
-                
-            logging.error(f"Suggestion: {suggestion}")
-            output_logger.error(f"Suggestion: {suggestion}")
-        return False
-    except Exception as e:
-        logging.error(f"Simulation failed with unknown error: {str(e)}")
-        output_logger.error(f"Simulation failed with unknown error: {str(e)}")
-        return False
-
-def check_pool_and_debug(w3, predictive, predicted_price):
-    """Check pool settings and debug possible transaction failure reasons"""
-    logging.info("Checking pool settings and debugging...")
-    output_logger.info("Checking pool settings and debugging...")
-    
-    try:
-        # Get contract token decimals
+        # Fix for Web3.py version compatibility
+        signed_tx = w3.eth.account.sign_transaction(tx_hash, private_key=PRIVATE_KEY)
+        # Access the correct attribute based on Web3.py version
+        raw_tx_data = signed_tx.rawTransaction if hasattr(signed_tx, 'rawTransaction') else signed_tx.raw_transaction
+        
+        deposit_tx_hash = w3.eth.send_raw_transaction(raw_tx_data)
+        logging.info(f"WETH deposit transaction sent: {deposit_tx_hash.hex()}")
+        logging.info(f"Waiting for confirmation (up to 300 seconds)...")
+        
         try:
-            token0_address = predictive.functions.token0().call()
-            token1_address = predictive.functions.token1().call()
-            token0_decimals = predictive.functions.token0Decimals().call()
-            token1_decimals = predictive.functions.token1Decimals().call()
-            logging.info(f"Token decimals - Token0: {token0_decimals}, Token1: {token1_decimals}")
-            output_logger.info(f"Token decimals - Token0: {token0_decimals}, Token1: {token1_decimals}")
+            deposit_receipt = w3.eth.wait_for_transaction_receipt(deposit_tx_hash, timeout=300)
+            logging.info(f"ETH to WETH conversion confirmed. Hash: {deposit_receipt.transactionHash.hex()}")
         except Exception as e:
-            logging.error(f"Error getting token decimals: {str(e)}")
-            token0_decimals = 6  # Default USDC
-            token1_decimals = 18  # Default WETH
-            logging.info(f"Using default decimals - Token0: {token0_decimals}, Token1: {token1_decimals}")
+            logging.error(f"Timed out waiting for WETH deposit confirmation: {str(e)}")
+            logging.warning("Continuing with the next step anyway, the transaction might confirm later.")
         
-        # Convert predicted price to contract format (similar to _priceToTick in contract)
-        # In contract: uint256 ratioX192 = numerator.mul(1 << 192).div(denominator);
-        # Here we need to properly scale the price based on token decimals
+        # Wait a few seconds to make sure nonce is updated
+        time.sleep(5)
         
-        # Convert predicted price to the expected format
-        # According to the contract, the price should be expressed as:
-        # price = (token1/token0) * 10^(token0_decimals - token1_decimals) * 1e18
+        # 2. Send WETH to contract
+        weth_balance = weth_contract.functions.balanceOf(account.address).call()
+        logging.info(f"WETH balance: {w3.from_wei(weth_balance, 'ether')} WETH")
         
-        # Start with a simple scaling
-        contract_price = int(predicted_price * (10 ** 18))
+        if weth_balance == 0:
+            logging.warning("WETH balance is 0, the deposit transaction might not be confirmed yet.")
+            logging.warning("Waiting 60 seconds and trying again...")
+            time.sleep(60)
+            weth_balance = weth_contract.functions.balanceOf(account.address).call()
+            logging.info(f"WETH balance after waiting: {w3.from_wei(weth_balance, 'ether')} WETH")
         
-        # Try to get pool address
-        pool_address = predictive.functions.getPoolAddress().call()
-        logging.info(f"Pool address: {pool_address}")
-        output_logger.info(f"Pool address: {pool_address}")
-        
-        # Try to get fee
-        fee = predictive.functions.fee().call()
-        logging.info(f"Pool fee: {fee}")
-        output_logger.info(f"Pool fee: {fee}")
-        
-        # Try to get tick spacing
-        tick_spacing = predictive.functions.tickSpacing().call()
-        logging.info(f"Tick spacing: {tick_spacing}")
-        output_logger.info(f"Tick spacing: {tick_spacing}")
-        
-        # Try to get current active position to understand the tick range
-        try:
-            position = predictive.functions.getActivePositionDetails().call()
-            if position[4]:  # If position is active
-                lower_tick = position[2]
-                upper_tick = position[3]
-                logging.info(f"Active position ticks: [{lower_tick}, {upper_tick}]")
-                output_logger.info(f"Active position ticks: [{lower_tick}, {upper_tick}]")
-                
-                # Based on the logs, we see when price_in_wei=1, we get ticks around -138000
-                # Since this works, we'll use this value
-                final_price = 1  # This seems to work reliably with the contract
-                
-                logging.info(f"Using price value 1 which is known to work with the contract")
-                output_logger.info(f"Using price value 1 which is known to work with the contract")
-                return True, final_price, contract_price
-        except Exception as e:
-            logging.error(f"Error checking active position: {str(e)}")
-            output_logger.error(f"Error checking active position: {str(e)}")
-        
-        # If all else fails, use 1 which works based on logs
-        logging.info("Using price value 1 which is known to work with contract")
-        output_logger.info("Using price value 1 which is known to work with contract")
-        return True, 1, contract_price
-    except Exception as e:
-        logging.error(f"Error checking pool: {str(e)}")
-        output_logger.error(f"Error checking pool: {str(e)}")
-        return False, 1, int(predicted_price * (10 ** 18))
-
-def create_position():
-    """Create a new position using predicted price"""
-    try:
-        # Setup web3
-        w3 = Web3(Web3.HTTPProvider(SEPOLIA_RPC_URL))
-        account = Account.from_key(PRIVATE_KEY)
-        
-        # Load contract
-        predictive_abi = load_contract_abi("PredictiveLiquidityManager")
-        predictive = w3.eth.contract(
-            address=PREDICTIVE_MANAGER_ADDRESS,
-            abi=predictive_abi
-        )
-        
-        output_logger.info("=== Starting new position creation ===")
-        
-        # Check contract balances first
-        balances = predictive.functions.getContractBalances().call()
-        logging.info(f"Contract balances before creating position:")
-        logging.info(f"- Token0: {balances[0]}")
-        logging.info(f"- Token1: {balances[1]}")
-        logging.info(f"- WETH: {balances[2]}")
-        
-        output_logger.info(f"Contract balances before creating position:")
-        output_logger.info(f"- Token0: {balances[0]}")
-        output_logger.info(f"- Token1: {balances[1]}")
-        output_logger.info(f"- WETH: {balances[2]}")
-        
-        # Send tokens to contract if needed
-        if balances[0] == 0 or balances[1] == 0:
-            logging.info("Contract needs tokens. Sending USDC and ETH...")
-            output_logger.info("Contract needs tokens. Sending USDC and ETH...")
-            
-            if not send_tokens_to_contract():
-                logging.error("Failed to send tokens to contract.")
-                output_logger.error("Failed to send tokens to contract.")
-                return
-            
-            # Wait for token transfer transactions to be confirmed
-            logging.info("Waiting for token transfers to be confirmed...")
-            output_logger.info("Waiting for token transfers to be confirmed...")
-            time.sleep(30)  # Wait 30 seconds for transactions to be confirmed
-            
-            # Verify balances after sending tokens
-            balances = predictive.functions.getContractBalances().call()
-            logging.info(f"Contract balances after sending tokens:")
-            logging.info(f"- Token0: {balances[0]}")
-            logging.info(f"- Token1: {balances[1]}")
-            logging.info(f"- WETH: {balances[2]}")
-            
-            output_logger.info(f"Contract balances after sending tokens:")
-            output_logger.info(f"- Token0: {balances[0]}")
-            output_logger.info(f"- Token1: {balances[1]}")
-            output_logger.info(f"- WETH: {balances[2]}")
-        
-        # Get predicted price from API
-        predicted_price = get_predicted_price()
-        logging.info(f"Received predicted price: {predicted_price}")
-        output_logger.info(f"Received predicted price: {predicted_price}")
-        
-        # Check if there's an existing position
-        position = predictive.functions.getActivePositionDetails().call()
-        if position[4]:  # if position is active
-            logging.info("Active position exists:")
-            logging.info(f"- Token ID: {position[0]}")
-            logging.info(f"- Liquidity: {position[1]}")
-            logging.info(f"- Lower Tick: {position[2]}")
-            logging.info(f"- Upper Tick: {position[3]}")
-            
-            output_logger.info("Active position exists:")
-            output_logger.info(f"- Token ID: {position[0]}")
-            output_logger.info(f"- Liquidity: {position[1]}")
-            output_logger.info(f"- Lower Tick: {position[2]}")
-            output_logger.info(f"- Upper Tick: {position[3]}")
-            
-            # Here we will try to update the position with a new price
-            logging.info("Attempting to update existing position with new predicted price...")
-            output_logger.info("Attempting to update existing position with new predicted price...")
-        
-        # Prepare transaction
-        if not position[4]:
-            logging.info("No active position found. Creating new position...")
-            output_logger.info("No active position found. Creating new position...")
-        
-        # استفاده از قیمت معکوس برای قرارداد
-        # در Uniswap، قیمت به صورت نسبت token1/token0 نمایش داده می‌شود
-        # اگر قیمت پیش‌بینی ما ETH/USDC است (مثلاً 1537 USDC برای هر ETH)،
-        # باید معکوس آن را به قرارداد بدهیم (USDC/ETH یا 1/1537 = 0.00065)
-        
-        # محاسبه معکوس قیمت
-        inverse_price = 1.0 / float(predicted_price)
-        
-        # برای اطمینان از دقت، مقدار را در 10^18 ضرب می‌کنیم (برای تبدیل به Wei)
-        price_in_wei = int(inverse_price * (10 ** 18))
-        
-        logging.info(f"Original predicted price: {predicted_price} (ETH/USDC)")
-        logging.info(f"Inverse price: {inverse_price} (USDC/ETH)")
-        logging.info(f"Price in Wei format: {price_in_wei}")
-        
-        output_logger.info(f"Original predicted price: {predicted_price} (ETH/USDC)")
-        output_logger.info(f"Inverse price: {inverse_price} (USDC/ETH)")
-        output_logger.info(f"Price in Wei format: {price_in_wei}")
-        
-        # اطمینان از اینکه قیمت از صفر بزرگتر است
-        if price_in_wei <= 0:
-            price_in_wei = 1
-            logging.warning(f"Invalid price calculation! Using default value: {price_in_wei}")
-            output_logger.warning(f"Invalid price calculation! Using default value: {price_in_wei}")
-        
-        original_predicted_price = predicted_price  # Save for logging
-        
-        # Build and send transaction
-        try:
-            transaction = predictive.functions.updatePredictionAndAdjust(
-                price_in_wei
-            ).build_transaction({
+        if weth_balance > 0:
+            # Send all WETH to contract
+            logging.info(f"Sending {w3.from_wei(weth_balance, 'ether')} WETH to contract...")
+            tx_hash = weth_contract.functions.transfer(PREDICTIVE_MANAGER_ADDRESS, weth_balance).build_transaction({
                 'from': account.address,
-                'gas': 5000000,  # Increased gas limit to 5 million
-                'gasPrice': w3.to_wei(20, 'gwei'),  # Increased gas price to 20 Gwei
                 'nonce': w3.eth.get_transaction_count(account.address),
+                'gas': 100000,
+                'gasPrice': gas_price
             })
             
-            # Sign and send transaction
-            signed_txn = w3.eth.account.sign_transaction(transaction, PRIVATE_KEY)
-            tx_hash = w3.eth.send_raw_transaction(signed_txn.raw_transaction)
+            signed_tx = w3.eth.account.sign_transaction(tx_hash, private_key=PRIVATE_KEY)
+            raw_tx_data = signed_tx.rawTransaction if hasattr(signed_tx, 'rawTransaction') else signed_tx.raw_transaction
             
-            logging.info(f"Transaction sent. Hash: {tx_hash.hex()}")
-            output_logger.info(f"Transaction sent. Hash: {tx_hash.hex()}")
-        except Exception as tx_error:
-            logging.error(f"Error sending transaction: {str(tx_error)}")
-            output_logger.error(f"Error sending transaction: {str(tx_error)}")
-            return False
+            weth_tx_hash = w3.eth.send_raw_transaction(raw_tx_data)
+            logging.info(f"WETH transfer transaction sent: {weth_tx_hash.hex()}")
+            logging.info(f"Waiting for confirmation (up to 300 seconds)...")
+            
+            try:
+                weth_receipt = w3.eth.wait_for_transaction_receipt(weth_tx_hash, timeout=300)
+                logging.info(f"WETH transfer confirmed. Hash: {weth_receipt.transactionHash.hex()}")
+            except Exception as e:
+                logging.error(f"Timed out waiting for WETH transfer confirmation: {str(e)}")
+                logging.warning("Continuing with the next step anyway, the transaction might confirm later.")
+            
+            # Wait a few seconds to make sure nonce is updated
+            time.sleep(5)
         
-        # Wait for receipt
+        # 3. Send USDC to contract - INCREASED AMOUNT TO 50 USDC (5x MORE)
+        usdc_amount = 50_000_000  # 50 USDC with 6 decimals (was 10)
+        
+        logging.info(f"Sending {usdc_amount / 1e6} USDC to contract...")
+        tx_hash = usdc_contract.functions.transfer(PREDICTIVE_MANAGER_ADDRESS, usdc_amount).build_transaction({
+            'from': account.address,
+            'nonce': w3.eth.get_transaction_count(account.address),
+            'gas': 100000,
+            'gasPrice': gas_price
+        })
+        
+        signed_tx = w3.eth.account.sign_transaction(tx_hash, private_key=PRIVATE_KEY)
+        raw_tx_data = signed_tx.rawTransaction if hasattr(signed_tx, 'rawTransaction') else signed_tx.raw_transaction
+        
+        usdc_tx_hash = w3.eth.send_raw_transaction(raw_tx_data)
+        logging.info(f"USDC transfer transaction sent: {usdc_tx_hash.hex()}")
+        logging.info(f"Waiting for confirmation (up to 300 seconds)...")
+        
         try:
-            logging.info("Waiting for transaction confirmation...")
-            output_logger.info("Waiting for transaction confirmation...")
-            receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=300)  # Increased timeout to 5 minutes
-            if receipt['status'] == 1:
-                logging.info("Position created successfully!")
-                output_logger.info("Position created successfully!")
-                
-                new_position = predictive.functions.getActivePositionDetails().call()
-                logging.info("New position details:")
-                logging.info(f"- Token ID: {new_position[0]}")
-                logging.info(f"- Liquidity: {new_position[1]}")
-                logging.info(f"- Lower Tick: {new_position[2]}")
-                logging.info(f"- Upper Tick: {new_position[3]}")
-                
-                output_logger.info("New position details:")
-                output_logger.info(f"- Token ID: {new_position[0]}")
-                output_logger.info(f"- Liquidity: {new_position[1]}")
-                output_logger.info(f"- Lower Tick: {new_position[2]}")
-                output_logger.info(f"- Upper Tick: {new_position[3]}")
+            usdc_receipt = w3.eth.wait_for_transaction_receipt(usdc_tx_hash, timeout=300)
+            logging.info(f"USDC transfer confirmed. Hash: {usdc_receipt.transactionHash.hex()}")
+        except Exception as e:
+            logging.error(f"Timed out waiting for USDC transfer confirmation: {str(e)}")
+            logging.warning("Continuing anyway, the transaction might confirm later.")
+        
+        # Check contract balances after transfer
+        try:
+            contract_weth_balance = weth_contract.functions.balanceOf(PREDICTIVE_MANAGER_ADDRESS).call()
+            contract_usdc_balance = usdc_contract.functions.balanceOf(PREDICTIVE_MANAGER_ADDRESS).call()
+            logging.info(f"Contract balances after transfer - WETH: {w3.from_wei(contract_weth_balance, 'ether')}, "
+                      f"USDC: {contract_usdc_balance / 1e6}")
+            output_logger.info(f"Contract now has {w3.from_wei(contract_weth_balance, 'ether')} WETH and {contract_usdc_balance / 1e6} USDC")
+        except Exception as e:
+            logging.error(f"Error checking contract balances: {str(e)}")
+        
+        # Wait a bit longer to make sure the contract received the tokens
+        logging.info("Waiting 60 seconds to ensure tokens are received by the contract...")
+        time.sleep(60)
+        
+        return {
+            "status": "Transactions sent, some might still be pending",
+            "weth_tx": deposit_tx_hash.hex(),
+            "usdc_tx": usdc_tx_hash.hex() if 'usdc_tx_hash' in locals() else "Not sent",
+            "weth_amount": weth_balance,
+            "usdc_amount": usdc_amount
+        }
+    except Exception as e:
+        logging.error(f"Error sending tokens: {str(e)}")
+        traceback.print_exc()
+        return None
 
-                # Get more details from transaction receipt and logs
-                gas_used = receipt['gasUsed']
-                gas_price = w3.eth.get_transaction(tx_hash)['gasPrice']
-                total_gas_cost = gas_used * gas_price
-                total_eth_cost = float(w3.from_wei(total_gas_cost, 'ether'))
+def create_position(predicted_price):
+    """Create position using predicted price"""
+    if not w3:
+        logging.error("Web3 not initialized. Check your RPC URL.")
+        return None
+        
+    account = Account.from_key(PRIVATE_KEY)
+    
+    # Load contract ABIs
+    predictive_abi = load_contract_abi("PredictiveLiquidityManager")
+    predictive = w3.eth.contract(address=PREDICTIVE_MANAGER_ADDRESS, abi=predictive_abi)
+    
+    # Get contract token balances
+    weth_abi = [{"constant": True, "inputs": [{"name": "owner", "type": "address"}], 
+                 "name": "balanceOf", "outputs": [{"name": "", "type": "uint256"}], 
+                 "payable": False, "stateMutability": "view", "type": "function"}]
+    erc20_abi = weth_abi  # Same balance checking function
+    
+    weth_contract = w3.eth.contract(address=WETH_ADDRESS, abi=weth_abi)
+    usdc_contract = w3.eth.contract(address=USDC_ADDRESS, abi=erc20_abi)
+    
+    # Check balances before proceeding
+    contract_weth_balance = weth_contract.functions.balanceOf(PREDICTIVE_MANAGER_ADDRESS).call()
+    contract_usdc_balance = usdc_contract.functions.balanceOf(PREDICTIVE_MANAGER_ADDRESS).call()
+    
+    logging.info(f"Contract balances - WETH: {w3.from_wei(contract_weth_balance, 'ether')}, "
+                 f"USDC: {contract_usdc_balance / 1e6}")
+    output_logger.info(f"Contract balances - WETH: {w3.from_wei(contract_weth_balance, 'ether')}, "
+                     f"USDC: {contract_usdc_balance / 1e6}")
+    
+    if contract_weth_balance == 0 and contract_usdc_balance == 0:
+        logging.warning("Contract has no tokens. Sending tokens first...")
+        tokens_result = send_tokens_to_contract()
+        if not tokens_result:
+            logging.error("Failed to send tokens to contract. Cannot create position.")
+            return None
+        
+        # Check balances again after sending tokens
+        time.sleep(10)
+        contract_weth_balance = weth_contract.functions.balanceOf(PREDICTIVE_MANAGER_ADDRESS).call()
+        contract_usdc_balance = usdc_contract.functions.balanceOf(PREDICTIVE_MANAGER_ADDRESS).call()
+        logging.info(f"Updated contract balances - WETH: {w3.from_wei(contract_weth_balance, 'ether')}, "
+                   f"USDC: {contract_usdc_balance / 1e6}")
+        output_logger.info(f"Updated contract balances - WETH: {w3.from_wei(contract_weth_balance, 'ether')}, "
+                       f"USDC: {contract_usdc_balance / 1e6}")
+        
+        if contract_weth_balance == 0 and contract_usdc_balance == 0:
+            logging.warning("Contract still has no tokens. Transactions might be pending. Will try to create position anyway.")
+            output_logger.warning("Contract still has no tokens. Transactions might be pending.")
+    
+    # Prepare different price variations to try (all prices are USDC/WETH format)
+    price_variations = []
+    
+    # Original inverted price with high precision
+    inverted_price_high_precision = predicted_price["inverted"]
+    price_variations.append({
+        "name": "High precision inverted",
+        "value": int(inverted_price_high_precision * 1e18),
+        "scale": 1e18,
+        "original": predicted_price["original"],
+        "inverted": inverted_price_high_precision
+    })
+    
+    # Rounded inverted price with 6 decimals (for better alignment with USDC decimals)
+    inverted_price_rounded = round(predicted_price["inverted"], 6)
+    price_variations.append({
+        "name": "6-decimal rounded inverted",
+        "value": int(inverted_price_rounded * 1e6),
+        "scale": 1e6,
+        "original": predicted_price["original"],
+        "inverted": inverted_price_rounded
+    })
+    
+    # Further simplified inverted price (4 decimals)
+    inverted_price_simple = round(predicted_price["inverted"], 4)
+    price_variations.append({
+        "name": "4-decimal simplified inverted",
+        "value": int(inverted_price_simple * 1e4),
+        "scale": 1e4,
+        "original": predicted_price["original"],
+        "inverted": inverted_price_simple
+    })
+    
+    # Modified price: slightly increase or decrease the prediction for a wider range
+    inverted_price_adjusted = inverted_price_high_precision * 1.05  # 5% increase
+    price_variations.append({
+        "name": "Adjusted inverted (+5%)",
+        "value": int(inverted_price_adjusted * 1e18),
+        "scale": 1e18,
+        "original": predicted_price["original"] / 1.05,
+        "inverted": inverted_price_adjusted
+    })
+    
+    # Try using a whole number to represent price (for debugging)
+    fallback_whole_number = 1000000  # Simple large integer for testing
+    price_variations.append({
+        "name": "Fallback whole number",
+        "value": fallback_whole_number,
+        "scale": 1,
+        "original": "N/A",
+        "inverted": fallback_whole_number
+    })
+    
+    # Log all price variations we'll try
+    logging.info(f"Generated {len(price_variations)} price variations to try:")
+    for i, pv in enumerate(price_variations):
+        logging.info(f"  {i+1}. {pv['name']}: {pv['value']}/{pv['scale']} = {pv['value']/pv['scale']}")
+    
+    # Try each price variation until one succeeds or all fail
+    for i, price_var in enumerate(price_variations):
+        logging.info(f"Trying price variation {i+1}/{len(price_variations)}: {price_var['name']}")
+        output_logger.info(f"Trying price: {price_var['value']/price_var['scale']} USDC/WETH (variation: {price_var['name']})")
+        
+        try:
+            # Get current active position info before transaction
+            try:
+                current_position = predictive.functions.currentPosition().call()
+                position_active = current_position[4]  # active flag
+                position_id = current_position[0] if position_active else 0
+                logging.info(f"Current position - Active: {position_active}, Token ID: {position_id}")
+            except Exception as e:
+                logging.warning(f"Error getting current position: {str(e)}")
+                position_active = False
+                position_id = 0
                 
-                # Get current price from pool
-                try:
-                    # First try with _getCurrentSqrtPriceAndTick
-                    try:
-                        current_price = predictive.functions._getCurrentSqrtPriceAndTick().call()[0]
-                        logging.info(f"Current pool price: {current_price}")
-                        output_logger.info(f"Current pool price: {current_price}")
-                    except Exception as e1:
-                        # If that fails, try alternative methods
-                        logging.warning(f"Could not get price with _getCurrentSqrtPriceAndTick: {str(e1)}")
-                        try:
-                            # Try to get pool address
-                            pool_address = predictive.functions.getPoolAddress().call()
-                            logging.info(f"Pool address for price check: {pool_address}")
-                            
-                            # Use direct observation from contract instead
-                            current_position = predictive.functions.getActivePositionDetails().call()
-                            logging.info(f"Successfully created position with ID: {current_position[0]}")
-                            output_logger.info(f"Successfully created position with ID: {current_position[0]}")
-                        except Exception as e2:
-                            logging.warning(f"Could not get alternative price info: {str(e2)}")
-                except Exception as e:
-                    logging.warning(f"Could not get price information: {str(e)}")
-                    output_logger.warning(f"Could not get price information: {str(e)}")
+            # Get current gas price and increase it by 50%
+            current_gas_price = w3.eth.gas_price
+            gas_price = int(current_gas_price * 1.5)  # 50% higher gas price
+            logging.info(f"Using gas price: {w3.from_wei(gas_price, 'gwei')} gwei (50% above current)")
+            
+            # Create transaction to update position with current price variation
+            price_to_use = price_var["value"]
+            tx_hash = predictive.functions.updatePredictionAndAdjust(price_to_use).build_transaction({
+                'from': account.address,
+                'nonce': w3.eth.get_transaction_count(account.address),
+                'gas': 2000000,  # Higher gas limit for complex operation
+                'gasPrice': gas_price
+            })
+            
+            signed_tx = w3.eth.account.sign_transaction(tx_hash, private_key=PRIVATE_KEY)
+            # Fix for Web3.py version compatibility
+            raw_tx_data = signed_tx.rawTransaction if hasattr(signed_tx, 'rawTransaction') else signed_tx.raw_transaction
+            
+            transaction_hash = w3.eth.send_raw_transaction(raw_tx_data)
+            
+            logging.info(f"Transaction sent, waiting for confirmation: {transaction_hash.hex()}")
+            output_logger.info(f"Transaction sent: {transaction_hash.hex()}")
+            
+            # Wait for transaction with extended timeout
+            try:
+                logging.info(f"Waiting for confirmation (up to 360 seconds)...")
+                transaction_receipt = w3.eth.wait_for_transaction_receipt(transaction_hash, timeout=360)
                 
-                # Save final transaction result with all details
-                final_result = {
-                    "timestamp": datetime.now().isoformat(),
-                    "transaction_hash": tx_hash.hex(),
-                    "predicted_price": {
-                        "original": float(original_predicted_price),
-                        "used_value": price_in_wei
-                    },
-                    "inverse_price": float(inverse_price) if 'inverse_price' in locals() else None,
-                    "gas_used": gas_used,
-                    "gas_price": gas_price,
-                    "total_gas_cost_eth": total_eth_cost,
-                    "position": {
-                        "token_id": int(new_position[0]),
-                        "liquidity": int(new_position[1]),
-                        "lower_tick": int(new_position[2]),
-                        "upper_tick": int(new_position[3]),
-                        "is_active": bool(new_position[4])
-                    }
-                }
+                # Get gas used and total cost
+                gas_used = transaction_receipt.gasUsed
+                gas_price = w3.eth.get_transaction(transaction_hash).gasPrice
+                gas_cost_eth = w3.from_wei(gas_used * gas_price, 'ether')
                 
-                # Log the final result in both loggers
-                logging.info(f"FINAL RESULT: {json.dumps(final_result, indent=2)}")
-                output_logger.info(f"FINAL RESULT: {json.dumps(final_result, indent=2)}")
+                logging.info(f"Transaction confirmed: {transaction_receipt.transactionHash.hex()}")
+                logging.info(f"Gas used: {gas_used}, Gas cost: {gas_cost_eth} ETH")
+                output_logger.info(f"Transaction confirmed! Gas cost: {gas_cost_eth} ETH")
                 
-                # Save the result to a separate JSON file that can be easily read by other scripts
-                result_dir = os.path.dirname(os.path.abspath(__file__))
-                parent_dir = os.path.abspath(os.path.join(result_dir, ".."))
-                result_file = os.path.join(parent_dir, "position_results.json")
-                csv_file = os.path.join(parent_dir, "position_results.csv")
-                
-                # Also save a copy in the current working directory
-                current_dir = os.getcwd()
-                current_csv_file = os.path.join(current_dir, "position_results.csv")
-                
-                logging.info(f"Current working directory: {current_dir}")
-                logging.info(f"Result directory: {result_dir}")
-                logging.info(f"Parent directory: {parent_dir}")
-                logging.info(f"Full JSON path: {os.path.abspath(result_file)}")
-                logging.info(f"Full CSV path: {os.path.abspath(csv_file)}")
-                logging.info(f"Current dir CSV path: {os.path.abspath(current_csv_file)}")
-                
-                try:
-                    # Read existing results if file exists
-                    if os.path.exists(result_file):
-                        with open(result_file, 'r') as f:
-                            results = json.load(f)
+                # Check if transaction status is success
+                if transaction_receipt.status == 0:
+                    logging.error(f"Transaction failed on-chain. Variation {i+1} failed.")
+                    output_logger.error(f"Transaction for price variation {price_var['name']} failed on-chain.")
+                    if i < len(price_variations) - 1:
+                        logging.info(f"Will try next price variation.")
+                        output_logger.info(f"Trying next price variation.")
+                        continue
                     else:
-                        results = []
+                        logging.error("All price variations failed. Position could not be created.")
+                        output_logger.error("All price variations failed. Position could not be created.")
+                        return None
+                
+                # Try to get and parse events from transaction receipt
+                try:
+                    # Event for liquidity operations
+                    liquidity_ops_event = predictive.events.LiquidityOperation()
+                    liquidity_events = liquidity_ops_event.processReceipt(transaction_receipt)
                     
-                    # Add new result
-                    results.append(final_result)
+                    if liquidity_events:
+                        for evt in liquidity_events:
+                            args = evt['args']
+                            logging.info(f"Event LiquidityOperation: Type={args['operationType']}, "
+                                      f"TokenId={args['tokenId']}, Ticks={args['tickLower']}-{args['tickUpper']}, "
+                                      f"Liquidity={args['liquidity']}, Success={args['success']}")
+                            output_logger.info(f"Liquidity operation: {args['operationType']}, Success={args['success']}")
+                            # If operation failed in the contract, log more details
+                            if not args['success']:
+                                output_logger.error(f"Liquidity operation failed in contract. Check token amounts: "
+                                                f"Amount0={args['amount0']}, Amount1={args['amount1']}")
+                                if i < len(price_variations) - 1:
+                                    logging.info(f"Will try next price variation.")
+                                    output_logger.info(f"Trying next price variation.")
+                                    continue
+                    else:
+                        logging.warning("No LiquidityOperation events found in transaction receipt")
                     
-                    # Write back to JSON file
-                    with open(result_file, 'w') as f:
-                        json.dump(results, f, indent=2)
+                    # Event for prediction adjustment metrics
+                    prediction_event = predictive.events.PredictionAdjustmentMetrics()
+                    prediction_events = prediction_event.processReceipt(transaction_receipt)
+                    
+                    if prediction_events:
+                        for evt in prediction_events:
+                            args = evt['args']
+                            logging.info(f"Event PredictionAdjustmentMetrics: Actual={args['actualPrice']}, "
+                                       f"Predicted={args['predictedPrice']}, PredictedTick={args['predictedTick']}, "
+                                       f"FinalTicks={args['finalTickLower']}-{args['finalTickUpper']}, "
+                                       f"Adjusted={args['adjusted']}")
+                            output_logger.info(f"Prediction metrics: Actual price={args['actualPrice']}, "
+                                           f"Predicted price={args['predictedPrice']}, "
+                                           f"Range={args['finalTickLower']}-{args['finalTickUpper']}")
+                    else:
+                        logging.warning("No PredictionAdjustmentMetrics events found in transaction receipt")
+                except Exception as e:
+                    logging.error(f"Error processing events from receipt: {str(e)}")
+                
+                # Get new position information
+                try:
+                    new_position = predictive.functions.currentPosition().call()
+                    token_id = new_position[0]
+                    liquidity = new_position[1]
+                    lower_tick = new_position[2]
+                    upper_tick = new_position[3]
+                    is_active = new_position[4]
+                    
+                    logging.info(f"New position - Token ID: {token_id}, Liquidity: {liquidity}, "
+                                 f"Lower Tick: {lower_tick}, Upper Tick: {upper_tick}, Active: {is_active}")
+                    output_logger.info(f"New position created: Token ID {token_id}, Ticks: {lower_tick}-{upper_tick}")
+                    
+                    # If position is now active, we succeeded!
+                    if is_active:
+                        logging.info(f"SUCCESS! Position is active with price variation {i+1}: {price_var['name']}")
+                        output_logger.info(f"SUCCESS! Position created with price: {price_var['value']/price_var['scale']} USDC/WETH")
                         
-                    logging.info(f"Result saved to {result_file}")
-                    output_logger.info(f"Result saved to {result_file}")
-                    
-                    # Also save to CSV file
-                    # Define CSV columns
-                    csv_columns = [
-                        'timestamp', 
-                        'transaction_hash', 
-                        'original_predicted_price', 
-                        'used_price_value',
-                        'inverse_price', 
-                        'gas_used', 
-                        'gas_price', 
-                        'total_gas_cost_eth',
-                        'token_id',
-                        'liquidity',
-                        'lower_tick',
-                        'upper_tick',
-                        'is_active'
-                    ]
-                    
-                    # Check if CSV exists
-                    csv_exists = os.path.exists(csv_file)
-                    logging.info(f"CSV file exists: {csv_exists}")
-                    
-                    try:
-                        # First make sure the directory exists
-                        os.makedirs(os.path.dirname(os.path.abspath(csv_file)), exist_ok=True)
+                        # Calculate results
+                        result = {
+                            "timestamp": datetime.now().isoformat(),
+                            "transaction_hash": transaction_receipt.transactionHash.hex(),
+                            "original_predicted_price": predicted_price["original"] if isinstance(predicted_price["original"], (int, float)) else 0,
+                            "inverted_price": price_var['value']/price_var['scale'],
+                            "price_variation": price_var['name'],
+                            "used_price_value": price_var['value'],
+                            "gas_used": gas_used,
+                            "gas_price": gas_price,
+                            "total_gas_cost_eth": gas_cost_eth,
+                            "token_id": token_id,
+                            "liquidity": liquidity,
+                            "lower_tick": lower_tick,
+                            "upper_tick": upper_tick,
+                            "is_active": is_active
+                        }
                         
-                        # Open CSV in append mode
-                        with open(csv_file, 'a', newline='') as csvfile:
-                            writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+                        # Save to CSV
+                        save_result_to_csv(result)
+                        
+                        return result
+                    # Position is not active, but we'll try the next price variation if available
+                    else:
+                        logging.warning(f"Position is not active after transaction with price variation {i+1}.")
+                        output_logger.warning(f"Position NOT active with price: {price_var['value']/price_var['scale']} USDC/WETH")
+                        
+                        # Check contract balances again
+                        contract_weth_balance = weth_contract.functions.balanceOf(PREDICTIVE_MANAGER_ADDRESS).call()
+                        contract_usdc_balance = usdc_contract.functions.balanceOf(PREDICTIVE_MANAGER_ADDRESS).call()
+                        logging.info(f"Contract balances after operation - WETH: {w3.from_wei(contract_weth_balance, 'ether')}, "
+                                   f"USDC: {contract_usdc_balance / 1e6}")
+                        output_logger.info(f"Contract balances after operation - WETH: {w3.from_wei(contract_weth_balance, 'ether')}, "
+                                       f"USDC: {contract_usdc_balance / 1e6}")
+                        
+                        if i < len(price_variations) - 1:
+                            logging.info(f"Will try next price variation.")
+                            output_logger.info(f"Trying next price variation.")
+                            # Wait a bit before trying the next variation
+                            time.sleep(5)
+                            continue
+                        else:
+                            logging.error("All price variations tried, but no active position was created.")
+                            output_logger.error("All price variations tried, but no active position was created.")
                             
-                            # Write header only if file is new
-                            if not csv_exists:
-                                writer.writeheader()
-                                logging.info("Wrote CSV header")
-                            
-                            # Flatten the data for CSV format
-                            csv_data = {
-                                'timestamp': final_result['timestamp'],
-                                'transaction_hash': final_result['transaction_hash'],
-                                'original_predicted_price': final_result['predicted_price']['original'],
-                                'used_price_value': final_result['predicted_price']['used_value'],
-                                'inverse_price': final_result['inverse_price'],
-                                'gas_used': final_result['gas_used'],
-                                'gas_price': final_result['gas_price'],
-                                'total_gas_cost_eth': final_result['total_gas_cost_eth'],
-                                'token_id': final_result['position']['token_id'],
-                                'liquidity': final_result['position']['liquidity'],
-                                'lower_tick': final_result['position']['lower_tick'],
-                                'upper_tick': final_result['position']['upper_tick'],
-                                'is_active': final_result['position']['is_active']
+                            # Save the last attempt to CSV anyway
+                            result = {
+                                "timestamp": datetime.now().isoformat(),
+                                "transaction_hash": transaction_receipt.transactionHash.hex(),
+                                "original_predicted_price": predicted_price["original"] if isinstance(predicted_price["original"], (int, float)) else 0,
+                                "inverted_price": price_var['value']/price_var['scale'],
+                                "price_variation": price_var['name'],
+                                "used_price_value": price_var['value'],
+                                "gas_used": gas_used,
+                                "gas_price": gas_price,
+                                "total_gas_cost_eth": gas_cost_eth,
+                                "token_id": token_id,
+                                "liquidity": liquidity,
+                                "lower_tick": lower_tick,
+                                "upper_tick": upper_tick,
+                                "is_active": is_active
                             }
                             
-                            # Write to CSV
-                            writer.writerow(csv_data)
-                            logging.info("Wrote CSV row data")
-                        
-                        logging.info(f"Result also saved to CSV file: {csv_file}")
-                        output_logger.info(f"Result also saved to CSV file: {csv_file}")
-                        
-                        # Also save a copy in the current working directory
-                        try:
-                            with open(current_csv_file, 'a', newline='') as current_csvfile:
-                                current_writer = csv.DictWriter(current_csvfile, fieldnames=csv_columns)
-                                
-                                # Write header only if file is new
-                                if not os.path.exists(current_csv_file) or os.path.getsize(current_csv_file) == 0:
-                                    current_writer.writeheader()
-                                
-                                # Write data
-                                current_writer.writerow(csv_data)
-                            
-                            logging.info(f"Also saved a copy to current directory: {current_csv_file}")
-                            output_logger.info(f"Also saved a copy to current directory: {current_csv_file}")
-                            
-                            # Try to determine if file is actually on disk and readable
-                            if os.path.exists(current_csv_file):
-                                file_size = os.path.getsize(current_csv_file)
-                                logging.info(f"Current dir CSV file exists, size: {file_size} bytes")
-                                
-                                # Try to read back a few lines to verify
-                                with open(current_csv_file, 'r') as f:
-                                    lines = f.readlines()[:5]  # Read up to 5 lines
-                                    logging.info(f"CSV file contains {len(lines)} lines (showing up to 5)")
-                                    for line in lines:
-                                        logging.info(f"CSV line: {line.strip()}")
-                            else:
-                                logging.error(f"Current dir CSV file still doesn't exist after writing!")
-                        except Exception as current_csv_error:
-                            logging.error(f"Error saving to current directory CSV: {str(current_csv_error)}")
-                    except Exception as csv_error:
-                        logging.error(f"Error saving to CSV: {str(csv_error)}")
-                        import traceback
-                        logging.error(traceback.format_exc())
-                except Exception as e:
-                    logging.error(f"Error saving result to file: {str(e)}")
-                    output_logger.error(f"Error saving result to file: {str(e)}")
-            else:
-                logging.error("Transaction failed!")
-                output_logger.error("Transaction failed!")
+                            save_result_to_csv(result)
+                            return result
                 
-                # Try to get detailed error information
-                try:
-                    tx = w3.eth.get_transaction(tx_hash)
-                    tx_data = {
-                        "hash": tx_hash.hex(),
-                        "from": tx["from"],
-                        "to": tx["to"],
-                        "gas": tx["gas"],
-                        "gasPrice": tx["gasPrice"],
-                        "nonce": tx["nonce"],
-                        "blockNumber": receipt["blockNumber"],
-                        "blockHash": receipt["blockHash"],
-                        "status": receipt["status"]
+                except Exception as e:
+                    logging.error(f"Error getting new position info: {str(e)}")
+                    if i < len(price_variations) - 1:
+                        logging.info("Will try next price variation.")
+                        continue
+                    else:
+                        # Still save basic transaction info for the last attempt
+                        result = {
+                            "timestamp": datetime.now().isoformat(),
+                            "transaction_hash": transaction_receipt.transactionHash.hex(),
+                            "original_predicted_price": predicted_price["original"] if isinstance(predicted_price["original"], (int, float)) else 0,
+                            "inverted_price": price_var['value']/price_var['scale'],
+                            "price_variation": price_var['name'],
+                            "used_price_value": price_var['value'],
+                            "gas_used": gas_used,
+                            "gas_price": gas_price,
+                            "total_gas_cost_eth": gas_cost_eth,
+                            "token_id": "Error",
+                            "liquidity": "Error",
+                            "lower_tick": "Error",
+                            "upper_tick": "Error",
+                            "is_active": "Error"
+                        }
+                        
+                        save_result_to_csv(result)
+                        return result
+                    
+            except Exception as e:
+                logging.error(f"Error waiting for transaction confirmation: {str(e)}")
+                logging.warning(f"Transaction {transaction_hash.hex()} might still confirm later.")
+                
+                if i < len(price_variations) - 1:
+                    logging.info("Will try next price variation.")
+                    continue
+                else:
+                    # Create result with pending status for the last attempt
+                    result = {
+                        "timestamp": datetime.now().isoformat(),
+                        "transaction_hash": transaction_hash.hex(),
+                        "original_predicted_price": predicted_price["original"] if isinstance(predicted_price["original"], (int, float)) else 0,
+                        "inverted_price": price_var['value']/price_var['scale'],
+                        "price_variation": price_var['name'],
+                        "used_price_value": price_var['value'],
+                        "gas_used": "Pending",
+                        "gas_price": gas_price,
+                        "total_gas_cost_eth": "Pending",
+                        "token_id": "Pending",
+                        "liquidity": "Pending",
+                        "lower_tick": "Pending",
+                        "upper_tick": "Pending",
+                        "is_active": "Pending"
                     }
                     
-                    logging.error(f"Transaction details: {json.dumps(tx_data, indent=2)}")
-                    output_logger.error(f"Transaction details: {json.dumps(tx_data, indent=2)}")
-                except Exception as debug_error:
-                    logging.error(f"Error debugging transaction: {str(debug_error)}")
-                    output_logger.error(f"Error debugging transaction: {str(debug_error)}")
-        except TimeExhausted:
-            logging.error("Transaction not confirmed within the expected time. Still pending...")
-            output_logger.error("Transaction not confirmed within the expected time. Still pending...")
-        
-        output_logger.info("=== Position creation operation completed ===")
-        return True
-    except Exception as e:
-        logging.error(f"Error creating position: {str(e)}")
-        output_logger.error(f"Error creating position: {str(e)}")
-        return False
+                    save_result_to_csv(result)
+                    return result
+                
+        except Exception as e:
+            logging.error(f"Error creating position with price variation {i+1}: {str(e)}")
+            if i < len(price_variations) - 1:
+                logging.info("Will try next price variation.")
+                continue
+            else:
+                logging.error("All price variations failed with exceptions.")
+                traceback.print_exc()
+                return None
+                
+    # If we reach here, all variations failed
+    logging.error("All price variations failed. Position could not be created.")
+    output_logger.error("All price variations failed. Position could not be created.")
+    return None
 
-def main():
-    """Main function to execute the position creation process"""
-    logging.info(f"Starting position creation process at {datetime.now()}")
-    output_logger.info(f"=== Starting position creation process at {datetime.now()} ===")
+def save_result_to_csv(result):
+    """Save transaction result to CSV file"""
+    # Define CSV columns
+    csv_columns = [
+        "timestamp", "transaction_hash", "original_predicted_price", "inverted_price",
+        "price_variation", "used_price_value", "gas_used", "gas_price", "total_gas_cost_eth", 
+        "token_id", "liquidity", "lower_tick", "upper_tick", "is_active"
+    ]
     
-    # Check if required environment variables are set
-    if not SEPOLIA_RPC_URL:
-        logging.error("SEPOLIA_RPC_URL is not set in .env file")
-        output_logger.error("SEPOLIA_RPC_URL is not set in .env file")
-        return
-    if not PRIVATE_KEY:
-        logging.error("PRIVATE_KEY is not set in .env file")
-        output_logger.error("PRIVATE_KEY is not set in .env file")
-        return
-    if not PREDICTIVE_MANAGER_ADDRESS:
-        logging.error("PREDICTIVE_LIQUIDITY_MANAGER_ADDRESS is not set in .env file")
-        output_logger.error("PREDICTIVE_LIQUIDITY_MANAGER_ADDRESS is not set in .env file")
-        return
-    if not PREDICTION_API_URL:
-        logging.error("PREDICTION_API_URL is not set in .env file")
-        output_logger.error("PREDICTION_API_URL is not set in .env file")
-        return
-    if not USDC_ADDRESS:
-        logging.error("USDC_ADDRESS is not set in .env file")
-        output_logger.error("USDC_ADDRESS is not set in .env file")
-        return
-    if not WETH_ADDRESS:
-        logging.error("WETH_ADDRESS is not set in .env file")
-        output_logger.error("WETH_ADDRESS is not set in .env file")
-        return
+    # Check if file exists to determine if headers are needed
+    file_exists = os.path.isfile(CSV_FILE_PATH)
     
     try:
-        create_position()
-        logging.info("Position creation process completed successfully")
-        output_logger.info("=== Position creation process completed successfully ===")
+        with open(CSV_FILE_PATH, 'a', newline='') as csvfile:
+            writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+            
+            # Write header only if file is new
+            if not file_exists:
+                writer.writeheader()
+            
+            # Write data row
+            writer.writerow(result)
+            
+        logging.info(f"Results saved to CSV: {CSV_FILE_PATH}")
+        
+        # Also save a copy in the current directory
+        current_dir = os.getcwd()
+        current_csv_file = os.path.join(current_dir, "position_results.csv")
+        current_file_exists = os.path.isfile(current_csv_file)
+        
+        try:
+            with open(current_csv_file, 'a', newline='') as csvfile:
+                writer = csv.DictWriter(csvfile, fieldnames=csv_columns)
+                
+                # Write header only if file is new
+                if not current_file_exists:
+                    writer.writeheader()
+                
+                # Write data row
+                writer.writerow(result)
+                
+            logging.info(f"Copy of results saved to current directory: {current_csv_file}")
+            output_logger.info(f"Results saved to: {current_csv_file}")
+            
+            # Check if file exists and log its size
+            if os.path.exists(current_csv_file):
+                file_size = os.path.getsize(current_csv_file)
+                logging.info(f"CSV file exists, size: {file_size} bytes")
+                
+                # Try to read back a few lines to verify
+                try:
+                    with open(current_csv_file, 'r') as f:
+                        lines = f.readlines()
+                        num_lines = min(5, len(lines))
+                        logging.info(f"First {num_lines} lines of CSV:")
+                        for i in range(num_lines):
+                            logging.info(f"  {i+1}: {lines[i].strip()}")
+                except Exception as e:
+                    logging.error(f"Error reading back CSV file: {str(e)}")
+            else:
+                logging.error(f"CSV file does not exist after writing: {current_csv_file}")
+        except Exception as e:
+            logging.error(f"Error saving copy of results to current directory: {str(e)}")
     except Exception as e:
-        logging.error(f"Error in position creation process: {str(e)}")
-        output_logger.error(f"Error in position creation process: {str(e)}")
-        import traceback
-        logging.error(traceback.format_exc())
-        output_logger.error(traceback.format_exc())
+        logging.error(f"Error saving results to CSV: {str(e)}")
+        traceback.print_exc()
 
 def run_scheduled(interval_hours=1):
-    """Run the position creation process at regular intervals"""
-    logging.info(f"Starting scheduled job to run every {interval_hours} hour(s)")
-    output_logger.info(f"Starting scheduled job to run every {interval_hours} hour(s)")
+    """Run the position creation on a schedule"""
+    logging.info(f"Starting scheduled execution every {interval_hours} hour(s)")
     
-    try:
-        main()  # Run once immediately
-        
-        seconds_between_runs = interval_hours * 60 * 60
-        next_run_time = time.time() + seconds_between_runs
-        
-        while True:
-            current_time = time.time()
-            wait_time = next_run_time - current_time
+    while True:
+        try:
+            # Get predicted price
+            predicted_price = get_predicted_price()
+            logging.info(f"Predicted price: {predicted_price}")
             
-            if wait_time > 0:
-                logging.info(f"Waiting {wait_time:.2f} seconds until next run...")
-                output_logger.info(f"Waiting {wait_time:.2f} seconds until next run...")
-                try:
-                    time.sleep(wait_time)
-                except KeyboardInterrupt:
-                    logging.info("Process terminated by user")
-                    output_logger.info("Process terminated by user")
-                    break
+            # Create position with predicted price
+            result = create_position(predicted_price)
             
-            main()  # Run the process
-            next_run_time = time.time() + seconds_between_runs
-    except KeyboardInterrupt:
-        logging.info("Process terminated by user")
-        output_logger.info("Process terminated by user")
-    except Exception as e:
-        logging.error(f"Error in scheduled process: {str(e)}")
-        output_logger.error(f"Error in scheduled process: {str(e)}")
-        import traceback
-        logging.error(traceback.format_exc())
-        output_logger.error(traceback.format_exc())
+            if result:
+                logging.info(f"Position created successfully. Token ID: {result.get('token_id', 'Unknown')}")
+            else:
+                logging.error("Failed to create position")
+                
+        except Exception as e:
+            logging.error(f"Error in scheduled execution: {str(e)}")
+            traceback.print_exc()
+            
+        # Sleep for the specified interval
+        sleep_seconds = interval_hours * 3600
+        logging.info(f"Sleeping for {interval_hours} hour(s) ({sleep_seconds} seconds)")
+        time.sleep(sleep_seconds)
 
-if __name__ == "__main__":
+def main():
+    """Main execution function"""
     # Parse command line arguments
-    parser = argparse.ArgumentParser(description='Run position creation process')
-    parser.add_argument('--schedule', action='store_true', help='Run the process at regular intervals')
-    parser.add_argument('--interval', type=float, default=1.0, help='Interval between runs in hours (default: 1.0)')
+    parser = argparse.ArgumentParser(description="Predictive liquidity position management")
+    parser.add_argument("--schedule", action="store_true", help="Run on a schedule")
+    parser.add_argument("--interval", type=int, default=1, help="Interval in hours (default: 1)")
+    parser.add_argument("--send-tokens", action="store_true", help="Only send tokens to contract")
     args = parser.parse_args()
     
-    if args.schedule:
-        run_scheduled(interval_hours=args.interval)
+    # Check for required environment variables
+    if not SEPOLIA_RPC_URL:
+        logging.error("SEPOLIA_RPC_URL is not set in .env file")
+        return
+    
+    if not PRIVATE_KEY:
+        logging.error("PRIVATE_KEY is not set in .env file")
+        return
+    
+    if not PREDICTIVE_MANAGER_ADDRESS:
+        logging.error("PREDICTIVE_LIQUIDITY_MANAGER_ADDRESS is not set in .env file")
+        return
+    
+    # Execute based on arguments
+    if args.send_tokens:
+        # Only send tokens
+        logging.info("Sending tokens to contract...")
+        send_tokens_to_contract()
+    elif args.schedule:
+        # Run on schedule
+        run_scheduled(args.interval)
     else:
-        main()
+        # Single execution
+        logging.info("Running single execution...")
+        predicted_price = get_predicted_price()
+        logging.info(f"Predicted price: {predicted_price}")
+        
+        result = create_position(predicted_price)
+        
+        if result:
+            logging.info(f"Position created successfully. Token ID: {result.get('token_id', 'Unknown')}")
+        else:
+            logging.error("Failed to create position")
+
+if __name__ == "__main__":
+    main()

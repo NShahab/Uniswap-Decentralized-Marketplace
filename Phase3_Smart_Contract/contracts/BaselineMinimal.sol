@@ -18,12 +18,12 @@ interface IWETH {
 
 /**
  * @title BaselineMinimal
- * @notice نسخه حداقلی قرارداد مدیریت نقدینگی بیس‌لاین
+ * @notice Minimal version of the baseline liquidity management contract
  */
 contract BaselineMinimal is Ownable {
     using SafeERC20 for IERC20;
 
-    // --- متغیرهای وضعیت اصلی ---
+    // --- Main State Variables ---
     IUniswapV3Factory public immutable factory;
     INonfungiblePositionManager public immutable positionManager;
     ISwapRouter public immutable swapRouter;
@@ -32,13 +32,25 @@ contract BaselineMinimal is Ownable {
     uint24 public immutable fee;
     int24 public immutable tickSpacing;
 
-    // --- متغیرها برای نگهداری موقعیت ---
+    // --- Variables for position tracking ---
     uint256 public currentTokenId;
     bool public hasPosition;
     int24 public lowerTick;
     int24 public upperTick;
 
-    // --- رویدادها ---
+    // --- Setting tickSpacing using the pool
+
+    // --- Convert ETH to WETH
+
+    // --- Main liquidity adjustment function ---
+
+    // --- Remove position ---
+
+    // --- Create position ---
+
+    // --- Helper function for price calculation ---
+
+    // --- Event declarations ---
     event PositionChanged(bool hasPosition, int24 lowerTick, int24 upperTick);
     event BaselineAdjustmentMetrics(
         uint256 timestamp,
@@ -50,7 +62,7 @@ contract BaselineMinimal is Ownable {
     );
     event TokensSwapped(uint256 amountIn, uint256 amountOut);
 
-    // --- سازنده ---
+    // --- Constructor ---
     constructor(
         address _factory,
         address _positionManager,
@@ -73,7 +85,7 @@ contract BaselineMinimal is Ownable {
         token1 = _token1;
         fee = _fee;
 
-        // تنظیم tickSpacing با استفاده از پول
+        // Setting tickSpacing using the pool
         address poolAddress = IUniswapV3Factory(_factory).getPool(
             _token0,
             _token1,
@@ -82,27 +94,27 @@ contract BaselineMinimal is Ownable {
         require(poolAddress != address(0), "Pool does not exist");
         tickSpacing = IUniswapV3Pool(poolAddress).tickSpacing();
 
-        // تنظیم تأییدیه‌های توکن
+        // Setting token approvals
         IERC20(_token0).approve(address(_positionManager), type(uint256).max);
         IERC20(_token1).approve(address(_positionManager), type(uint256).max);
         IERC20(_token0).approve(address(_swapRouter), type(uint256).max);
         IERC20(_token1).approve(address(_swapRouter), type(uint256).max);
     }
 
-    // --- تابع دریافت ETH ---
+    // --- Function to receive ETH ---
     receive() external payable {
-        // تبدیل ETH به WETH
+        // Convert ETH to WETH
         IWETH(token1).deposit{value: msg.value}();
 
-        // تبدیل نیمی از WETH به USDC
+        // Convert half of WETH to USDC
         uint256 halfAmount = msg.value / 2;
         _swapExactInputSingle(token1, token0, halfAmount);
 
-        // تنظیم نقدینگی با توکن‌های جدید
+        // Adjust liquidity with new tokens
         adjustLiquidityWithCurrentPrice();
     }
 
-    // --- تابع سواپ ---
+    // --- Swap function ---
     function _swapExactInputSingle(
         address tokenIn,
         address tokenOut,
@@ -124,9 +136,9 @@ contract BaselineMinimal is Ownable {
         emit TokensSwapped(amountIn, amountOut);
     }
 
-    // --- تابع اصلی تنظیم نقدینگی ---
+    // --- Main liquidity adjustment function ---
     function adjustLiquidityWithCurrentPrice() public {
-        // 1. دریافت اطلاعات قیمت و tick فعلی
+        // 1. Get current price and tick information
         address pool = factory.getPool(token0, token1, fee);
         require(pool != address(0), "Pool not found");
 
@@ -134,22 +146,22 @@ contract BaselineMinimal is Ownable {
         int24 currentTick;
         (sqrtPriceX96, currentTick, , , , , ) = IUniswapV3Pool(pool).slot0();
 
-        // 2. محاسبه محدوده tick جدید
+        // 2. Calculate new tick range
         int24 width = tickSpacing * 4;
         int24 newLowerTick = ((currentTick - width / 2) / tickSpacing) *
             tickSpacing;
         int24 newUpperTick = ((currentTick + width / 2) / tickSpacing) *
             tickSpacing;
 
-        // 3. حذف موقعیت موجود
+        // 3. Remove existing position
         if (hasPosition) {
             _removePosition();
         }
 
-        // 4. ایجاد موقعیت جدید با موجودی توکن‌ها
+        // 4. Create new position with token balances
         _createPosition(newLowerTick, newUpperTick);
 
-        // 5. انتشار رویداد
+        // 5. Emit event
         emit BaselineAdjustmentMetrics(
             block.timestamp,
             _sqrtPriceX96ToPrice(sqrtPriceX96),
@@ -160,12 +172,12 @@ contract BaselineMinimal is Ownable {
         );
     }
 
-    // --- حذف موقعیت ---
+    // --- Remove position ---
     function _removePosition() internal {
         require(hasPosition, "No position to remove");
         require(currentTokenId > 0, "Invalid token ID");
 
-        // حذف نقدینگی
+        // Remove liquidity
         try
             positionManager.decreaseLiquidity(
                 INonfungiblePositionManager.DecreaseLiquidityParams({
@@ -178,7 +190,7 @@ contract BaselineMinimal is Ownable {
             )
         {} catch {}
 
-        // جمع‌آوری توکن‌ها
+        // Collect tokens
         try
             positionManager.collect(
                 INonfungiblePositionManager.CollectParams({
@@ -190,17 +202,17 @@ contract BaselineMinimal is Ownable {
             )
         {} catch {}
 
-        // سوزاندن NFT
+        // Burn NFT
         try positionManager.burn(currentTokenId) {} catch {}
 
-        // بازنشانی وضعیت
+        // Reset state
         hasPosition = false;
         currentTokenId = 0;
 
         emit PositionChanged(false, 0, 0);
     }
 
-    // --- ایجاد موقعیت ---
+    // --- Create position ---
     function _createPosition(int24 _lowerTick, int24 _upperTick) internal {
         require(_lowerTick < _upperTick, "Invalid tick range");
 
@@ -239,7 +251,7 @@ contract BaselineMinimal is Ownable {
         } catch {}
     }
 
-    // --- تابع کمکی برای محاسبه قیمت ---
+    // --- Helper function for price calculation ---
     function _sqrtPriceX96ToPrice(
         uint160 sqrtPriceX96
     ) internal pure returns (uint256) {
@@ -248,7 +260,7 @@ contract BaselineMinimal is Ownable {
         return priceX192 >> 96;
     }
 
-    // --- برداشت اضطراری توکن‌ها ---
+    // --- Emergency token withdrawal ---
     function rescueTokens(address token, address to) external onlyOwner {
         require(token != address(0), "Invalid token");
         require(to != address(0), "Invalid recipient");
@@ -259,7 +271,7 @@ contract BaselineMinimal is Ownable {
         }
     }
 
-    // --- تابع برداشت اضطراری ETH ---
+    // --- Emergency ETH withdrawal function ---
     function rescueETH() external onlyOwner {
         uint256 balance = address(this).balance;
         if (balance > 0) {
@@ -267,7 +279,7 @@ contract BaselineMinimal is Ownable {
         }
     }
 
-    // --- تابع برداشت اضطراری WETH ---
+    // --- Emergency WETH withdrawal function ---
     function rescueWETH(uint256 amount) external onlyOwner {
         IWETH(token1).withdraw(amount);
         payable(owner()).transfer(amount);

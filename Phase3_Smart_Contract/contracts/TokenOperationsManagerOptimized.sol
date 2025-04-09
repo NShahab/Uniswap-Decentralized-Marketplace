@@ -12,7 +12,7 @@ import "@uniswap/v3-periphery/contracts/interfaces/external/IWETH9.sol";
 
 /**
  * @title TokenOperationsManagerOptimized
- * @notice بهینه‌سازی شده برای کاهش اندازه قرارداد
+ * @notice Optimized for reduced contract size
  */
 contract TokenOperationsManagerOptimized is Ownable {
     using SafeERC20 for IERC20;

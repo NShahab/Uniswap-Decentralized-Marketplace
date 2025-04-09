@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.7.6;
-pragma abicoder v2; // برای پشتیبانی از ساختارها در پارامترها
+pragma abicoder v2; // To support structs in parameters
 
 // OpenZeppelin ~3.4.0 Imports
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -29,7 +29,7 @@ interface IERC20Decimals {
 
 /**
  * @title PredictiveLiquidityManager
- * @notice قرارداد اصلی مدیریت نقدینگی که موقعیت‌ها را بر اساس پیش‌بینی قیمت تنظیم می‌کند
+ * @notice The main liquidity management contract that adjusts positions based on price predictions
  */
 contract PredictiveLiquidityManager is
     Ownable,
@@ -39,7 +39,7 @@ contract PredictiveLiquidityManager is
     using SafeERC20 for IERC20;
     using SafeMath for uint256;
 
-    // --- متغیرهای وضعیت ---
+    // --- State Variables ---
     IUniswapV3Factory public immutable factory;
     INonfungiblePositionManager public immutable positionManager;
     address public immutable token0;
@@ -50,7 +50,7 @@ contract PredictiveLiquidityManager is
     int24 public immutable tickSpacing;
     address public immutable WETH9;
 
-    // ساختار موقعیت‌های نقدینگی
+    // Structure for liquidity positions
     struct Position {
         uint256 tokenId;
         uint128 liquidity;
@@ -60,11 +60,11 @@ contract PredictiveLiquidityManager is
     }
     Position public currentPosition;
 
-    // پارامترهای استراتژی
+    // Strategy Parameters
     uint24 public rangeWidthMultiplier = 4;
 
-    // --- رویدادها ---
-    // رویداد برای عملیات‌های نقدینگی
+    // --- Events ---
+    // Event for liquidity operations
     event LiquidityOperation(
         string operationType,
         uint256 indexed tokenId,
@@ -76,7 +76,7 @@ contract PredictiveLiquidityManager is
         bool success
     );
 
-    // رویداد برای خروجی منطق تنظیم اصلی
+    // Event for outputting main adjustment logic
     event PredictionAdjustmentMetrics(
         uint256 timestamp,
         uint256 actualPrice,
@@ -89,7 +89,7 @@ contract PredictiveLiquidityManager is
 
     event StrategyParamUpdated(string indexed paramName, uint256 newValue);
 
-    // --- سازنده ---
+    // --- Constructor ---
     constructor(
         address _factory,
         address _positionManager,
@@ -99,7 +99,7 @@ contract PredictiveLiquidityManager is
         address _weth9,
         address _initialOwner
     ) {
-        // ذخیره مقادیر در متغیرهای immutable
+        // Store values in immutable variables
         factory = IUniswapV3Factory(_factory);
         positionManager = INonfungiblePositionManager(_positionManager);
         token0 = _token0;
@@ -107,7 +107,7 @@ contract PredictiveLiquidityManager is
         fee = _fee;
         WETH9 = _weth9;
 
-        // بررسی decimals با استفاده از try-catch
+        // Check decimals using try-catch
         try IERC20Decimals(_token0).decimals() returns (uint8 _decimals) {
             token0Decimals = _decimals;
         } catch {
@@ -120,7 +120,7 @@ contract PredictiveLiquidityManager is
             revert("Token1 does not support decimals()");
         }
 
-        // ذخیره tickSpacing در یک متغیر موقت
+        // Store tickSpacing in a temporary variable
         address poolAddress = IUniswapV3Factory(_factory).getPool(
             _token0,
             _token1,
@@ -129,7 +129,7 @@ contract PredictiveLiquidityManager is
         require(poolAddress != address(0), "Pool does not exist");
         tickSpacing = IUniswapV3Pool(poolAddress).tickSpacing();
 
-        // تنظیم approvals
+        // Set approvals for token0 and token1
         IERC20(_token0).safeApprove(
             address(_positionManager),
             type(uint256).max
@@ -144,11 +144,11 @@ contract PredictiveLiquidityManager is
         }
     }
 
-    // --- مدیریت نقدینگی خودکار (فقط مالک) ---
+    // --- Automated Liquidity Management (Owner Only) ---
     function updatePredictionAndAdjust(
         uint256 predictedPriceDecimal
     ) external nonReentrant onlyOwner {
-        // محاسبه اطلاعات قیمت و tick های پیش‌بینی شده
+        // Calculate current price and predicted tick information
         (
             uint256 currentPriceDecimal,
             int24 currentTick,
@@ -157,22 +157,24 @@ contract PredictiveLiquidityManager is
             int24 targetTickUpper
         ) = _calculatePredictionData(predictedPriceDecimal);
 
-        // به‌روزرسانی موقعیت در صورت نیاز
+        // Update position if needed
         bool adjusted = _updatePositionIfNeeded(
             targetTickLower,
             targetTickUpper
         );
 
-        // رویداد با استفاده از تابع کمکی برای کاهش عمق پشته
+        // Emit prediction adjustment metrics using a helper function to reduce stack depth
         _emitPredictionMetrics(
             currentPriceDecimal,
             predictedPriceDecimal,
             predictedTick,
+            targetTickLower,
+            targetTickUpper,
             adjusted
         );
     }
 
-    // تابع کمکی برای محاسبه داده‌های پیش‌بینی - کاهش عمق پشته
+    // Helper function for calculating prediction data - reducing stack depth
     function _calculatePredictionData(
         uint256 predictedPriceDecimal
     )
@@ -186,7 +188,7 @@ contract PredictiveLiquidityManager is
             int24 targetTickUpper
         )
     {
-        // بازیابی اطلاعات قیمت و tick فعلی
+        // Retrieve current price and tick information
         uint160 sqrtPriceX96;
         int24 tick;
         (sqrtPriceX96, tick) = _getCurrentSqrtPriceAndTick();
@@ -194,7 +196,7 @@ contract PredictiveLiquidityManager is
         currentPriceDecimal = _sqrtPriceX96ToPrice(sqrtPriceX96);
         predictedTick = _priceToTick(predictedPriceDecimal);
 
-        // محاسبه موقعیت جدید
+        // Calculate new position
         (targetTickLower, targetTickUpper) = _calculateTicks(predictedTick);
 
         return (
@@ -206,7 +208,7 @@ contract PredictiveLiquidityManager is
         );
     }
 
-    // تابع کمکی برای به‌روزرسانی موقعیت در صورت نیاز - کاهش عمق پشته
+    // Helper function to update position if needed - reducing stack depth
     function _updatePositionIfNeeded(
         int24 targetTickLower,
         int24 targetTickUpper
@@ -222,7 +224,7 @@ contract PredictiveLiquidityManager is
         return false;
     }
 
-    // --- کمک‌کننده‌های مدیریت نقدینگی داخلی ---
+    // --- Internal Liquidity Management Helpers ---
     function _adjustLiquidity(int24 tickLower, int24 tickUpper) internal {
         if (currentPosition.active) {
             _removeLiquidity();
@@ -236,7 +238,7 @@ contract PredictiveLiquidityManager is
         }
     }
 
-    // تابع کمکی برای انتشار رویدادهای حذف نقدینگی - کاهش عمق پشته
+    // Helper function for emitting liquidity removal events - reducing stack depth
     function _emitLiquidityRemoveEvent(
         uint256 tokenId,
         int24 tickLower,
@@ -270,11 +272,11 @@ contract PredictiveLiquidityManager is
 
         currentPosition = Position(0, 0, 0, 0, false);
 
-        // اجرای فرآیند حذف در یک تابع جداگانه برای جلوگیری از stack too deep
+        // Executing removal process in a separate function to prevent stack too deep
         _executeRemoval(_tokenId, _liquidity, _tickLower, _tickUpper);
     }
 
-    // تابع کمکی برای اجرای حذف نقدینگی - کاهش عمق پشته
+    // Helper function for executing liquidity removal - reducing stack depth
     function _executeRemoval(
         uint256 _tokenId,
         uint128 _liquidity,
@@ -300,7 +302,7 @@ contract PredictiveLiquidityManager is
             {
                 decreaseSuccess = true;
             } catch {
-                // شکست خاموش، در انتها success = false برگردانده خواهد شد
+                // Silent failure, success = false will be returned at the end
             }
         } else {
             decreaseSuccess = true;
@@ -321,16 +323,16 @@ contract PredictiveLiquidityManager is
                 amount1Collected = a1;
                 collectSuccess = true;
             } catch {
-                // شکست خاموش، در انتها success = false برگردانده خواهد شد
+                // Silent failure, success = false will be returned at the end
             }
 
-            // سعی در burn بدون توجه به موفقیت collect
+            // Try to burn regardless of collect success
             try positionManager.burn(_tokenId) {} catch {}
         }
 
         bool overallSuccess = decreaseSuccess && collectSuccess;
 
-        // استفاده از تابع کمکی برای انتشار رویداد - کاهش عمق پشته
+        // Using helper function to emit event - reducing stack depth
         _emitLiquidityRemoveEvent(
             _tokenId,
             _tickLower,
@@ -342,7 +344,7 @@ contract PredictiveLiquidityManager is
         );
     }
 
-    // تابع کمکی برای انتشار رویدادهای ضرب نقدینگی - کاهش عمق پشته
+    // Helper function for emitting liquidity mint events - reducing stack depth
     function _emitLiquidityMintEvent(
         uint256 tokenId,
         int24 tickLower,
@@ -387,7 +389,7 @@ contract PredictiveLiquidityManager is
                 deadline: block.timestamp
             });
 
-        // اجرای ضرب و مدیریت ایجاد موقعیت در یک تابع جداگانه
+        // Execute mint and manage position creation in a separate function
         _executeMint(params, tickLower, tickUpper);
     }
 
@@ -426,10 +428,10 @@ contract PredictiveLiquidityManager is
                 try positionManager.burn(tokenId) {} catch {}
             }
         } catch {
-            // شکست خاموش، رویداد با success = false منتشر خواهد شد
+            // Silent failure, event will be emitted with success = false
         }
 
-        // استفاده از تابع کمکی برای انتشار رویداد - کاهش عمق پشته
+        // Using helper function to emit event - reducing stack depth
         _emitLiquidityMintEvent(
             tokenId,
             tickLower,
@@ -445,30 +447,39 @@ contract PredictiveLiquidityManager is
         }
     }
 
-    // --- کمک‌کننده‌های محاسبه داخلی ---
+    // --- Internal Calculation Helpers ---
     function _calculateTicks(
         int24 targetCenterTick
     ) internal view returns (int24 tickLower, int24 tickUpper) {
         require(tickSpacing > 0, "Invalid tick spacing");
 
-        // محاسبه نیم عرض و اعمال حداقل عرض یک فاصله tick
+        // Calculate half width with better symmetry
         int24 halfWidth = (tickSpacing * int24(rangeWidthMultiplier)) / 2;
         if (halfWidth <= 0) halfWidth = tickSpacing;
 
-        // محاسبه مرزهای tick خام
+        // Ensure half width is a multiple of tick spacing for perfect symmetry
+        halfWidth = (halfWidth / tickSpacing) * tickSpacing;
+        if (halfWidth == 0) halfWidth = tickSpacing;
+
+        // Calculate raw tick boundaries with better centering
         int24 rawTickLower = targetCenterTick - halfWidth;
         int24 rawTickUpper = targetCenterTick + halfWidth;
 
-        // تراز با فاصله tick
+        // Align with tick spacing
         tickLower = floorToTickSpacing(rawTickLower, tickSpacing);
         tickUpper = floorToTickSpacing(rawTickUpper, tickSpacing);
 
-        // اطمینان از فاصله‌گذاری مناسب تیک‌ها
+        // If upper tick is not properly spaced after flooring, add another tick spacing
+        if ((rawTickUpper % tickSpacing) != 0) {
+            tickUpper += tickSpacing;
+        }
+
+        // Ensure proper spacing between ticks
         if (tickLower >= tickUpper) {
             tickUpper = tickLower + tickSpacing;
         }
 
-        // اطمینان از اینکه تیک‌ها در محدوده جهانی قرار دارند
+        // Ensure ticks are within global range
         tickLower = tickLower < TickMath.MIN_TICK
             ? floorToTickSpacing(TickMath.MIN_TICK, tickSpacing)
             : tickLower;
@@ -477,11 +488,11 @@ contract PredictiveLiquidityManager is
             ? floorToTickSpacing(TickMath.MAX_TICK, tickSpacing)
             : tickUpper;
 
-        // بررسی نهایی برای اطمینان از ترتیب مناسب
+        // Final check to ensure proper ordering
         if (tickLower >= tickUpper) {
             tickUpper = tickLower + tickSpacing;
 
-            // اگر tick بالا از MAX_TICK فراتر رود، هر دو را تنظیم کنید
+            // If upper tick exceeds MAX_TICK, adjust both
             if (tickUpper > TickMath.MAX_TICK) {
                 tickUpper = floorToTickSpacing(TickMath.MAX_TICK, tickSpacing);
                 tickLower = tickUpper - tickSpacing;
@@ -513,10 +524,48 @@ contract PredictiveLiquidityManager is
         (sqrtPriceX96, tick, , , , , ) = IUniswapV3Pool(poolAddress).slot0();
     }
 
+    // Helper function to convert sqrtPriceX96 to price decimal
+    function _sqrtPriceX96ToPrice(
+        uint160 sqrtPriceX96
+    ) internal view returns (uint256) {
+        uint256 price = uint256(sqrtPriceX96) * uint256(sqrtPriceX96);
+        uint256 adjustedPrice = price >> 192; // Divide by 2^192
+
+        // Adjust for decimal differences between tokens
+        if (token1Decimals > token0Decimals) {
+            adjustedPrice =
+                adjustedPrice /
+                (10 ** (token1Decimals - token0Decimals));
+        } else if (token0Decimals > token1Decimals) {
+            adjustedPrice =
+                adjustedPrice *
+                (10 ** (token0Decimals - token1Decimals));
+        }
+
+        return adjustedPrice;
+    }
+
     function _priceToTick(uint256 priceDecimal) internal view returns (int24) {
         require(priceDecimal > 0, "Price must be > 0");
 
-        uint256 numerator = priceDecimal;
+        // If the input price is ETH/USDC (e.g., 1500)
+        // We need to convert it to WETH/USDC (e.g., 1/1500 = 0.00066)
+        // To match Uniswap's logic which uses token1/token0 ratio
+
+        // Calculate inverted price
+        uint256 invertedPrice;
+        if (priceDecimal > 1e12) {
+            // If price is large (if price is ETH/USDC)
+            // Invert price with high precision
+            // Use 1e36 to maintain precision in division
+            invertedPrice = uint256(1e36).div(priceDecimal);
+        } else {
+            // If price is small (likely already inverted), use it as is
+            invertedPrice = priceDecimal;
+        }
+
+        // Adjust for decimal differences
+        uint256 numerator = invertedPrice;
         uint256 denominator = 1e18;
 
         if (token1Decimals > token0Decimals) {
@@ -529,129 +578,56 @@ contract PredictiveLiquidityManager is
             );
         }
 
+        // Calculate ratioX192 considering inverted price
         uint256 ratioX192 = numerator.mul(1 << 192).div(denominator);
 
         uint160 sqrtPriceX96 = uint160(SqrtMath.sqrt(ratioX192));
 
+        // Check Uniswap constraints
         require(sqrtPriceX96 >= TickMath.MIN_SQRT_RATIO, "Price too low");
         require(sqrtPriceX96 <= TickMath.MAX_SQRT_RATIO, "Price too high");
 
         return TickMath.getTickAtSqrtRatio(sqrtPriceX96);
     }
 
-    function _sqrtPriceX96ToPrice(
-        uint160 sqrtPriceX96
-    ) internal view returns (uint256 priceDecimal) {
-        uint256 ratioX192 = uint256(sqrtPriceX96).mul(uint256(sqrtPriceX96));
-
-        uint256 numerator = ratioX192;
-        uint256 denominator = (1 << 192);
-
-        if (token0Decimals > token1Decimals) {
-            numerator = numerator.mul(
-                10 ** (uint256(token0Decimals).sub(token1Decimals))
-            );
-        } else if (token1Decimals > token0Decimals) {
-            denominator = denominator.mul(
-                10 ** (uint256(token1Decimals).sub(token0Decimals))
-            );
-        }
-
-        priceDecimal = numerator.mul(1e18).div(denominator);
-    }
-
-    // --- Uniswap V3 Mint Callback ---
-    function uniswapV3MintCallback(
-        uint256 amount0Owed,
-        uint256 amount1Owed,
-        bytes calldata /* data */
-    ) external override {
-        address pool = factory.getPool(token0, token1, fee);
-        require(msg.sender == pool, "Callback sender invalid");
-
-        if (amount0Owed > 0) {
-            require(
-                IERC20(token0).balanceOf(address(this)) >= amount0Owed,
-                "Insufficient T0 for callback"
-            );
-            IERC20(token0).safeTransfer(msg.sender, amount0Owed);
-        }
-        if (amount1Owed > 0) {
-            require(
-                IERC20(token1).balanceOf(address(this)) >= amount1Owed,
-                "Insufficient T1 for callback"
-            );
-            IERC20(token1).safeTransfer(msg.sender, amount1Owed);
-        }
-    }
-
-    // --- تنظیم پارامتر استراتژی ---
-    function setRangeWidthMultiplier(uint24 _multiplier) external onlyOwner {
-        require(_multiplier > 0, "Multiplier must be positive");
-        rangeWidthMultiplier = _multiplier;
-        emit StrategyParamUpdated("rangeWidthMultiplier", _multiplier);
-    }
-
-    // --- توابع نمایشی ---
-    function getActivePositionDetails()
-        external
-        view
-        returns (
-            uint256 tokenId,
-            uint128 liquidity,
-            int24 tickLower,
-            int24 tickUpper,
-            bool active
-        )
-    {
-        return (
-            currentPosition.tokenId,
-            currentPosition.liquidity,
-            currentPosition.tickLower,
-            currentPosition.tickUpper,
-            currentPosition.active
-        );
-    }
-
-    function getContractBalances()
-        external
-        view
-        returns (uint256 balance0, uint256 balance1, uint256 balanceWETH)
-    {
-        balance0 = IERC20(token0).balanceOf(address(this));
-        balance1 = IERC20(token1).balanceOf(address(this));
-        balanceWETH = WETH9 != address(0)
-            ? IERC20(WETH9).balanceOf(address(this))
-            : 0;
-    }
-
-    function getPoolAddress() external view returns (address) {
-        return factory.getPool(token0, token1, fee);
-    }
-
-    // کمک‌کننده برای بررسی مقدار مطلق
-    function abs(int256 x) private pure returns (uint256) {
-        return uint256(x >= 0 ? x : -x);
-    }
-
-    // تابع کمکی برای انتشار متریک‌ها - کاهش عمق پشته در تابع اصلی
+    // Helper function to emit prediction metrics event
     function _emitPredictionMetrics(
-        uint256 currentPriceDecimal,
-        uint256 predictedPriceDecimal,
+        uint256 actualPrice,
+        uint256 predictedPrice,
         int24 predictedTick,
+        int24 finalTickLower,
+        int24 finalTickUpper,
         bool adjusted
     ) internal {
         emit PredictionAdjustmentMetrics(
             block.timestamp,
-            currentPriceDecimal,
-            predictedPriceDecimal,
+            actualPrice,
+            predictedPrice,
             predictedTick,
-            currentPosition.tickLower,
-            currentPosition.tickUpper,
+            finalTickLower,
+            finalTickUpper,
             adjusted
         );
     }
 
-    // --- Receive function ---
-    receive() external payable {}
+    // Implement IUniswapV3MintCallback interface
+    function uniswapV3MintCallback(
+        uint256 amount0Owed,
+        uint256 amount1Owed,
+        bytes calldata data
+    ) external override {
+        // Verify the caller is the Uniswap V3 position manager
+        require(
+            msg.sender == address(positionManager),
+            "Unauthorized callback"
+        );
+
+        // Send the required tokens
+        if (amount0Owed > 0) {
+            IERC20(token0).safeTransfer(msg.sender, amount0Owed);
+        }
+        if (amount1Owed > 0) {
+            IERC20(token1).safeTransfer(msg.sender, amount1Owed);
+        }
+    }
 }
