@@ -54,8 +54,8 @@ predictive_manager = w3.eth.contract(
 def setup_database():
     """راه‌اندازی پایگاه داده"""
     conn = sqlite3.connect('liquidity_data.db')
-    c = conn.cursor()
-    
+        c = conn.cursor()
+        
     # ایجاد جدول برای ذخیره اطلاعات موقعیت‌های BaselineMinimal
     c.execute('''CREATE TABLE IF NOT EXISTS baseline_positions
                  (timestamp TEXT,
@@ -74,7 +74,7 @@ def setup_database():
                   upper_tick INTEGER,
                   token0_balance REAL,
                   token1_balance REAL,
-                  predicted_price REAL,
+                predicted_price REAL,
                   transaction_hash TEXT)''')
     
     # ایجاد جدول برای ذخیره رویدادها
@@ -83,13 +83,13 @@ def setup_database():
                   contract_type TEXT,
                   event_type TEXT,
                   data TEXT)''')
-    
-    conn.commit()
+        
+        conn.commit()
     return conn
-
+    
 def store_baseline_position(conn, position_data):
     """ذخیره اطلاعات موقعیت BaselineMinimal در پایگاه داده"""
-    c = conn.cursor()
+        c = conn.cursor()
     c.execute('''INSERT INTO baseline_positions VALUES (?, ?, ?, ?, ?, ?, ?)''',
               (position_data['timestamp'],
                position_data['has_position'],
@@ -122,7 +122,7 @@ def store_event(conn, contract_type, event_type, data):
                contract_type,
                event_type,
                json.dumps(data)))
-    conn.commit()
+        conn.commit()
 
 def get_baseline_position_info():
     """دریافت اطلاعات موقعیت فعلی از قرارداد BaselineMinimal"""
