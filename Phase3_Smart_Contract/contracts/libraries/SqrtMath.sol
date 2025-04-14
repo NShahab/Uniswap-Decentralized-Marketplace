@@ -24,9 +24,9 @@ library SqrtMath {
     function sqrt(uint256 a) internal pure returns (uint256) {
         if (a == 0) return 0;
 
-        // Initial estimate - can start with a simple estimate like a/2 or use log2 based estimate
+        // Initial estimate - can start with a simple estimate like a/2 or use log2_ based estimate
         // Using roughly x = 2**(log2(a)/2) based estimate (safer)
-        uint256 estimate = 1 << (log2(a) >> 1);
+        uint256 estimate = 1 << (log2_(a) >> 1);
         if (estimate == 0) estimate = 1; // Ensure estimate is not zero if a > 0
 
         // Babylonian method iterations using SafeMath
@@ -79,7 +79,7 @@ library SqrtMath {
      * @dev Return the log in base 2 of a positive value rounded towards zero.
      * Returns 0 if given 0. Adapted from OZ 4.x for 0.7.6 compatibility using assembly.
      */
-    function log2(uint256 x) internal pure returns (uint256 r) {
+    function log2_(uint256 x) internal pure returns (uint256 r) {
         assembly {
             let v := x
             if iszero(v) {

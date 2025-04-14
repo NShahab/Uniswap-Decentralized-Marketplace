@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\libraries\\SqrtMath.sol": {
-      "lastModificationDate": 1743591768361,
-      "contentHash": "a9e7fce6c66fb068d61f9f4cb452182e",
+      "lastModificationDate": 1744552592341,
+      "contentHash": "649558c52e6fb440295657056d12f9f2",
       "sourceName": "contracts/libraries/SqrtMath.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -88,7 +88,7 @@
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\PredictiveLiquidityManager.sol": {
-      "lastModificationDate": 1744205697082,
+      "lastModificationDate": 1744475772229,
       "contentHash": "d9bddd48ef6b591aed1df9ced5716009",
       "sourceName": "contracts/PredictiveLiquidityManager.sol",
       "solcConfig": {
@@ -1395,8 +1395,8 @@
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\TokenOperationsManagerOptimized.sol": {
-      "lastModificationDate": 1743690146506,
-      "contentHash": "9f65619cf745123eff4cac75bd007435",
+      "lastModificationDate": 1744206691406,
+      "contentHash": "ba2c168e0ce467f596a14ac558b2704d",
       "sourceName": "contracts/TokenOperationsManagerOptimized.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -1444,8 +1444,8 @@
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\BaselineMinimal.sol": {
-      "lastModificationDate": 1743950576064,
-      "contentHash": "7d9a5c5d003068456d4d1b7da5bde360",
+      "lastModificationDate": 1744554693152,
+      "contentHash": "045428b9b5df01851f85e671b8bd33ac",
       "sourceName": "contracts/BaselineMinimal.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -1484,8 +1484,7 @@
         "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol",
         "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol",
         "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol",
-        "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol",
-        "@uniswap/v3-periphery/contracts/libraries/TransferHelper.sol"
+        "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol"
       ],
       "versionPragmas": [
         "^0.7.6"
