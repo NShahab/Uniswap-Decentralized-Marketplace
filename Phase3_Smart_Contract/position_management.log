@@ -1,0 +1,482 @@
+2025-04-14 17:04:06,692 - INFO - Connected to network ID: 11155111
+2025-04-14 17:04:06,692 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-14 17:04:06,692 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-14 17:04:06,693 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-14 17:04:06,693 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-14 17:04:06,694 - INFO - Loading ABI from: artifacts/contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-14 17:04:06,695 - INFO - Loading ABI from: artifacts/contracts\BaselineMinimal.sol\BaselineMinimal.json
+2025-04-14 17:04:07,814 - CRITICAL - Failed to load required ABI: ABI file for 'IERC20' not found in any expected paths: ['artifacts/contracts/IERC20.sol/IERC20.json', 'artifacts/IERC20.json', 'abis/IERC20.json']. Please ensure artifacts are available. Exiting.
+2025-04-14 17:05:27,165 - INFO - Connected to network ID: 11155111
+2025-04-14 17:05:27,166 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-14 17:05:27,167 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-14 17:05:27,168 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-14 17:05:27,170 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-14 17:05:27,171 - INFO - Loading ABI from: artifacts/contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-14 17:05:27,176 - INFO - Loading ABI from: artifacts/contracts\BaselineMinimal.sol\BaselineMinimal.json
+2025-04-14 17:05:27,182 - CRITICAL - Failed to load required ABI: ABI file for 'IERC20' not found in any expected paths: ['artifacts/contracts/IERC20.sol/IERC20.json', 'artifacts/IERC20.json', 'abis/IERC20.json', 'artifacts/contracts/interfaces/IERC20.sol/IERC20.json']. Please ensure artifacts are available. Exiting.
+2025-04-14 17:07:08,246 - INFO - Connected to network ID: 11155111
+2025-04-14 17:07:08,247 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-14 17:07:08,247 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-14 17:07:08,248 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-14 17:07:08,248 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-14 17:07:08,249 - INFO - Loading ABI from: artifacts/contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-14 17:07:08,250 - INFO - Loading ABI from: artifacts/contracts\BaselineMinimal.sol\BaselineMinimal.json
+2025-04-14 17:07:08,251 - CRITICAL - Failed to load required ABI: ABI file for 'IERC20' not found in any expected paths: ['artifacts/contracts/IERC20.sol/IERC20.json', 'artifacts/IERC20.json', 'abis/IERC20.json', 'artifacts/contracts/interfaces/IERC20.sol/IERC20.json']. Please ensure artifacts are available. Exiting.
+2025-04-14 17:12:30,242 - INFO - Connected to network ID: 11155111
+2025-04-14 17:12:30,243 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-14 17:12:30,245 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-14 17:12:30,247 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-14 17:12:30,248 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-14 17:12:30,250 - INFO - Loading ABI from: artifacts/contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-14 17:12:30,253 - INFO - Loading ABI from: artifacts/contracts\BaselineMinimal.sol\BaselineMinimal.json
+2025-04-14 17:12:30,257 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:12:30,296 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:12:30,298 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:12:30,299 - INFO - Required ABIs loaded successfully.
+2025-04-14 17:12:30,301 - WARNING - No contracts selected to run (--no-both specified without --predictive-only or --baseline-only). Exiting.
+2025-04-14 17:13:35,836 - INFO - Connected to network ID: 11155111
+2025-04-14 17:13:35,837 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-14 17:13:35,838 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-14 17:13:35,840 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-14 17:13:35,841 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-14 17:13:35,842 - INFO - Loading ABI from: artifacts/contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-14 17:13:35,847 - INFO - Loading ABI from: artifacts/contracts\BaselineMinimal.sol\BaselineMinimal.json
+2025-04-14 17:13:35,851 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:13:35,854 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:13:35,857 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:13:35,860 - INFO - Required ABIs loaded successfully.
+2025-04-14 17:13:35,866 - INFO - === Starting Position Adjustment Cycle ===
+2025-04-14 17:13:35,868 - INFO - Fetching predicted price...
+2025-04-14 17:13:37,511 - INFO - Custom API predicted ETH price: 1597.2228114259244 USD
+2025-04-14 17:13:37,512 - INFO - Using predicted price: 1597.2228114259244 ETH/USDC for cycle
+2025-04-14 17:13:37,514 - INFO - --- Attempting to adjust position for Predictive contract ---
+2025-04-14 17:13:37,515 - INFO - Using contract: PredictiveLiquidityManager at 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-14 17:13:40,355 - INFO - Fetched params for PredictiveLiquidityManager: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18, 'rangeWidthMultiplier': 4}
+2025-04-14 17:13:41,091 - INFO - Calculated predicted_tick (Python): 202560 for price 1597.2228114259244
+2025-04-14 17:13:41,092 - ERROR - Error calculating predictive tick range in Python: name 'tickSpacing' is not defined
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 492, in calculate_ticks_predictive_py
+    half_width = (half_width // tickSpacing) * tickSpacing
+                                ^^^^^^^^^^^
+NameError: name 'tickSpacing' is not defined. Did you mean: 'tick_spacing'?
+2025-04-14 17:13:41,103 - ERROR - Predictive: Python tick calculation failed. Defaulting to adjust.
+2025-04-14 17:13:41,105 - INFO - Off-chain check indicates adjustment needed for Predictive. Proceeding with transaction...
+2025-04-14 17:13:41,106 - INFO - Checking/Sending tokens for Predictive...
+2025-04-14 17:13:42,595 - INFO - Predictive contract balance: 0.05 WETH, 60.0 USDC
+2025-04-14 17:13:42,596 - ERROR - Error checking token balances for Predictive: name 'MIN_WETH_BALANCE' is not defined
+2025-04-14 17:13:42,598 - INFO - Attempting to fund Predictive contract...
+2025-04-14 17:13:43,079 - INFO - Sending 0.01 WETH to Predictive contract...
+2025-04-14 17:13:43,613 - INFO - WETH transfer tx sent: c77278fbd14494ba716900fbab2938cf91b3ca3f0a4edbef2d62fef79f50f6dc
+2025-04-14 17:13:55,179 - ERROR - Error sending tokens to Predictive: WETH transfer transaction failed
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 352, in send_tokens_to_contract
+    if receipt.status != 1: raise Exception("WETH transfer transaction failed")
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: WETH transfer transaction failed
+2025-04-14 17:13:55,184 - ERROR - Failed to ensure sufficient funds for Predictive. Aborting.
+2025-04-14 17:14:00,187 - INFO - --- Attempting to adjust position for Baseline contract ---
+2025-04-14 17:14:00,188 - INFO - Using contract: BaselineMinimal at 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-14 17:14:00,939 - INFO - Fetched params for BaselineMinimal: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18}
+2025-04-14 17:14:01,663 - INFO - Baseline: No active position. Adjustment required.
+2025-04-14 17:14:01,663 - INFO - Off-chain check indicates adjustment needed for Baseline. Proceeding with transaction...
+2025-04-14 17:14:01,665 - INFO - Checking/Sending tokens for Baseline...
+2025-04-14 17:14:03,136 - INFO - Baseline contract balance: 0 WETH, 0.0 USDC
+2025-04-14 17:14:03,137 - ERROR - Error checking token balances for Baseline: name 'MIN_WETH_BALANCE' is not defined
+2025-04-14 17:14:03,138 - INFO - Attempting to fund Baseline contract...
+2025-04-14 17:14:03,628 - INFO - Sending 0.02 ETH to Baseline contract...
+2025-04-14 17:14:03,904 - INFO - ETH transfer tx sent: f3dd2cd948cb2a2e117c0f27e02f0428ba9ba286b79e701bbee712b85961c3ce
+2025-04-14 17:14:07,218 - ERROR - Error sending tokens to Baseline: ETH transfer transaction failed
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 331, in send_tokens_to_contract
+    if receipt.status != 1: raise Exception("ETH transfer transaction failed")
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: ETH transfer transaction failed
+2025-04-14 17:14:07,223 - ERROR - Failed to ensure sufficient funds for Baseline. Aborting.
+2025-04-14 17:14:07,225 - INFO - === Position Adjustment Cycle Completed (Duration: 31.36s) ===
+2025-04-14 17:25:35,854 - INFO - Connected to network ID: 11155111
+2025-04-14 17:25:35,855 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-14 17:25:35,855 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-14 17:25:35,856 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-14 17:25:35,856 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-14 17:25:35,857 - INFO - Loading ABI from: artifacts/contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-14 17:25:35,858 - INFO - Loading ABI from: artifacts/contracts\BaselineMinimal.sol\BaselineMinimal.json
+2025-04-14 17:25:35,859 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:25:35,860 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:25:35,860 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:25:35,861 - INFO - Required ABIs loaded successfully.
+2025-04-14 17:25:35,864 - INFO - === Starting Position Adjustment Cycle ===
+2025-04-14 17:25:35,864 - INFO - Fetching predicted price...
+2025-04-14 17:25:36,556 - INFO - Custom API predicted ETH price: 1597.0441825246812 USD
+2025-04-14 17:25:36,557 - INFO - Using predicted price: 1597.0441825246812 ETH/USDC for cycle
+2025-04-14 17:25:36,559 - INFO - --- Attempting to adjust position for Predictive contract ---
+2025-04-14 17:25:36,560 - INFO - Using contract: PredictiveLiquidityManager at 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-14 17:25:40,046 - INFO - Fetched params for PredictiveLiquidityManager: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18, 'rangeWidthMultiplier': 4}
+2025-04-14 17:25:40,812 - INFO - Calculated predicted_tick (Python): 202561 for price 1597.0441825246812
+2025-04-14 17:25:40,812 - ERROR - Error calculating predictive tick range in Python: name 'tickSpacing' is not defined
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 492, in calculate_ticks_predictive_py
+    half_width = (half_width // tickSpacing) * tickSpacing
+                                ^^^^^^^^^^^
+NameError: name 'tickSpacing' is not defined. Did you mean: 'tick_spacing'?
+2025-04-14 17:25:40,816 - ERROR - Predictive: Python tick calculation failed. Defaulting to adjust.
+2025-04-14 17:25:40,816 - INFO - Off-chain check indicates adjustment needed for Predictive. Proceeding with transaction...
+2025-04-14 17:25:40,817 - INFO - Checking/Sending tokens for Predictive...
+2025-04-14 17:25:42,415 - INFO - Predictive contract balance: 0.05 WETH, 60.0 USDC
+2025-04-14 17:25:42,415 - ERROR - Error checking token balances for Predictive: name 'MIN_WETH_BALANCE' is not defined
+2025-04-14 17:25:42,417 - INFO - Attempting to fund Predictive contract...
+2025-04-14 17:25:42,949 - INFO - Sending 0.01 WETH to Predictive contract...
+2025-04-14 17:25:43,479 - INFO - WETH transfer tx sent: 39f7e5f3d2860392e8d6bf8bd5fa48a5a2cdfcd505737d22496b1172fd987693
+2025-04-14 17:25:55,852 - ERROR - Error sending tokens to Predictive: WETH transfer transaction failed
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 352, in send_tokens_to_contract
+    if receipt.status != 1: raise Exception("WETH transfer transaction failed")
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: WETH transfer transaction failed
+2025-04-14 17:25:55,857 - ERROR - Failed to ensure sufficient funds for Predictive. Aborting.
+2025-04-14 17:26:00,859 - INFO - --- Attempting to adjust position for Baseline contract ---
+2025-04-14 17:26:00,860 - INFO - Using contract: BaselineMinimal at 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-14 17:26:01,571 - INFO - Fetched params for BaselineMinimal: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18}
+2025-04-14 17:26:02,341 - INFO - Baseline: No active position. Adjustment required.
+2025-04-14 17:26:02,342 - INFO - Off-chain check indicates adjustment needed for Baseline. Proceeding with transaction...
+2025-04-14 17:26:02,343 - INFO - Checking/Sending tokens for Baseline...
+2025-04-14 17:26:04,057 - INFO - Baseline contract balance: 0 WETH, 0.0 USDC
+2025-04-14 17:26:04,058 - ERROR - Error checking token balances for Baseline: name 'MIN_WETH_BALANCE' is not defined
+2025-04-14 17:26:04,058 - INFO - Attempting to fund Baseline contract...
+2025-04-14 17:26:04,549 - INFO - Sending 0.02 ETH to Baseline contract...
+2025-04-14 17:26:04,840 - INFO - ETH transfer tx sent: 92150ec8053d9cff114222abf0d40d98cc70204eae8efd4e87353f55aee60cff
+2025-04-14 17:27:18,940 - ERROR - Error sending tokens to Baseline: ETH transfer transaction failed
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 331, in send_tokens_to_contract
+    if receipt.status != 1: raise Exception("ETH transfer transaction failed")
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: ETH transfer transaction failed
+2025-04-14 17:27:18,946 - ERROR - Failed to ensure sufficient funds for Baseline. Aborting.
+2025-04-14 17:27:18,948 - INFO - === Position Adjustment Cycle Completed (Duration: 103.08s) ===
+2025-04-14 17:31:09,645 - INFO - Connected to network ID: 11155111
+2025-04-14 17:31:09,646 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-14 17:31:09,648 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-14 17:31:09,649 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-14 17:31:09,650 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-14 17:31:09,651 - INFO - Loading ABI from: artifacts/contracts\PredictiveLiquidityManager.sol\PredictiveLiquidityManager.json
+2025-04-14 17:31:09,655 - INFO - Loading ABI from: artifacts/contracts\BaselineMinimal.sol\BaselineMinimal.json
+2025-04-14 17:31:09,659 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-14 17:31:12,029 - CRITICAL - Failed to load required ABI: ABI file for 'IUniswapV3Pool' not found in any expected paths: ['artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json', 'artifacts/contracts/IUniswapV3Pool.sol/IUniswapV3Pool.json', 'artifacts/IUniswapV3Pool.json', 'abis/IUniswapV3Pool.json']. Please ensure artifacts are available. Exiting.
+2025-04-15 17:02:28,574 - INFO - Connected to network ID: 11155111
+2025-04-15 17:02:28,575 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:02:28,575 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:02:28,576 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 17:02:28,576 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 17:02:28,577 - CRITICAL - An unexpected error occurred before main execution: cannot access local variable 'possible_paths' where it is not associated with a value
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 1114, in <module>
+    load_contract_abi("PredictiveLiquidityManager")
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 162, in load_contract_abi
+    error_logger.error(f"ABI file for '{contract_name}' not found in any expected paths: {possible_paths}")
+                                                                                          ^^^^^^^^^^^^^^
+UnboundLocalError: cannot access local variable 'possible_paths' where it is not associated with a value
+2025-04-15 17:04:53,260 - INFO - Connected to network ID: 11155111
+2025-04-15 17:04:53,261 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:04:53,263 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:04:53,264 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 17:04:53,265 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 17:04:53,267 - CRITICAL - Failed to load required ABI: ABI file for 'PredictiveLiquidityManager' not found in any expected paths: []. Please ensure artifacts are available. Exiting.
+2025-04-15 17:35:30,528 - INFO - Connected to network ID: 11155111
+2025-04-15 17:35:30,529 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:35:30,530 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:35:30,531 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 17:35:30,531 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 17:35:30,533 - CRITICAL - Failed to load required ABI: ABI file for 'PredictiveLiquidityManager' not found in any expected paths: []. Please ensure artifacts are available. Exiting.
+2025-04-15 17:39:51,423 - INFO - Connected to network ID: 11155111
+2025-04-15 17:39:51,425 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:39:51,426 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:39:51,427 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 17:39:51,429 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 17:39:51,433 - CRITICAL - Failed to load required ABI: ABI file for 'BaselineMinimal' not found in any expected paths: []. Please ensure artifacts are available. Exiting.
+2025-04-15 17:44:22,913 - INFO - Connected to network ID: 11155111
+2025-04-15 17:44:22,914 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:44:22,916 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:44:22,917 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 17:44:22,918 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 17:44:22,919 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 17:44:22,924 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 17:44:22,930 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:44:22,933 - INFO - Loading ABI from: artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json
+2025-04-15 17:44:22,937 - CRITICAL - Failed to load required ABI: [Errno 2] No such file or directory: 'artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'. Please ensure artifacts are available. Exiting.
+2025-04-15 17:47:56,586 - INFO - Connected to network ID: 11155111
+2025-04-15 17:47:56,588 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:47:56,589 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:47:56,590 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 17:47:56,591 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 17:47:56,592 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 17:47:56,598 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 17:47:56,602 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:47:56,605 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json
+2025-04-15 17:47:56,610 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json
+2025-04-15 17:47:56,612 - INFO - Required ABIs loaded successfully.
+2025-04-15 17:47:56,615 - INFO - === Starting Position Adjustment Cycle ===
+2025-04-15 17:47:56,615 - INFO - Fetching predicted price...
+2025-04-15 17:47:57,392 - INFO - Custom API predicted ETH price: 1602.6103613233568 USD
+2025-04-15 17:47:59,291 - INFO - Using predicted price: 1602.6103613233568 ETH/USDC for cycle
+2025-04-15 17:47:59,292 - INFO - --- Attempting to adjust position for Predictive contract ---
+2025-04-15 17:47:59,294 - INFO - Using contract: PredictiveLiquidityManager at 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:47:59,295 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 17:48:02,928 - INFO - Fetched params for PredictiveLiquidityManager: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18, 'rangeWidthMultiplier': 4}
+2025-04-15 17:48:03,797 - INFO - Calculated predicted_tick (Python): 202526 for price 1602.6103613233568
+2025-04-15 17:48:03,799 - ERROR - Error calculating predictive tick range in Python: name 'tickSpacing' is not defined
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 511, in calculate_ticks_predictive_py
+    half_width = (half_width // tickSpacing) * tickSpacing
+                                ^^^^^^^^^^^
+NameError: name 'tickSpacing' is not defined. Did you mean: 'tick_spacing'?
+2025-04-15 17:48:03,813 - ERROR - Predictive: Python tick calculation failed. Defaulting to adjust.
+2025-04-15 17:48:03,814 - INFO - Off-chain check indicates adjustment needed for Predictive. Proceeding with transaction...
+2025-04-15 17:48:03,816 - INFO - Checking/Sending tokens for Predictive...
+2025-04-15 17:48:03,843 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:48:05,667 - INFO - Predictive contract balance: 0.05 WETH, 60.0 USDC
+2025-04-15 17:48:05,668 - INFO - Predictive contract appears to have sufficient funds or funding mechanism.
+2025-04-15 17:48:05,684 - INFO - Estimating gas...
+2025-04-15 17:48:06,637 - WARNING - Gas estimation failed: ('execution reverted: SafeMath: multiplication overflow', '0x08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000021536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f7700000000000000000000000000000000000000000000000000000000000000'). Using default gas limit: 1500000
+2025-04-15 17:48:07,281 - INFO - Using Nonce: 120, Gas Price: 0.002542818 gwei
+2025-04-15 17:48:07,969 - INFO - Transaction sent: 1bdbc1cef7451e1c194a1b164f0c734d4370e0da2b877880e0a4253898a1fc3b
+2025-04-15 17:48:07,971 - INFO - Waiting for transaction receipt...
+2025-04-15 17:48:21,867 - ERROR - Transaction failed! Hash: 1bdbc1cef7451e1c194a1b164f0c734d4370e0da2b877880e0a4253898a1fc3b
+2025-04-15 17:48:21,868 - ERROR - Receipt: AttributeDict({'blockHash': HexBytes('0xf1c9a6ecea15c853a1f427c8b410dfe10d90c2c7294a0eaa330352db2f8b85c4'), 'blockNumber': 8123888, 'contractAddress': None, 'cumulativeGasUsed': 19876698, 'effectiveGasPrice': 2542818, 'from': '0xD8e187c840c8A1D320B19281A8AfAf51D161B397', 'gasUsed': 42094, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 0, 'to': '0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34', 'transactionHash': HexBytes('0x1bdbc1cef7451e1c194a1b164f0c734d4370e0da2b877880e0a4253898a1fc3b'), 'transactionIndex': 327, 'type': 0})
+2025-04-15 17:48:27,005 - INFO - --- Attempting to adjust position for Baseline contract ---
+2025-04-15 17:48:27,006 - INFO - Using contract: BaselineMinimal at 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:48:27,006 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 17:48:27,901 - INFO - Fetched params for BaselineMinimal: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18}
+2025-04-15 17:48:28,819 - INFO - Baseline: No active position. Adjustment required.
+2025-04-15 17:48:28,820 - INFO - Off-chain check indicates adjustment needed for Baseline. Proceeding with transaction...
+2025-04-15 17:48:28,821 - INFO - Checking/Sending tokens for Baseline...
+2025-04-15 17:48:28,838 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:48:30,673 - INFO - Baseline contract balance: 0 WETH, 0.0 USDC
+2025-04-15 17:48:30,674 - INFO - Attempting to fund Baseline contract...
+2025-04-15 17:48:31,316 - INFO - Sending 0.02 ETH to Baseline contract...
+2025-04-15 17:48:31,651 - INFO - ETH transfer tx sent: 82f53490271442443254f331ce1e1bd7e62358c1e4cd796cd971131085e6c76e
+2025-04-15 17:48:33,217 - ERROR - Error sending tokens to Baseline: ETH transfer transaction failed
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 350, in send_tokens_to_contract
+    if receipt.status != 1: raise Exception("ETH transfer transaction failed")
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: ETH transfer transaction failed
+2025-04-15 17:48:33,222 - ERROR - Failed to ensure sufficient funds for Baseline. Aborting.
+2025-04-15 17:48:33,225 - INFO - === Position Adjustment Cycle Completed (Duration: 36.61s) ===
+2025-04-15 17:54:43,484 - INFO - Connected to network ID: 11155111
+2025-04-15 17:54:43,485 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:54:43,486 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:54:43,487 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 17:54:43,489 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 17:54:43,490 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 17:54:43,494 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 17:54:45,909 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:54:45,911 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json
+2025-04-15 17:54:45,914 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json
+2025-04-15 17:54:45,919 - INFO - Required ABIs loaded successfully.
+2025-04-15 17:54:45,929 - INFO - === Starting Position Adjustment Cycle ===
+2025-04-15 17:54:45,931 - INFO - Fetching predicted price...
+2025-04-15 17:54:46,776 - INFO - Custom API predicted ETH price: 1602.0736226534843 USD
+2025-04-15 17:54:46,777 - INFO - Using predicted price: 1602.0736226534843 ETH/USDC for cycle
+2025-04-15 17:54:46,778 - INFO - --- Attempting to adjust position for Predictive contract ---
+2025-04-15 17:54:46,780 - INFO - Using contract: PredictiveLiquidityManager at 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:54:46,781 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 17:54:50,254 - INFO - Fetched params for PredictiveLiquidityManager: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18, 'rangeWidthMultiplier': 4}
+2025-04-15 17:54:50,985 - INFO - Calculated predicted_tick (Python): 202529 for price 1602.0736226534843
+2025-04-15 17:54:50,986 - INFO - Calculated Predictive Ticks (Python): Lower=202380, Upper=202680
+2025-04-15 17:54:50,987 - INFO - Predictive Off-Chain Check: Current=[-73620, -73320], Target=[202380, 202680], Diff=[276000, 276000]
+2025-04-15 17:54:50,989 - INFO - Predictive: Target ticks differ from current ticks. Adjustment needed.
+2025-04-15 17:54:50,992 - INFO - Off-chain check indicates adjustment needed for Predictive. Proceeding with transaction...
+2025-04-15 17:54:50,994 - INFO - Checking/Sending tokens for Predictive...
+2025-04-15 17:54:51,014 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:54:52,714 - INFO - Predictive contract balance: 0.05 WETH, 60.0 USDC
+2025-04-15 17:54:52,715 - INFO - Predictive contract appears to have sufficient funds or funding mechanism.
+2025-04-15 17:54:52,733 - INFO - Estimating gas...
+2025-04-15 17:54:53,566 - WARNING - Gas estimation failed: ('execution reverted: SafeMath: multiplication overflow', '0x08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000021536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f7700000000000000000000000000000000000000000000000000000000000000'). Using default gas limit: 1500000
+2025-04-15 17:54:54,154 - INFO - Using Nonce: 122, Gas Price: 0.002630387 gwei
+2025-04-15 17:54:54,786 - INFO - Transaction sent: 49a329ef8a8e6b270382e42108651a1a2ef3858a84403f41555423d2a14f4f9d
+2025-04-15 17:54:54,789 - INFO - Waiting for transaction receipt...
+2025-04-15 17:55:08,816 - ERROR - Transaction failed! Hash: 49a329ef8a8e6b270382e42108651a1a2ef3858a84403f41555423d2a14f4f9d
+2025-04-15 17:55:08,818 - ERROR - Receipt: AttributeDict({'blockHash': HexBytes('0xaa482bdbfe456ccd0bc81bb7c225216c44652ea4d00c36aef04a324835d546c3'), 'blockNumber': 8123922, 'contractAddress': None, 'cumulativeGasUsed': 5561156, 'effectiveGasPrice': 2630387, 'from': '0xD8e187c840c8A1D320B19281A8AfAf51D161B397', 'gasUsed': 42094, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 0, 'to': '0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34', 'transactionHash': HexBytes('0x49a329ef8a8e6b270382e42108651a1a2ef3858a84403f41555423d2a14f4f9d'), 'transactionIndex': 76, 'type': 0})
+2025-04-15 17:55:13,826 - INFO - --- Attempting to adjust position for Baseline contract ---
+2025-04-15 17:55:13,827 - INFO - Using contract: BaselineMinimal at 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:55:13,829 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 17:55:14,673 - INFO - Fetched params for BaselineMinimal: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18}
+2025-04-15 17:55:15,577 - INFO - Baseline: No active position. Adjustment required.
+2025-04-15 17:55:15,587 - INFO - Off-chain check indicates adjustment needed for Baseline. Proceeding with transaction...
+2025-04-15 17:55:15,588 - INFO - Checking/Sending tokens for Baseline...
+2025-04-15 17:55:15,613 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:55:17,359 - INFO - Baseline contract balance: 0 WETH, 0.0 USDC
+2025-04-15 17:55:17,360 - INFO - Attempting to fund Baseline contract...
+2025-04-15 17:55:17,933 - INFO - Sending 0.02 ETH to Baseline contract...
+2025-04-15 17:55:18,238 - INFO - ETH transfer tx sent: aab6bbdd87232bed00656e6255c513cc22532cd6a5730d5b9edbb67763743d3b
+2025-04-15 17:55:33,103 - ERROR - Error sending tokens to Baseline: ETH transfer transaction failed
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 350, in send_tokens_to_contract
+    if receipt.status != 1: raise Exception("ETH transfer transaction failed")
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Exception: ETH transfer transaction failed
+2025-04-15 17:55:33,110 - ERROR - Failed to ensure sufficient funds for Baseline. Aborting.
+2025-04-15 17:55:33,112 - INFO - === Position Adjustment Cycle Completed (Duration: 47.18s) ===
+2025-04-15 17:58:36,823 - INFO - Connected to network ID: 11155111
+2025-04-15 17:58:36,824 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:58:36,825 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:58:36,841 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 17:58:36,844 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 17:58:36,845 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 17:58:36,847 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 17:58:36,849 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:58:36,850 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json
+2025-04-15 17:58:36,852 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json
+2025-04-15 17:58:36,853 - INFO - Required ABIs loaded successfully.
+2025-04-15 17:58:36,861 - INFO - === Starting Position Adjustment Cycle ===
+2025-04-15 17:58:36,861 - INFO - Fetching predicted price...
+2025-04-15 17:58:37,710 - INFO - Custom API predicted ETH price: 1601.9517914950848 USD
+2025-04-15 17:58:37,711 - INFO - Using predicted price: 1601.9517914950848 ETH/USDC for cycle
+2025-04-15 17:58:37,712 - INFO - --- Attempting to adjust position for Predictive contract ---
+2025-04-15 17:58:37,714 - INFO - Using contract: PredictiveLiquidityManager at 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 17:58:37,715 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 17:58:41,541 - INFO - Fetched params for PredictiveLiquidityManager: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18, 'rangeWidthMultiplier': 4}
+2025-04-15 17:58:42,522 - INFO - Calculated predicted_tick (Python): 202530 for price 1601.9517914950848
+2025-04-15 17:58:42,523 - INFO - Calculated Predictive Ticks (Python): Lower=202380, Upper=202680
+2025-04-15 17:58:42,524 - INFO - Predictive Off-Chain Check: Current=[-73620, -73320], Target=[202380, 202680], Diff=[276000, 276000]
+2025-04-15 17:58:42,525 - INFO - Predictive: Target ticks differ from current ticks. Adjustment needed.
+2025-04-15 17:58:42,527 - INFO - Off-chain check indicates adjustment needed for Predictive. Proceeding with transaction...
+2025-04-15 17:58:42,528 - INFO - Checking/Sending tokens for Predictive...
+2025-04-15 17:58:42,550 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:58:44,269 - INFO - Predictive contract balance: 0.05 WETH, 60.0 USDC
+2025-04-15 17:58:44,270 - INFO - Predictive contract appears to have sufficient funds or funding mechanism.
+2025-04-15 17:58:44,285 - INFO - Calculated price_to_send: 1601951791495000 (original: 1601.9517914950848, decimal_diff: 12)
+2025-04-15 17:58:44,287 - INFO - Estimating gas...
+2025-04-15 17:58:45,207 - WARNING - Gas estimation failed: ('execution reverted: SafeMath: multiplication overflow', '0x08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000021536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f7700000000000000000000000000000000000000000000000000000000000000'). Using default gas limit: 1500000
+2025-04-15 17:58:45,842 - INFO - Using Nonce: 124, Gas Price: 0.002253942 gwei
+2025-04-15 17:58:46,472 - INFO - Transaction sent: f9239f6d8ce15d87d62f9e62f0ab0f65d61cd04ca0bcbb02545541cdf56180e5
+2025-04-15 17:58:46,473 - INFO - Waiting for transaction receipt...
+2025-04-15 17:59:08,646 - ERROR - Transaction failed! Hash: f9239f6d8ce15d87d62f9e62f0ab0f65d61cd04ca0bcbb02545541cdf56180e5
+2025-04-15 17:59:08,647 - ERROR - Receipt: AttributeDict({'blockHash': HexBytes('0x8ae12386f7c80f1cba23cd727aee4b7dea73981da9e9bb44d2b274776f43cfcf'), 'blockNumber': 8123941, 'contractAddress': None, 'cumulativeGasUsed': 10351453, 'effectiveGasPrice': 2253942, 'from': '0xD8e187c840c8A1D320B19281A8AfAf51D161B397', 'gasUsed': 42094, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 0, 'to': '0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34', 'transactionHash': HexBytes('0xf9239f6d8ce15d87d62f9e62f0ab0f65d61cd04ca0bcbb02545541cdf56180e5'), 'transactionIndex': 113, 'type': 0})
+2025-04-15 17:59:13,655 - INFO - --- Attempting to adjust position for Baseline contract ---
+2025-04-15 17:59:13,656 - INFO - Using contract: BaselineMinimal at 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 17:59:13,658 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 17:59:14,501 - INFO - Fetched params for BaselineMinimal: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18}
+2025-04-15 17:59:15,368 - INFO - Baseline: No active position. Adjustment required.
+2025-04-15 17:59:15,369 - INFO - Off-chain check indicates adjustment needed for Baseline. Proceeding with transaction...
+2025-04-15 17:59:15,370 - INFO - Checking/Sending tokens for Baseline...
+2025-04-15 17:59:15,384 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 17:59:17,058 - INFO - Baseline contract balance: 0 WETH, 0.0 USDC
+2025-04-15 17:59:17,059 - INFO - Attempting to fund Baseline contract...
+2025-04-15 17:59:17,627 - INFO - Sending 0.02 ETH to Baseline contract...
+2025-04-15 17:59:17,889 - INFO - ETH transfer tx sent: 4cc700be4c6f7c8d9d2542c020f6164839bde0c5713e4c02309cc51bedf336e6
+2025-04-15 17:59:20,820 - ERROR - ETH transfer failed. Receipt: AttributeDict({'blockHash': HexBytes('0x021197fc83aa5329691bbf35c742b8ea0d0497774e720ecd739cd199c4034662'), 'blockNumber': 8123942, 'contractAddress': None, 'cumulativeGasUsed': 8707073, 'effectiveGasPrice': 2431865, 'from': '0xD8e187c840c8A1D320B19281A8AfAf51D161B397', 'gasUsed': 60256, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 0, 'to': '0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba', 'transactionHash': HexBytes('0x4cc700be4c6f7c8d9d2542c020f6164839bde0c5713e4c02309cc51bedf336e6'), 'transactionIndex': 95, 'type': 0})
+2025-04-15 17:59:20,824 - ERROR - Error sending tokens to Baseline: ETH transfer transaction failed
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 354, in send_tokens_to_contract
+    raise Exception("ETH transfer transaction failed")
+Exception: ETH transfer transaction failed
+2025-04-15 17:59:20,831 - ERROR - Failed to ensure sufficient funds for Baseline. Aborting.
+2025-04-15 17:59:20,834 - INFO - === Position Adjustment Cycle Completed (Duration: 43.97s) ===
+2025-04-15 18:03:30,793 - INFO - Connected to network ID: 11155111
+2025-04-15 18:03:30,794 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 18:03:30,795 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 18:03:30,797 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 18:03:30,798 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 18:03:30,799 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 18:03:30,805 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 18:03:30,808 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 18:03:30,812 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json
+2025-04-15 18:03:30,816 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json
+2025-04-15 18:03:30,819 - INFO - Required ABIs loaded successfully.
+2025-04-15 18:03:30,822 - INFO - === Starting Position Adjustment Cycle ===
+2025-04-15 18:03:30,822 - INFO - Fetching predicted price...
+2025-04-15 18:03:31,807 - INFO - Custom API predicted ETH price: 1602.0259125494956 USD
+2025-04-15 18:03:31,808 - INFO - Using predicted price: 1602.0259125494956 ETH/USDC for cycle
+2025-04-15 18:03:31,809 - INFO - --- Attempting to adjust position for Predictive contract ---
+2025-04-15 18:03:31,810 - INFO - Using contract: PredictiveLiquidityManager at 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 18:03:31,812 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 18:03:36,157 - INFO - Fetched params for PredictiveLiquidityManager: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18, 'rangeWidthMultiplier': 4}
+2025-04-15 18:03:37,106 - INFO - Calculated predicted_tick (Python): 202530 for price 1602.0259125494956
+2025-04-15 18:03:37,107 - INFO - Calculated Predictive Ticks (Python): Lower=202380, Upper=202680
+2025-04-15 18:03:37,109 - INFO - Predictive Off-Chain Check: Current=[-73620, -73320], Target=[202380, 202680], Diff=[276000, 276000]
+2025-04-15 18:03:37,110 - INFO - Predictive: Target ticks differ from current ticks. Adjustment needed.
+2025-04-15 18:03:37,111 - INFO - Off-chain check indicates adjustment needed for Predictive. Proceeding with transaction...
+2025-04-15 18:03:37,112 - INFO - Checking/Sending tokens for Predictive...
+2025-04-15 18:03:37,123 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 18:03:38,942 - INFO - Predictive contract balance: 0.05 WETH, 60.0 USDC
+2025-04-15 18:03:38,943 - INFO - Predictive contract appears to have sufficient funds or funding mechanism.
+2025-04-15 18:03:38,958 - INFO - Calculated scaled price_to_send: 1602025912549495 (original: 1602.0259125494956)
+2025-04-15 18:03:38,960 - INFO - Estimating gas...
+2025-04-15 18:03:39,894 - WARNING - Gas estimation failed: ('execution reverted: SafeMath: multiplication overflow', '0x08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000021536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f7700000000000000000000000000000000000000000000000000000000000000'). Using default gas limit: 1500000
+2025-04-15 18:03:40,411 - INFO - Using Nonce: 126, Gas Price: 0.002024729 gwei
+2025-04-15 18:03:40,990 - INFO - Transaction sent: 80780bed5ea159c87bfb7bd9c2a4747582e9c23a3eadd4d019d44d50fed6fb78
+2025-04-15 18:03:40,992 - INFO - Waiting for transaction receipt...
+2025-04-15 18:03:44,770 - ERROR - Transaction failed! Hash: 80780bed5ea159c87bfb7bd9c2a4747582e9c23a3eadd4d019d44d50fed6fb78
+2025-04-15 18:03:44,770 - ERROR - Receipt: AttributeDict({'blockHash': HexBytes('0x89f2a8ca34f96008456f559ca94df340ab608f8ae11a46b9abae29329b977cb7'), 'blockNumber': 8123963, 'contractAddress': None, 'cumulativeGasUsed': 9110132, 'effectiveGasPrice': 2024729, 'from': '0xD8e187c840c8A1D320B19281A8AfAf51D161B397', 'gasUsed': 42094, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 0, 'to': '0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34', 'transactionHash': HexBytes('0x80780bed5ea159c87bfb7bd9c2a4747582e9c23a3eadd4d019d44d50fed6fb78'), 'transactionIndex': 102, 'type': 0})
+2025-04-15 18:03:49,772 - INFO - --- Attempting to adjust position for Baseline contract ---
+2025-04-15 18:03:49,773 - INFO - Using contract: BaselineMinimal at 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 18:03:49,775 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 18:03:50,694 - INFO - Fetched params for BaselineMinimal: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18}
+2025-04-15 18:03:51,512 - INFO - Baseline: No active position. Adjustment required.
+2025-04-15 18:03:51,513 - INFO - Off-chain check indicates adjustment needed for Baseline. Proceeding with transaction...
+2025-04-15 18:03:51,515 - INFO - Checking/Sending tokens for Baseline...
+2025-04-15 18:03:51,534 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 18:03:53,269 - INFO - Baseline contract balance: 0 WETH, 0.0 USDC
+2025-04-15 18:03:53,269 - INFO - Attempting to fund Baseline contract...
+2025-04-15 18:03:53,834 - INFO - Sending 0.02 ETH to Baseline contract...
+2025-04-15 18:03:54,139 - INFO - ETH transfer tx sent: 8a7db395ede686bbbc048ce9530d4b9abf58a43b70a2d4e66c1ce4b8b0ff355c
+2025-04-15 18:03:56,831 - ERROR - ETH transfer failed. Receipt: AttributeDict({'blockHash': HexBytes('0x36e5df4b50f62ca52f28fcdb577c08a7aaca781dff3a722ccb4fe7e5fe3871c8'), 'blockNumber': 8123964, 'contractAddress': None, 'cumulativeGasUsed': 9275037, 'effectiveGasPrice': 2196708, 'from': '0xD8e187c840c8A1D320B19281A8AfAf51D161B397', 'gasUsed': 60256, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 0, 'to': '0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba', 'transactionHash': HexBytes('0x8a7db395ede686bbbc048ce9530d4b9abf58a43b70a2d4e66c1ce4b8b0ff355c'), 'transactionIndex': 93, 'type': 0})
+2025-04-15 18:03:56,835 - ERROR - Error sending tokens to Baseline: ETH transfer transaction failed
+Traceback (most recent call last):
+  File "D:\Uniswap-Decentralized-Marketplace\Phase3_Smart_Contract\test\test_create_position.py", line 354, in send_tokens_to_contract
+    raise Exception("ETH transfer transaction failed")
+Exception: ETH transfer transaction failed
+2025-04-15 18:03:56,842 - ERROR - Failed to ensure sufficient funds for Baseline. Aborting.
+2025-04-15 18:03:56,846 - INFO - === Position Adjustment Cycle Completed (Duration: 26.02s) ===
+2025-04-15 18:14:17,627 - INFO - Connected to network ID: 11155111
+2025-04-15 18:14:17,628 - INFO - Using Predictive contract: 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 18:14:17,628 - INFO - Using Baseline contract: 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 18:14:17,629 - INFO - USDC: 0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238 (Decimals: 6)
+2025-04-15 18:14:17,629 - INFO - WETH: 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9 (Decimals: 18)
+2025-04-15 18:14:17,629 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 18:14:17,631 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 18:14:17,632 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 18:14:17,633 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json
+2025-04-15 18:14:17,634 - INFO - Loading ABI from: artifacts/@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol/IUniswapV3Factory.json
+2025-04-15 18:14:17,635 - INFO - Required ABIs loaded successfully.
+2025-04-15 18:14:17,638 - INFO - === Starting Position Adjustment Cycle ===
+2025-04-15 18:14:17,638 - INFO - Fetching predicted price...
+2025-04-15 18:14:18,439 - INFO - Custom API predicted ETH price: 1602.0852661907672 USD
+2025-04-15 18:14:18,442 - INFO - Using predicted price: 1602.0852661907672 ETH/USDC for cycle
+2025-04-15 18:14:18,443 - INFO - --- Attempting to adjust position for Predictive contract ---
+2025-04-15 18:14:18,444 - INFO - Using contract: PredictiveLiquidityManager at 0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34
+2025-04-15 18:14:18,445 - INFO - Loading ABI from: artifacts/contracts/PredictiveLiquidityManager.sol/PredictiveLiquidityManager.json
+2025-04-15 18:14:21,918 - INFO - Fetched params for PredictiveLiquidityManager: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18, 'rangeWidthMultiplier': 4}
+2025-04-15 18:14:22,806 - INFO - Calculated predicted_tick (Python): 202529 for price 1602.0852661907672
+2025-04-15 18:14:22,806 - INFO - Calculated Predictive Ticks (Python): Lower=202380, Upper=202680
+2025-04-15 18:14:22,807 - INFO - Predictive Off-Chain Check: Current=[-73620, -73320], Target=[202380, 202680], Diff=[276000, 276000]
+2025-04-15 18:14:22,808 - INFO - Predictive: Target ticks differ from current ticks. Adjustment needed.
+2025-04-15 18:14:22,809 - INFO - Off-chain check indicates adjustment needed for Predictive. Proceeding with transaction...
+2025-04-15 18:14:22,809 - INFO - Checking/Sending tokens for Predictive...
+2025-04-15 18:14:23,515 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 18:14:25,314 - INFO - Predictive contract balance: 0.05 WETH, 60.0 USDC
+2025-04-15 18:14:25,315 - INFO - Predictive contract appears to have sufficient funds.
+2025-04-15 18:14:25,633 - INFO - Calculated scaled price_to_send: 1602085266190767 (original: 1602.0852661907672)
+2025-04-15 18:14:25,635 - INFO - Estimating gas...
+2025-04-15 18:14:26,525 - WARNING - Gas estimation failed: ('execution reverted: SafeMath: multiplication overflow', '0x08c379a000000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000021536166654d6174683a206d756c7469706c69636174696f6e206f766572666c6f7700000000000000000000000000000000000000000000000000000000000000'). Using default gas limit: 1500000
+2025-04-15 18:14:27,441 - INFO - Transaction sent: 9f2bc885a8cfb679545770132659cab24b64de2a239101ce08a448fc006b28f8
+2025-04-15 18:14:27,441 - INFO - Waiting for transaction receipt...
+2025-04-15 18:14:32,991 - ERROR - Transaction failed! Hash: 9f2bc885a8cfb679545770132659cab24b64de2a239101ce08a448fc006b28f8
+2025-04-15 18:14:32,992 - ERROR - Receipt: AttributeDict({'blockHash': HexBytes('0x4a352461bc21502fb72cc0935bd963a61d69f9eadd859a5812448023fe5a2e0b'), 'blockNumber': 8124016, 'contractAddress': None, 'cumulativeGasUsed': 3696154, 'effectiveGasPrice': 3582504, 'from': '0xD8e187c840c8A1D320B19281A8AfAf51D161B397', 'gasUsed': 42094, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 0, 'to': '0xe5fe90A6eE1E6721c2A39d64F7c718B13Ee39B34', 'transactionHash': HexBytes('0x9f2bc885a8cfb679545770132659cab24b64de2a239101ce08a448fc006b28f8'), 'transactionIndex': 53, 'type': 0})
+2025-04-15 18:14:37,999 - INFO - --- Attempting to adjust position for Baseline contract ---
+2025-04-15 18:14:38,000 - INFO - Using contract: BaselineMinimal at 0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba
+2025-04-15 18:14:38,002 - INFO - Loading ABI from: artifacts/contracts/BaselineMinimal.sol/BaselineMinimal.json
+2025-04-15 18:14:38,854 - INFO - Fetched params for BaselineMinimal: {'tickSpacing': 60, 'token0Decimals': 6, 'token1Decimals': 18}
+2025-04-15 18:14:39,757 - INFO - Baseline: No active position. Adjustment required.
+2025-04-15 18:14:39,758 - INFO - Off-chain check indicates adjustment needed for Baseline. Proceeding with transaction...
+2025-04-15 18:14:39,760 - INFO - Checking/Sending tokens for Baseline...
+2025-04-15 18:14:40,261 - INFO - Loading ABI from: artifacts/contracts/interfaces/IERC20.sol/IERC20.json
+2025-04-15 18:14:42,108 - INFO - Baseline contract balance: 0 WETH, 0.0 USDC
+2025-04-15 18:14:42,109 - INFO - Attempting to fund Baseline contract...
+2025-04-15 18:14:42,647 - INFO - Sending 0.02 ETH to Baseline contract...
+2025-04-15 18:14:43,494 - WARNING - Gas estimation failed: ('execution reverted', 'no data'). Using default gas limit.
+2025-04-15 18:14:43,847 - INFO - ETH transfer tx sent: ba8f5ce9447f155c20a1bf03a55607b2076806a5207ae52e7bc3046724c22115
+2025-04-15 18:14:56,882 - ERROR - ETH transfer failed. Receipt: AttributeDict({'blockHash': HexBytes('0xf041fc11631a39d41989e08a64442e07b58d0960167b635fbf1f244fd12d1aa3'), 'blockNumber': 8124018, 'contractAddress': None, 'cumulativeGasUsed': 3407070, 'effectiveGasPrice': 3728508, 'from': '0xD8e187c840c8A1D320B19281A8AfAf51D161B397', 'gasUsed': 60256, 'logs': [], 'logsBloom': HexBytes('0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'), 'status': 0, 'to': '0x17478930234c0D34459cfeD1f12C240Ea9E7d8ba', 'transactionHash': HexBytes('0xba8f5ce9447f155c20a1bf03a55607b2076806a5207ae52e7bc3046724c22115'), 'transactionIndex': 153, 'type': 2})
+2025-04-15 18:14:56,888 - ERROR - Failed to ensure sufficient funds for Baseline. Aborting.
+2025-04-15 18:14:56,891 - INFO - === Position Adjustment Cycle Completed (Duration: 39.25s) ===

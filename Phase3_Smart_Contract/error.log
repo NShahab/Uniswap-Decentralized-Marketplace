@@ -1,0 +1,8 @@
+2025-04-14 17:04:07,814 - ERROR - ABI file for 'IERC20' not found in any expected paths: ['artifacts/contracts/IERC20.sol/IERC20.json', 'artifacts/IERC20.json', 'abis/IERC20.json']
+2025-04-14 17:05:27,181 - ERROR - ABI file for 'IERC20' not found in any expected paths: ['artifacts/contracts/IERC20.sol/IERC20.json', 'artifacts/IERC20.json', 'abis/IERC20.json', 'artifacts/contracts/interfaces/IERC20.sol/IERC20.json']
+2025-04-14 17:07:08,251 - ERROR - ABI file for 'IERC20' not found in any expected paths: ['artifacts/contracts/IERC20.sol/IERC20.json', 'artifacts/IERC20.json', 'abis/IERC20.json', 'artifacts/contracts/interfaces/IERC20.sol/IERC20.json']
+2025-04-14 17:31:09,662 - ERROR - ABI file for 'IUniswapV3Pool' not found in any expected paths: ['artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json', 'artifacts/contracts/IUniswapV3Pool.sol/IUniswapV3Pool.json', 'artifacts/IUniswapV3Pool.json', 'abis/IUniswapV3Pool.json']
+2025-04-15 17:04:53,266 - ERROR - ABI file for 'PredictiveLiquidityManager' not found in any expected paths: []
+2025-04-15 17:35:30,532 - ERROR - ABI file for 'PredictiveLiquidityManager' not found in any expected paths: []
+2025-04-15 17:39:51,433 - ERROR - ABI file for 'BaselineMinimal' not found in any expected paths: []
+2025-04-15 17:44:22,936 - ERROR - Error loading ABI for IUniswapV3Pool: [Errno 2] No such file or directory: 'artifacts/contracts/interfaces/IUniswapV3Pool.sol/IUniswapV3Pool.json'
