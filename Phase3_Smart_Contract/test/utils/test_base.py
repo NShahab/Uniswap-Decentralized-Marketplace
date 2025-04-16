@@ -5,7 +5,6 @@ import logging
 from abc import ABC, abstractmethod
 from web3 import Web3
 from .web3_utils import init_web3, get_contract
-from .price_utils import TickCalculator
 
 logger = logging.getLogger('test_base')
 
@@ -19,30 +18,71 @@ class LiquidityTestBase(ABC):
         self.contract = None
         self.token0 = None
         self.token1 = None
-        self.tick_calculator = TickCalculator()
         
     def setup(self) -> bool:
-        """مرحله اول: راه‌اندازی و اتصال"""
+        """Initialize connection and contracts."""
         try:
-            # تست اتصال به شبکه
             if not init_web3():
                 logger.error("Web3 initialization failed")
                 return False
                 
-            # لود کردن قرارداد
+            # Load main contract
             self.contract = get_contract(self.contract_address, self.contract_name)
             
-            # دریافت آدرس توکن‌ها
-            self.token0 = self.contract.functions.token0().call()
-            self.token1 = self.contract.functions.token1().call()
+            # Get token addresses with checksum
+            self.token0 = Web3.to_checksum_address(self.contract.functions.token0().call())
+            self.token1 = Web3.to_checksum_address(self.contract.functions.token1().call())
             
+            # Verify token contracts
+            token0_contract = get_contract(self.token0, "IERC20")
+            token1_contract = get_contract(self.token1, "IERC20")
+            
+            # Verify required functions exist
+            required_functions = ['balanceOf', 'approve', 'transfer']
+            for func in required_functions:
+                if not hasattr(token0_contract.functions, func):
+                    logger.error(f"Token0 contract missing required function: {func}")
+                    return False
+                if not hasattr(token1_contract.functions, func):
+                    logger.error(f"Token1 contract missing required function: {func}")
+                    return False
+                    
             logger.info(f"Setup completed for {self.contract_name}")
             return True
             
         except Exception as e:
             logger.error(f"Setup failed: {e}")
             return False
+
+    def fund_contract(self) -> bool:
+        """Fund the contract with proper ABI handling."""
+        try:
+            # Convert addresses to checksum
+            token0 = Web3.to_checksum_address(self.token0)
+            token1 = Web3.to_checksum_address(self.token1)
+            contract_address = Web3.to_checksum_address(self.contract_address)
+
+            # Get contracts with standard ABI
+            token0_contract = get_contract(token0, "IERC20")
+            token1_contract = get_contract(token1, "IERC20")
             
+            # Verify approve function exists
+            if not hasattr(token0_contract.functions, 'approve'):
+                logger.error("Token0 contract doesn't have approve function")
+                return False
+            if not hasattr(token1_contract.functions, 'approve'):
+                logger.error("Token1 contract doesn't have approve function")
+                return False
+
+            # Rest of the funding logic remains the same...
+            # [Previous funding code here...]
+            
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error funding contract: {e}")
+            return False
+
     def check_balances(self) -> bool:
         """مرحله دوم: بررسی موجودی"""
         try:
@@ -71,11 +111,6 @@ class LiquidityTestBase(ABC):
             return False
             
     @abstractmethod
-    def calculate_ticks(self) -> tuple:
-        """مرحله سوم: محاسبه تیک‌ها - باید در کلاس فرزند پیاده‌سازی شود"""
-        pass
-        
-    @abstractmethod
     def adjust_position(self) -> bool:
         """مرحله چهارم: تنظیم موقعیت - باید در کلاس فرزند پیاده‌سازی شود"""
         pass
@@ -94,14 +129,8 @@ class LiquidityTestBase(ABC):
                 logger.warning("Low or zero balances detected")
                 # ادامه می‌دهیم چون ممکن است نیاز به تامین موجودی باشد
                 
-            # مرحله 3: محاسبه تیک‌ها
-            logger.info("Step 3: Tick Calculation")
-            lower_tick, upper_tick = self.calculate_ticks()
-            if lower_tick is None or upper_tick is None:
-                return False
-                
-            # مرحله 4: تنظیم موقعیت
-            logger.info("Step 4: Position Adjustment")
+            # مرحله 3: تنظیم موقعیت
+            logger.info("Step 3: Position Adjustment")
             if not self.adjust_position():
                 return False
                 

@@ -118,11 +118,10 @@ class BaselineTest(LiquidityTestBase):
             
     def adjust_position(self) -> bool:
         try:
-            lower_tick, upper_tick = self.calculate_ticks()
             # Off-chain: check if position needs adjustment
             position_info = self.get_position_info()
             if position_info and position_info.get('hasPosition'):
-                if position_info.get('lowerTick') == lower_tick and position_info.get('upperTick') == upper_tick:
+                if position_info.get('lowerTick') == self.metrics.get('finalTickLower') and position_info.get('upperTick') == self.metrics.get('finalTickUpper'):
                     logger.info("Ticks unchanged, skipping adjustment.")
                     self.save_metrics(receipt=None, success=False)
                     return True
@@ -163,42 +162,6 @@ class BaselineTest(LiquidityTestBase):
         except Exception as e:
             logger.error(f"Failed to adjust position: {e}")
             return False
-            
-    def calculate_ticks(self) -> tuple:
-        """Calculate ticks based on current pool price (off-chain logic)."""
-        try:
-            if not self.factory_contract:
-                raise ValueError("Factory contract not initialized")
-            pool_address = self.factory_contract.functions.getPool(
-                self.token0,
-                self.token1,
-                self.contract.functions.fee().call()
-            ).call()
-            if pool_address == '0x0000000000000000000000000000000000000000':
-                raise ValueError("Pool not found")
-            pool_contract = get_contract(pool_address, "IUniswapV3Pool")
-            slot0 = pool_contract.functions.slot0().call()
-            sqrt_price_x96, current_tick = slot0[0], slot0[1]
-            self.metrics['sqrtPriceX96'] = sqrt_price_x96
-            self.metrics['currentTick'] = current_tick
-            try:
-                price_ratio = (sqrt_price_x96 / TWO_POW_96)**2
-                price_t1_t0_adj = price_ratio / (10**(18 - 6))  # WETH(18) - USDC(6)
-                self.metrics['actualPrice'] = 1.0 / price_t1_t0_adj if price_t1_t0_adj else 0
-                self.metrics['input_price'] = self.metrics['actualPrice']
-            except Exception as e:
-                logger.warning(f"Failed to calculate actual price: {e}")
-            tick_spacing = self.contract.functions.tickSpacing().call()
-            half_width = (tick_spacing * 4) // 2
-            lower_tick = ((current_tick - half_width) // tick_spacing) * tick_spacing
-            upper_tick = ((current_tick + half_width) // tick_spacing) * tick_spacing
-            self.metrics['finalTickLower'] = lower_tick
-            self.metrics['finalTickUpper'] = upper_tick
-            logger.info(f"Calculated ticks - Lower: {lower_tick}, Upper: {upper_tick}")
-            return lower_tick, upper_tick
-        except Exception as e:
-            logger.error(f"Failed to calculate ticks: {e}")
-            return None, None
             
     def save_metrics(self, receipt: dict = None, success: bool = False):
         try:

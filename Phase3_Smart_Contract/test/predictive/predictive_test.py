@@ -12,10 +12,11 @@ from datetime import datetime
 from pathlib import Path
 from web3 import Web3
 from eth_account import Account
+from decimal import Decimal, ROUND_DOWN
 
 sys.path.append(str(Path(__file__).parent.parent))
 from utils.test_base import LiquidityTestBase
-from utils.web3_utils import send_transaction, init_web3, get_contract
+from utils.web3_utils import send_transaction, init_web3, get_contract, wrap_eth_to_weth
 
 # Constants
 MIN_WETH_BALANCE = Web3.to_wei(0.01, 'ether')
@@ -36,6 +37,7 @@ class PredictiveTest(LiquidityTestBase):
             'tx_hash': None,
             'input_price': 0,
             'predictedPrice': None,
+            'predictedTick': None,
             'actualPrice': None,
             'sqrtPriceX96': 0,
             'currentTick': 0,
@@ -43,7 +45,8 @@ class PredictiveTest(LiquidityTestBase):
             'finalTickUpper': 0,
             'liquidity': 0,
             'gas_used': 0,
-            'gas_cost_eth': 0.0
+            'gas_cost_eth': 0.0,
+            'error_message': ""
         }
         self.predicted_price = None
         
@@ -63,58 +66,26 @@ class PredictiveTest(LiquidityTestBase):
             logger.warning(f"Using fallback price: {fallback_price} USD")
             return fallback_price
             
-    def calculate_ticks(self) -> tuple:
-        """Calculate ticks based on predicted price (off-chain logic)."""
+    def calculate_predicted_tick(self, price: float) -> int:
+        """Convert predicted price to Uniswap v3 tick (off-chain, overflow-safe)."""
         try:
-            # تبدیل آدرس‌ها به checksum
-            self.token0 = Web3.to_checksum_address(self.token0)
-            self.token1 = Web3.to_checksum_address(self.token1)
-            self.contract_address = Web3.to_checksum_address(self.contract_address)
-
-            self.predicted_price = self.get_predicted_price()
-            if not self.predicted_price:
-                return None, None
-            self.metrics['input_price'] = self.predicted_price
-            self.metrics['predictedPrice'] = self.predicted_price
             token0_decimals = self.contract.functions.token0Decimals().call()
             token1_decimals = self.contract.functions.token1Decimals().call()
-            # Off-chain tick calculation (replicate contract logic)
-            price_ratio = 1.0 / self.predicted_price
-            ratio = price_ratio * (10**(token1_decimals - token0_decimals))
-            sqrt_price_x96 = int((ratio ** 0.5) * TWO_POW_96)
-            predicted_tick = int((math.log(sqrt_price_x96 / TWO_POW_96) / (0.5 * math.log(1.0001))))
-            tick_spacing = self.contract.functions.tickSpacing().call()
-            range_multiplier = self.contract.functions.rangeWidthMultiplier().call()
-            half_width = (tick_spacing * range_multiplier) // 2
-            lower_tick = ((predicted_tick - half_width) // tick_spacing) * tick_spacing
-            upper_tick = ((predicted_tick + half_width) // tick_spacing) * tick_spacing
-            self.metrics['finalTickLower'] = lower_tick
-            self.metrics['finalTickUpper'] = upper_tick
-            # Get current pool price for actual price metric
-            try:
-                factory_addr = self.contract.functions.factory().call()
-                factory_contract = get_contract(factory_addr, "IUniswapV3Factory")
-                pool_address = factory_contract.functions.getPool(
-                    self.token0,
-                    self.token1,
-                    self.contract.functions.fee().call()
-                ).call()
-                pool_contract = get_contract(pool_address, "IUniswapV3Pool")
-                slot0 = pool_contract.functions.slot0().call()
-                sqrt_price_x96_onchain, current_tick = slot0[0], slot0[1]
-                self.metrics['sqrtPriceX96'] = sqrt_price_x96_onchain
-                self.metrics['currentTick'] = current_tick
-                price_ratio_onchain = (sqrt_price_x96_onchain / TWO_POW_96)**2
-                price_t1_t0_adj = price_ratio_onchain / (10**(token1_decimals - token0_decimals))
-                self.metrics['actualPrice'] = 1.0 / price_t1_t0_adj if price_t1_t0_adj else 0
-            except Exception as e:
-                logger.warning(f"Failed to get actual price: {e}")
-            logger.info(f"Calculated ticks - Lower: {lower_tick}, Upper: {upper_tick}")
-            return lower_tick, upper_tick
+            price_decimal = Decimal(str(price)).quantize(Decimal('1.000000000000000000'))
+            inverse_price = Decimal(1) / price_decimal
+            # Adjust for decimals difference
+            if token1_decimals > token0_decimals:
+                ratio = inverse_price * Decimal(10 ** (token1_decimals - token0_decimals))
+            else:
+                ratio = inverse_price / Decimal(10 ** (token0_decimals - token1_decimals))
+            sqrt_ratio = ratio.sqrt()
+            sqrt_price_x96 = float(sqrt_ratio) * (2 ** 96)
+            tick = int(math.log(sqrt_price_x96 / (2 ** 96)) / math.log(1.0001))
+            return tick
         except Exception as e:
-            logger.error(f"Failed to calculate ticks: {e}")
-            return None, None
-            
+            logger.error(f"Failed to calculate predicted tick: {e}")
+            return 0
+
     def check_token_balances(self) -> tuple:
         """Check if contract has sufficient token balances."""
         try:
@@ -157,10 +128,23 @@ class PredictiveTest(LiquidityTestBase):
             contract_weth_balance = token1_contract.functions.balanceOf(contract_address).call()
             if contract_weth_balance < MIN_WETH_BALANCE:
                 user_weth_balance = token1_contract.functions.balanceOf(account.address).call()
-                if user_weth_balance < (MIN_WETH_BALANCE - contract_weth_balance):
-                    logger.error("Not enough WETH in your wallet. Please wrap ETH to WETH first.")
-                    return False
-                tx1 = token1_contract.functions.transfer(contract_address, MIN_WETH_BALANCE - contract_weth_balance).build_transaction({
+                required_weth = MIN_WETH_BALANCE - contract_weth_balance
+                if user_weth_balance < required_weth:
+                    # Try to wrap ETH to WETH automatically
+                    eth_balance = w3.eth.get_balance(account.address)
+                    if eth_balance > required_weth:
+                        logger.info(f"Wrapping {Web3.from_wei(required_weth, 'ether')} ETH to WETH...")
+                        wrap_success = wrap_eth_to_weth(required_weth)
+                        if wrap_success:
+                            # Update user_weth_balance after wrapping
+                            user_weth_balance = token1_contract.functions.balanceOf(account.address).call()
+                        else:
+                            logger.error("Failed to wrap ETH to WETH automatically.")
+                            return False
+                    else:
+                        logger.error("Not enough WETH or ETH in your wallet to wrap.")
+                        return False
+                tx1 = token1_contract.functions.transfer(contract_address, required_weth).build_transaction({
                     'from': account.address,
                     'nonce': nonce,
                     'gas': 100000,
@@ -170,7 +154,7 @@ class PredictiveTest(LiquidityTestBase):
                 signed_tx1 = w3.eth.account.sign_transaction(tx1, os.getenv('PRIVATE_KEY'))
                 tx_hash1 = w3.eth.send_raw_transaction(signed_tx1.raw_transaction)
                 w3.eth.wait_for_transaction_receipt(tx_hash1, timeout=180)
-                logger.info(f"Funded contract with WETH: {MIN_WETH_BALANCE - contract_weth_balance}")
+                logger.info(f"Funded contract with WETH: {required_weth}")
                 nonce += 1
                 funded = True
             else:
@@ -181,10 +165,24 @@ class PredictiveTest(LiquidityTestBase):
             contract_usdc_balance = token0_contract.functions.balanceOf(contract_address).call()
             if contract_usdc_balance < MIN_USDC_BALANCE:
                 user_usdc_balance = token0_contract.functions.balanceOf(account.address).call()
-                if user_usdc_balance < (MIN_USDC_BALANCE - contract_usdc_balance):
+                required_usdc = MIN_USDC_BALANCE - contract_usdc_balance
+                if user_usdc_balance < required_usdc:
                     logger.error("Not enough USDC in your wallet.")
                     return False
-                tx2 = token0_contract.functions.transfer(contract_address, MIN_USDC_BALANCE - contract_usdc_balance).build_transaction({
+                # --- APPROVE USDC ---
+                approve_tx = token0_contract.functions.approve(contract_address, required_usdc).build_transaction({
+                    'from': account.address,
+                    'nonce': nonce,
+                    'gas': 60000,
+                    'gasPrice': int(gas_price * 1.1),
+                    'chainId': int(w3.net.version)
+                })
+                signed_approve = w3.eth.account.sign_transaction(approve_tx, os.getenv('PRIVATE_KEY'))
+                approve_hash = w3.eth.send_raw_transaction(signed_approve.raw_transaction)
+                w3.eth.wait_for_transaction_receipt(approve_hash, timeout=180)
+                nonce += 1
+                # --- TRANSFER USDC ---
+                tx2 = token0_contract.functions.transfer(contract_address, required_usdc).build_transaction({
                     'from': account.address,
                     'nonce': nonce,
                     'gas': 100000,
@@ -194,7 +192,7 @@ class PredictiveTest(LiquidityTestBase):
                 signed_tx2 = w3.eth.account.sign_transaction(tx2, os.getenv('PRIVATE_KEY'))
                 tx_hash2 = w3.eth.send_raw_transaction(signed_tx2.raw_transaction)
                 w3.eth.wait_for_transaction_receipt(tx_hash2, timeout=180)
-                logger.info(f"Funded contract with USDC: {MIN_USDC_BALANCE - contract_usdc_balance}")
+                logger.info(f"Funded contract with USDC: {required_usdc}")
                 funded = True
             else:
                 logger.info("Contract already has enough USDC.")
@@ -208,8 +206,26 @@ class PredictiveTest(LiquidityTestBase):
             
     def adjust_position(self) -> bool:
         try:
-            lower_tick, upper_tick = self.calculate_ticks()
-            # Off-chain: check if position needs adjustment
+            # --- دریافت قیمت پیش‌بینی‌شده ---
+            self.predicted_price = self.get_predicted_price()
+            predicted_tick = self.calculate_predicted_tick(self.predicted_price)
+            self.metrics['predictedPrice'] = float(self.predicted_price)
+            self.metrics['predictedTick'] = predicted_tick
+
+            # محاسبه بازه تیک جدید
+            tick_spacing = self.contract.functions.tickSpacing().call()
+            range_multiplier = self.contract.functions.rangeWidthMultiplier().call()
+            half_width = (tick_spacing * range_multiplier) // 2
+            lower_tick = ((predicted_tick - half_width) // tick_spacing) * tick_spacing
+            upper_tick = ((predicted_tick + half_width) // tick_spacing) * tick_spacing
+            lower_tick = max(lower_tick, -887272)
+            upper_tick = min(upper_tick, 887272)
+            if lower_tick >= upper_tick:
+                upper_tick = lower_tick + tick_spacing
+            self.metrics['finalTickLower'] = lower_tick
+            self.metrics['finalTickUpper'] = upper_tick
+
+            # بررسی موقعیت فعلی
             position_info = self.get_position_info()
             if position_info and position_info.get('hasPosition'):
                 if position_info.get('lowerTick') == lower_tick and position_info.get('upperTick') == upper_tick:
@@ -217,16 +233,14 @@ class PredictiveTest(LiquidityTestBase):
                     self.save_metrics(receipt=None, success=False)
                     return True
             if not self.fund_contract():
+                self.save_metrics(receipt=None, success=False, error_message="funding_failed")
                 return False
-            token0_decimals = self.contract.functions.token0Decimals().call()
-            token1_decimals = self.contract.functions.token1Decimals().call()
-            scaled_price = self.predicted_price / (10 ** token0_decimals)
-            price_to_send = int(scaled_price * (10 ** token1_decimals))
+            # --- ارسال predictedTick به قرارداد ---
             account = Account.from_key(os.getenv('PRIVATE_KEY'))
             w3 = self.contract.w3
             gas_price = w3.eth.gas_price
             nonce = w3.eth.get_transaction_count(account.address)
-            tx = self.contract.functions.updatePredictionAndAdjust(price_to_send).build_transaction({
+            tx = self.contract.functions.updatePredictionAndAdjust(predicted_tick).build_transaction({
                 'from': account.address,
                 'nonce': nonce,
                 'gas': 1500000,
@@ -235,35 +249,82 @@ class PredictiveTest(LiquidityTestBase):
             })
             signed = w3.eth.account.sign_transaction(tx, os.getenv('PRIVATE_KEY'))
             tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
-            receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=180)
-            # --- مقداردهی دقیق فیلدهای liquidity و actualPrice و input_price ---
+            try:
+                receipt = w3.eth.wait_for_transaction_receipt(tx_hash, timeout=180)
+            except Exception as e:
+                logger.error("Position adjustment failed")
+                self.save_metrics(receipt=None, success=False, error_message=str(e))
+                return False
+            # مقداردهی sqrtPriceX96 از استخر یونی‌سواپ
+            try:
+                pool_address = self.contract.functions.pool().call()
+                pool_contract = get_contract(pool_address, "IUniswapV3Pool")
+                slot0 = pool_contract.functions.slot0().call()
+                sqrt_price_x96 = slot0[0]
+                self.metrics['sqrtPriceX96'] = sqrt_price_x96
+                self.metrics['currentTick'] = slot0[1]
+            except Exception as e:
+                logger.warning(f"Could not fetch sqrtPriceX96 from pool: {e}")
+            # مقداردهی دقیق فیلدهای liquidity و actualPrice و input_price
             position_info = self.get_position_info()
             if position_info:
                 self.metrics['liquidity'] = position_info.get('liquidity', 0)
             sqrt_price_x96 = self.metrics.get('sqrtPriceX96')
             if sqrt_price_x96:
+                token0_decimals = self.contract.functions.token0Decimals().call()
+                token1_decimals = self.contract.functions.token1Decimals().call()
                 price_ratio = (sqrt_price_x96 / TWO_POW_96) ** 2
                 price_t1_t0_adj = price_ratio / (10**(token1_decimals - token0_decimals))
                 actual_price = 1.0 / price_t1_t0_adj if price_t1_t0_adj else 0
                 self.metrics['actualPrice'] = actual_price
                 self.metrics['input_price'] = actual_price
             if receipt.status != 1:
-                logger.error("Position adjustment failed")
-                self.save_metrics(receipt, success=False)
+                error_message = "onchain_failed"
+                try:
+                    call_tx = dict(tx)
+                    call_tx.pop('gas', None)
+                    call_tx.pop('gasPrice', None)
+                    call_tx.pop('nonce', None)
+                    call_tx['to'] = self.contract_address
+                    call_tx['from'] = account.address
+                    try:
+                        w3.eth.call(call_tx, block_identifier=receipt.blockNumber)
+                    except Exception as call_exc:
+                        if hasattr(call_exc, 'args') and len(call_exc.args) > 0:
+                            msg = str(call_exc.args[0])
+                            if 'revert' in msg:
+                                error_message = msg[msg.find('revert')+7:].strip()
+                            else:
+                                error_message = msg
+                        else:
+                            error_message = str(call_exc)
+                except Exception as e:
+                    error_message = f"onchain_failed: {str(e)}"
+                logger.error(f"Position adjustment failed: {error_message}")
+                self.save_metrics(receipt=receipt, success=False, error_message=error_message)
                 return False
             logger.info("Position adjusted successfully")
-            self.save_metrics(receipt, success=True)
+            self.save_metrics(receipt=receipt, success=True)
             return True
         except Exception as e:
             logger.error(f"Failed to adjust position: {e}")
+            self.save_metrics(receipt=None, success=False, error_message=str(e))
             return False
             
-    def save_metrics(self, receipt: dict = None, success: bool = False):
-        """Save position metrics to CSV."""
+    def save_metrics(self, receipt: dict = None, success: bool = False, error_message: str = None):
+        """Save position metrics to CSV with clear action_taken and error_message."""
         try:
+            if error_message == "funding_failed":
+                action_taken = "funding_failed"
+            elif receipt is None:
+                action_taken = "offchain_skipped"
+            elif receipt and receipt.get('status', 0) == 1:
+                action_taken = "onchain_success"
+            else:
+                action_taken = "onchain_failed"
             self.metrics['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            self.metrics['action_taken'] = success
-            
+            self.metrics['action_taken'] = action_taken
+            self.metrics['error_message'] = error_message or ""
             if receipt:
                 self.metrics['tx_hash'] = receipt.get('transactionHash', '').hex()
                 self.metrics['gas_used'] = receipt.get('gasUsed', 0)
@@ -274,22 +335,20 @@ class PredictiveTest(LiquidityTestBase):
                             'ether'
                         )
                     )
-                    
-            # Get current position info for liquidity
             position_info = self.get_position_info()
             if position_info:
                 self.metrics['liquidity'] = position_info.get('liquidity', 0)
-                
-            # Save to CSV
             filepath = Path(__file__).parent.parent.parent / 'position_results.csv'
             file_exists = filepath.exists()
-            
+            columns = [
+                'timestamp','contract_type','action_taken','tx_hash','input_price','predictedPrice','predictedTick','actualPrice',
+                'sqrtPriceX96','currentTick','finalTickLower','finalTickUpper','liquidity','gas_used','gas_cost_eth','error_message'
+            ]
             with open(filepath, 'a', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=list(self.metrics.keys()))
+                writer = csv.DictWriter(f, fieldnames=columns)
                 if not file_exists:
                     writer.writeheader()
-                writer.writerow(self.metrics)
-                
+                writer.writerow({col: self.metrics.get(col, "") for col in columns})
         except Exception as e:
             logger.error(f"Failed to save metrics: {e}")
 

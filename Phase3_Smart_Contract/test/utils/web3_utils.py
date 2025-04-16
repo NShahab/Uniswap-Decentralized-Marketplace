@@ -20,25 +20,32 @@ RPC_URL = os.getenv('SEPOLIA_RPC_URL')
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
 
 # --- Standard IERC20 ABI ---
+# Updated IERC20_ABI in web3_utils.py
 IERC20_ABI = [
+    # Balance check
     {
         "constant": True,
-        "inputs": [{"name": "account", "type": "address"}],
+        "inputs": [{"name": "owner", "type": "address"}],
         "name": "balanceOf",
         "outputs": [{"name": "", "type": "uint256"}],
         "payable": False,
         "stateMutability": "view",
         "type": "function"
     },
+    # Approve
     {
-        "constant": True,
-        "inputs": [],
-        "name": "decimals",
-        "outputs": [{"name": "", "type": "uint8"}],
+        "constant": False,
+        "inputs": [
+            {"name": "spender", "type": "address"},
+            {"name": "amount", "type": "uint256"}
+        ],
+        "name": "approve",
+        "outputs": [{"name": "", "type": "bool"}],
         "payable": False,
-        "stateMutability": "view",
+        "stateMutability": "nonpayable",
         "type": "function"
     },
+    # Transfer
     {
         "constant": False,
         "inputs": [
@@ -50,8 +57,33 @@ IERC20_ABI = [
         "payable": False,
         "stateMutability": "nonpayable",
         "type": "function"
+    },
+    # Decimals
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{"name": "", "type": "uint8"}],
+        "payable": False,
+        "stateMutability": "view",
+        "type": "function"
     }
 ]
+
+# --- WETH ABI for deposit ---
+WETH_ABI = [
+    {
+        "constant": False,
+        "inputs": [],
+        "name": "deposit",
+        "outputs": [],
+        "payable": True,
+        "stateMutability": "payable",
+        "type": "function"
+    }
+]
+
+WETH_ADDRESS = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"  # Sepolia WETH
 
 def init_web3():
     """Initialize Web3 connection and validate environment."""
@@ -113,3 +145,26 @@ def send_transaction(tx_params):
     except Exception as e:
         logger.error(f"Transaction failed: {str(e)}")
         return None
+
+def wrap_eth_to_weth(amount_wei):
+    """Wrap ETH to WETH by calling deposit on WETH contract."""
+    try:
+        account = Account.from_key(PRIVATE_KEY)
+        weth = w3.eth.contract(address=WETH_ADDRESS, abi=WETH_ABI)
+        tx = weth.functions.deposit().build_transaction({
+            'from': account.address,
+            'value': int(amount_wei),
+            'nonce': w3.eth.get_transaction_count(account.address),
+            'gas': 100000,
+            'gasPrice': w3.eth.gas_price,
+            'chainId': int(w3.net.version)
+        })
+        signed = w3.eth.account.sign_transaction(tx, PRIVATE_KEY)
+        tx_hash = w3.eth.send_raw_transaction(signed.raw_transaction)
+        logger.info(f"Wrapping ETH to WETH, tx hash: {tx_hash.hex()}")
+        w3.eth.wait_for_transaction_receipt(tx_hash, timeout=180)
+        logger.info("ETH successfully wrapped to WETH.")
+        return True
+    except Exception as e:
+        logger.error(f"Failed to wrap ETH to WETH: {e}")
+        return False

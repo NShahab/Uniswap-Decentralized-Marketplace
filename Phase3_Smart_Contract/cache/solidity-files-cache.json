@@ -88,8 +88,8 @@
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\PredictiveLiquidityManager.sol": {
-      "lastModificationDate": 1744475772229,
-      "contentHash": "d9bddd48ef6b591aed1df9ced5716009",
+      "lastModificationDate": 1744803242103,
+      "contentHash": "49221c92c5dbcdb096aeca9d94711136",
       "sourceName": "contracts/PredictiveLiquidityManager.sol",
       "solcConfig": {
         "version": "0.7.6",
@@ -125,15 +125,12 @@
         "@openzeppelin/contracts/access/Ownable.sol",
         "@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
-        "@openzeppelin/contracts/math/SafeMath.sol",
         "@openzeppelin/contracts/utils/ReentrancyGuard.sol",
-        "./libraries/SqrtMath.sol",
         "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol",
         "@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory.sol",
         "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3MintCallback.sol",
         "@uniswap/v3-core/contracts/libraries/TickMath.sol",
-        "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol",
-        "@uniswap/v3-periphery/contracts/interfaces/external/IWETH9.sol"
+        "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol"
       ],
       "versionPragmas": [
         "^0.7.6"
@@ -1444,7 +1441,7 @@
       ]
     },
     "D:\\Uniswap-Decentralized-Marketplace\\Phase3_Smart_Contract\\contracts\\BaselineMinimal.sol": {
-      "lastModificationDate": 1744554693152,
+      "lastModificationDate": 1744733532694,
       "contentHash": "045428b9b5df01851f85e671b8bd33ac",
       "sourceName": "contracts/BaselineMinimal.sol",
       "solcConfig": {

@@ -48,14 +48,13 @@ async function main() {
     console.log("WETH:", WETH);
     console.log("Pool Fee:", POOL_FEE);
 
-    // Deploy the contract
+    // Deploy the contract (بدون پارامتر WETH9)
     const predictiveManager = await PredictiveLiquidityManager.deploy(
         UNISWAP_V3_FACTORY,    // _factory
-        POSITION_MANAGER,       // _positionManager
-        USDC,                  // _token0 (USDC)
-        WETH,                  // _token1 (WETH)
+        POSITION_MANAGER,      // _positionManager
+        USDC,                 // _token0 (USDC)
+        WETH,                 // _token1 (WETH)
         POOL_FEE,             // _fee
-        WETH,                 // _weth9
         "0x0000000000000000000000000000000000000000"  // _initialOwner (will be msg.sender)
     );
 
@@ -80,7 +79,6 @@ async function main() {
                 USDC,
                 WETH,
                 POOL_FEE,
-                WETH,
                 "0x0000000000000000000000000000000000000000"
             ],
         });
@@ -95,4 +93,4 @@ main()
     .catch((error) => {
         console.error(error);
         process.exit(1);
-    }); 
+    });
