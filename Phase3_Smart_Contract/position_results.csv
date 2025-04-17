@@ -1,3 +1,2 @@
 timestamp,contract_type,action_taken,tx_hash,input_price,predictedPrice,predictedTick,actualPrice,sqrtPriceX96,currentTick,finalTickLower,finalTickUpper,liquidity,gas_used,gas_cost_eth,error_message
-2025-04-16 19:12:22,Predictive,onchain_success,e197618a63f7cfdb306f2e77a4289b9b2bc6a0b5bd76cad75d030b83d5c88927,0,1599.505,101272,,0,0,101100,101340,105300946493,34479,0.000346524139027206,
-2025-04-16 19:16:34,Baseline,True,a671346a52fa589533d5f72f0a438f091df6f622c219dbfbc537b408d9a8b2e7,0,0.0,,0,0,0,0,65877103,41555,0.000450203574065175
+2025-04-17 23:14:24,Predictive,onchain_success,fec706f63f23aa2465b858d3d03c964d615d5236a0d4a76ea398b1d906f83379,0,1584.96,101318,,0,0,101160,101400,105300946493,34529,5.9026738507e-08,
