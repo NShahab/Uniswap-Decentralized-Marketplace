@@ -1,170 +1,161 @@
-"""Base class for step-by-step contract testing."""
+# test_base.py
 
 import os
 import logging
 from abc import ABC, abstractmethod
 from web3 import Web3
-from .web3_utils import init_web3, get_contract
+from .web3_utils import init_web3, get_contract, w3  # Import w3 instance
 
 logger = logging.getLogger('test_base')
 
 class LiquidityTestBase(ABC):
     """Base class for liquidity position testing."""
-    
+
     def __init__(self, contract_address: str, contract_name: str):
         """Initialize test with contract info."""
-        self.contract_address = contract_address
+        if not contract_address:
+            raise ValueError("Contract address cannot be empty")
+        self.contract_address = Web3.to_checksum_address(contract_address)  # Store checksummed
         self.contract_name = contract_name
         self.contract = None
         self.token0 = None
         self.token1 = None
-        
+        self.token0_decimals = None
+        self.token1_decimals = None
+
     def setup(self) -> bool:
         """Initialize connection and contracts."""
         try:
-            if not init_web3():
+            if not init_web3():  # Ensure Web3 is initialized and connected
                 logger.error("Web3 initialization failed")
                 return False
-                
+
+            logger.info(f"Setting up test for {self.contract_name} at {self.contract_address}")
             # Load main contract
             self.contract = get_contract(self.contract_address, self.contract_name)
-            
-            # Get token addresses with checksum
+            if not self.contract:
+                logger.error(f"Failed to load contract {self.contract_name}")
+                return False
+
+            # Get token addresses and decimals
             self.token0 = Web3.to_checksum_address(self.contract.functions.token0().call())
             self.token1 = Web3.to_checksum_address(self.contract.functions.token1().call())
-            
-            # Verify token contracts
-            token0_contract = get_contract(self.token0, "IERC20")
-            token1_contract = get_contract(self.token1, "IERC20")
-            
-            # Verify required functions exist
-            required_functions = ['balanceOf', 'approve', 'transfer']
-            for func in required_functions:
-                if not hasattr(token0_contract.functions, func):
-                    logger.error(f"Token0 contract missing required function: {func}")
-                    return False
-                if not hasattr(token1_contract.functions, func):
-                    logger.error(f"Token1 contract missing required function: {func}")
-                    return False
-                    
+            # Get decimals directly from the main contract if available (as per your contract)
+            if hasattr(self.contract.functions, 'token0Decimals'):
+                self.token0_decimals = self.contract.functions.token0Decimals().call()
+            else:  # Fallback to calling token directly
+                token0_contract = get_contract(self.token0, "IERC20")
+                self.token0_decimals = token0_contract.functions.decimals().call()
+
+            if hasattr(self.contract.functions, 'token1Decimals'):
+                self.token1_decimals = self.contract.functions.token1Decimals().call()
+            else:  # Fallback
+                token1_contract = get_contract(self.token1, "IERC20")
+                self.token1_decimals = token1_contract.functions.decimals().call()
+
+            logger.info(f"Token0: {self.token0} (Decimals: {self.token0_decimals})")
+            logger.info(f"Token1: {self.token1} (Decimals: {self.token1_decimals})")
+
+            # Basic check if contract methods exist (example)
+            if not hasattr(self.contract.functions, 'updatePredictionAndAdjust'):  # Check a key method
+                logger.warning(f"Method 'updatePredictionAndAdjust' not found on contract {self.contract_name}. Adapt if needed.")
+                # Add checks for other essential methods used in your test logic
+
             logger.info(f"Setup completed for {self.contract_name}")
             return True
-            
+
         except Exception as e:
-            logger.error(f"Setup failed: {e}")
+            logger.exception(f"Setup failed for {self.contract_name} at {self.contract_address}: {e}")  # Use logger.exception for traceback
             return False
 
-    def fund_contract(self) -> bool:
-        """Fund the contract with proper ABI handling."""
-        try:
-            # Convert addresses to checksum
-            token0 = Web3.to_checksum_address(self.token0)
-            token1 = Web3.to_checksum_address(self.token1)
-            contract_address = Web3.to_checksum_address(self.contract_address)
-
-            # Get contracts with standard ABI
-            token0_contract = get_contract(token0, "IERC20")
-            token1_contract = get_contract(token1, "IERC20")
-            
-            # Verify approve function exists
-            if not hasattr(token0_contract.functions, 'approve'):
-                logger.error("Token0 contract doesn't have approve function")
-                return False
-            if not hasattr(token1_contract.functions, 'approve'):
-                logger.error("Token1 contract doesn't have approve function")
-                return False
-
-            # Rest of the funding logic remains the same...
-            # [Previous funding code here...]
-            
-            return True
-            
-        except Exception as e:
-            logger.error(f"Error funding contract: {e}")
-            return False
+    # fund_contract is removed from base, handle in derived class if needed
 
     def check_balances(self) -> bool:
-        """مرحله دوم: بررسی موجودی"""
+        """Step 2: Check contract's token balances."""
+        if not self.contract or not self.token0 or not self.token1:
+            logger.error("Contract or tokens not initialized. Run setup first.")
+            return False
         try:
-            # دریافت موجودی توکن‌ها
             token0_contract = get_contract(self.token0, "IERC20")
             token1_contract = get_contract(self.token1, "IERC20")
-            
-            balance0 = token0_contract.functions.balanceOf(self.contract_address).call()
-            balance1 = token1_contract.functions.balanceOf(self.contract_address).call()
-            
-            # دریافت تعداد اعشار
-            decimals0 = token0_contract.functions.decimals().call()
-            decimals1 = token1_contract.functions.decimals().call()
-            
-            # تبدیل به مقادیر قابل خواندن
-            readable_balance0 = balance0 / (10 ** decimals0)
-            readable_balance1 = balance1 / (10 ** decimals1)
-            
-            logger.info(f"Token0 balance: {readable_balance0}")
-            logger.info(f"Token1 balance: {readable_balance1}")
-            
-            return balance0 > 0 and balance1 > 0
-            
+
+            balance0_wei = token0_contract.functions.balanceOf(self.contract_address).call()
+            balance1_wei = token1_contract.functions.balanceOf(self.contract_address).call()
+
+            readable_balance0 = Decimal(balance0_wei) / (10 ** self.token0_decimals)
+            readable_balance1 = Decimal(balance1_wei) / (10 ** self.token1_decimals)
+
+            logger.info(f"Contract Token0 ({self.token0[-6:]}) balance: {readable_balance0:.6f}")
+            logger.info(f"Contract Token1 ({self.token1[-6:]}) balance: {readable_balance1:.6f}")
+
+            # Return True even if balances are zero, adjustment logic should handle this
+            return True
+
         except Exception as e:
-            logger.error(f"Balance check failed: {e}")
+            logger.exception(f"Balance check failed: {e}")
             return False
-            
+
     @abstractmethod
     def adjust_position(self) -> bool:
-        """مرحله چهارم: تنظیم موقعیت - باید در کلاس فرزند پیاده‌سازی شود"""
+        """Abstract method for adjusting the position. Implement in derived class."""
         pass
-        
+
+    @abstractmethod
+    def save_metrics(self, receipt: dict = None, success: bool = False, error_message: str = None):
+        """Abstract method for saving metrics. Implement in derived class."""
+        pass
+
     def execute_test_steps(self) -> bool:
-        """اجرای تمام مراحل تست به صورت پله به پله"""
+        """Execute all test steps sequentially."""
         try:
-            # مرحله 1: راه‌اندازی
-            logger.info("Step 1: Setup")
+            # Step 1: Setup
+            logger.info("--- Test Step 1: Setup ---")
             if not self.setup():
+                logger.error("Setup failed. Aborting test.")
                 return False
-                
-            # مرحله 2: بررسی موجودی
-            logger.info("Step 2: Balance Check")
-            if not self.check_balances():
-                logger.warning("Low or zero balances detected")
-                # ادامه می‌دهیم چون ممکن است نیاز به تامین موجودی باشد
-                
-            # مرحله 3: تنظیم موقعیت
-            logger.info("Step 3: Position Adjustment")
+
+            # Step 2: Balance Check (Informational)
+            logger.info("--- Test Step 2: Balance Check ---")
+            self.check_balances()  # Log balances, don't abort if zero
+
+            # Step 3: Position Adjustment (Core Logic)
+            logger.info("--- Test Step 3: Position Adjustment ---")
             if not self.adjust_position():
+                logger.error("Position adjustment failed.")
+                # Metrics should be saved within adjust_position or its called methods
                 return False
-                
-            logger.info("All test steps completed successfully")
+
+            logger.info("--- All test steps completed successfully ---")
             return True
-            
+
         except Exception as e:
-            logger.error(f"Test execution failed: {e}")
+            logger.exception(f"Test execution failed during steps: {e}")
+            # Attempt to save failure state if possible
+            try:
+                self.save_metrics(success=False, error_message=f"Test Execution Aborted: {str(e)}")
+            except Exception as save_err:
+                logger.error(f"Also failed to save metrics during exception handling: {save_err}")
             return False
 
     def get_position_info(self) -> dict:
-        """دریافت اطلاعات موقعیت فعلی"""
+        """Get current position info from the contract's 'currentPosition' state variable."""
+        if not self.contract:
+            logger.error("Contract not initialized. Run setup first.")
+            return None
         try:
-            if hasattr(self.contract.functions, 'getCurrentPosition'):
-                pos = self.contract.functions.getCurrentPosition().call()
-                return {
-                    'tokenId': pos[0],
-                    'hasPosition': pos[1],
-                    'tickLower': pos[2],
-                    'tickUpper': pos[3],
-                    'liquidity': pos[4]
-                }
-            elif hasattr(self.contract.functions, 'currentPosition'):
-                pos = self.contract.functions.currentPosition().call()
-                return {
-                    'tokenId': pos[0],
-                    'liquidity': pos[1],
-                    'tickLower': pos[2],
-                    'tickUpper': pos[3],
-                    'active': pos[4]
-                }
-            else:
-                raise AttributeError("Contract has no position query method")
-                
+            # Access the public state variable 'currentPosition'
+            # The order of returned values matches the struct definition:
+            # (tokenId, liquidity, tickLower, tickUpper, active)
+            pos_data = self.contract.functions.currentPosition().call()
+            position = {
+                'tokenId': pos_data[0],
+                'liquidity': pos_data[1],
+                'tickLower': pos_data[2],
+                'tickUpper': pos_data[3],
+                'active': pos_data[4]  # Use the 'active' flag from the struct
+            }
+            logger.debug(f"Fetched Position Info: {position}")
+            return position
         except Exception as e:
-            logger.error(f"Failed to get position info: {e}")
+            logger.exception(f"Failed to get position info using currentPosition(): {e}")
             return None

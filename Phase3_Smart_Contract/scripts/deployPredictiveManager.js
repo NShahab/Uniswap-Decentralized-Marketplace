@@ -1,96 +1,85 @@
 const hre = require("hardhat");
+const fs = require('fs');
+const path = require('path');
 
 async function main() {
-    console.log("Starting deployment process...");
+    console.log("Starting deployment process on the forked network...");
 
-    // Addresses on Sepolia
-    const UNISWAP_V3_FACTORY = "0x0227628f3F023bb0B980b67D528571c95c6DaC1c";
-    const POSITION_MANAGER = "0x1238536071E1c677A632429e3655c799b22cDA52";
-    const WETH = "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9";
-    const USDC = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
-    const POOL_FEE = 3000; // 0.3%
+    // --- Mainnet Addresses ---
+    const UNISWAP_V3_FACTORY_MAINNET = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
+    const POSITION_MANAGER_MAINNET = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88";
+    const WETH_MAINNET = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+    const USDC_MAINNET = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48";
+    const POOL_FEE = 500; // 0.05% fee tier (500)
 
-    console.log("Creating Uniswap V3 Pool...");
+    const [deployer] = await hre.ethers.getSigners();
+    console.log("Deploying contracts with the account:", deployer.address);
+    console.log("Account balance:", (await deployer.getBalance()).toString());
 
-    // Get the Factory contract
-    const factory = await hre.ethers.getContractAt("IUniswapV3Factory", UNISWAP_V3_FACTORY);
-
-    // Check if pool exists
-    let poolAddress = await factory.getPool(USDC, WETH, POOL_FEE);
+    // --- Verify Pool Existence ---
+    console.log("Checking if the mainnet pool exists (WETH/USDC 0.05%)...");
+    const factory = await hre.ethers.getContractAt("IUniswapV3Factory", UNISWAP_V3_FACTORY_MAINNET);
+    const token0ForPool = USDC_MAINNET < WETH_MAINNET ? USDC_MAINNET : WETH_MAINNET;
+    const token1ForPool = USDC_MAINNET < WETH_MAINNET ? WETH_MAINNET : USDC_MAINNET;
+    const poolAddress = await factory.getPool(token0ForPool, token1ForPool, POOL_FEE);
 
     if (poolAddress === "0x0000000000000000000000000000000000000000") {
-        console.log("Pool does not exist. Creating new pool...");
-        // Create pool
-        await factory.createPool(USDC, WETH, POOL_FEE);
-
-        // Get the new pool address
-        poolAddress = await factory.getPool(USDC, WETH, POOL_FEE);
-        console.log("Pool created at:", poolAddress);
-
-        // Initialize pool with a price
-        const pool = await hre.ethers.getContractAt("IUniswapV3Pool", poolAddress);
-        const sqrtPriceX96 = "792281625142643375935439503360"; // Example initial price
-        await pool.initialize(sqrtPriceX96);
-        console.log("Pool initialized with initial price");
+        console.error("ERROR: The specified pool does not exist on Mainnet Fork!");
+        console.error(`Checked for pool: ${token0ForPool}/${token1ForPool} fee ${POOL_FEE}`);
+        process.exit(1);
     } else {
-        console.log("Pool already exists at:", poolAddress);
+        console.log("Pool exists on Mainnet Fork at:", poolAddress);
     }
 
+    // --- Deploy PredictiveLiquidityManager ---
     console.log("\nDeploying PredictiveLiquidityManager...");
-
-    // Get the contract factory
     const PredictiveLiquidityManager = await hre.ethers.getContractFactory("PredictiveLiquidityManager");
 
+    const constructorToken0 = USDC_MAINNET < WETH_MAINNET ? USDC_MAINNET : WETH_MAINNET;
+    const constructorToken1 = USDC_MAINNET < WETH_MAINNET ? WETH_MAINNET : USDC_MAINNET;
+
     console.log("Deploying with parameters:");
-    console.log("Uniswap V3 Factory:", UNISWAP_V3_FACTORY);
-    console.log("Position Manager:", POSITION_MANAGER);
-    console.log("USDC:", USDC);
-    console.log("WETH:", WETH);
-    console.log("Pool Fee:", POOL_FEE);
+    console.log("  Factory:", UNISWAP_V3_FACTORY_MAINNET);
+    console.log("  Position Manager:", POSITION_MANAGER_MAINNET);
+    console.log("  Token0 (for constructor):", constructorToken0);
+    console.log("  Token1 (for constructor):", constructorToken1);
+    console.log("  Pool Fee:", POOL_FEE);
+    console.log("  Initial Owner:", deployer.address);
 
-    // Deploy the contract (بدون پارامتر WETH9)
     const predictiveManager = await PredictiveLiquidityManager.deploy(
-        UNISWAP_V3_FACTORY,    // _factory
-        POSITION_MANAGER,      // _positionManager
-        USDC,                 // _token0 (USDC)
-        WETH,                 // _token1 (WETH)
-        POOL_FEE,             // _fee
-        "0x0000000000000000000000000000000000000000"  // _initialOwner (will be msg.sender)
+        UNISWAP_V3_FACTORY_MAINNET,
+        POSITION_MANAGER_MAINNET,
+        constructorToken0,
+        constructorToken1,
+        POOL_FEE,
+        deployer.address
     );
-
     await predictiveManager.deployed();
 
     console.log("PredictiveLiquidityManager deployed to:", predictiveManager.address);
     console.log("Transaction hash:", predictiveManager.deployTransaction.hash);
 
-    // Wait for 5 block confirmations
-    console.log("Waiting for 5 block confirmations...");
-    await predictiveManager.deployTransaction.wait(5);
-    console.log("Deployment confirmed!");
-
-    // Verify the contract on Etherscan
-    console.log("Verifying contract on Etherscan...");
+    // --- Save Deployed Address ---
+    const addresses = {
+        predictiveManager: predictiveManager.address,
+    };
+    const outputPath = path.join(__dirname, '..', 'deployed_addresses.json');
     try {
-        await hre.run("verify:verify", {
-            address: predictiveManager.address,
-            constructorArguments: [
-                UNISWAP_V3_FACTORY,
-                POSITION_MANAGER,
-                USDC,
-                WETH,
-                POOL_FEE,
-                "0x0000000000000000000000000000000000000000"
-            ],
-        });
-        console.log("Contract verified successfully!");
-    } catch (error) {
-        console.error("Error verifying contract:", error);
+        fs.writeFileSync(outputPath, JSON.stringify(addresses, null, 2));
+        console.log(`Deployed addresses saved to ${outputPath}`);
+    } catch (err) {
+        console.error("Error saving deployed addresses:", err);
     }
+
+    // Wait for 1 block confirmation
+    console.log("Waiting for 1 block confirmation...");
+    await predictiveManager.deployTransaction.wait(1);
+    console.log("Deployment confirmed on the fork!");
 }
 
 main()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error(error);
+        console.error("Deployment script failed:", error);
         process.exit(1);
     });
