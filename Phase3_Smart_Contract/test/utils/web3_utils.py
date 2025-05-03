@@ -51,11 +51,73 @@ def init_web3():
         return False
     return True
 
-# --- Standard IERC20 ABI (Keep as is) ---
-IERC20_ABI = [ ... ] # Your existing ABI here
+# --- Standard IERC20 ABI (Minimal, covers balanceOf, decimals, transfer, etc.) ---
+IERC20_ABI = [
+    {
+        "constant": True,
+        "inputs": [{"name": "_owner", "type": "address"}],
+        "name": "balanceOf",
+        "outputs": [{"name": "balance", "type": "uint256"}],
+        "type": "function",
+        "stateMutability": "view"
+    },
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "decimals",
+        "outputs": [{"name": "", "type": "uint8"}],
+        "type": "function",
+        "stateMutability": "view"
+    },
+    {
+        "constant": False,
+        "inputs": [
+            {"name": "_to", "type": "address"},
+            {"name": "_value", "type": "uint256"}
+        ],
+        "name": "transfer",
+        "outputs": [{"name": "", "type": "bool"}],
+        "type": "function",
+        "stateMutability": "nonpayable"
+    },
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "name",
+        "outputs": [{"name": "", "type": "string"}],
+        "type": "function",
+        "stateMutability": "view"
+    },
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "symbol",
+        "outputs": [{"name": "", "type": "string"}],
+        "type": "function",
+        "stateMutability": "view"
+    },
+    {
+        "constant": True,
+        "inputs": [],
+        "name": "totalSupply",
+        "outputs": [{"name": "", "type": "uint256"}],
+        "type": "function",
+        "stateMutability": "view"
+    }
+]
 
-# --- WETH ABI for deposit (Keep as is) ---
-WETH_ABI = [ ... ] # Your existing ABI here
+# --- WETH ABI (Minimal, only deposit function) ---
+WETH_ABI = [
+    {
+        "constant": False,
+        "inputs": [],
+        "name": "deposit",
+        "outputs": [],
+        "payable": True,
+        "stateMutability": "payable",
+        "type": "function"
+    }
+]
 
 # --- Mainnet WETH Address ---
 WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2" # Mainnet WETH
@@ -141,10 +203,10 @@ def send_transaction(tx_params):
                 logger.error(f"Gas estimation failed: {gas_err}. Using default 1,000,000.")
                 tx_params['gas'] = 1000000 # Fallback gas limit
 
-        # Set gas price if not provided (using eth_gasPrice)
-        if 'gasPrice' not in tx_params:
-            tx_params['gasPrice'] = w3.eth.gas_price
-            logger.debug(f"Using network gas price: {tx_params['gasPrice']}")
+        # حذف افزودن gasPrice برای سازگاری با web3.py v6+
+        # if 'gasPrice' not in tx_params:
+        #     tx_params['gasPrice'] = w3.eth.gas_price
+        #     logger.debug(f"Using network gas price: {tx_params['gasPrice']}")
 
         logger.debug(f"Signing transaction: {tx_params}")
         signed_tx = w3.eth.account.sign_transaction(tx_params, PRIVATE_KEY)

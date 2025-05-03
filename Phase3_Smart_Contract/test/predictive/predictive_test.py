@@ -25,6 +25,9 @@ current_dir = Path(__file__).parent
 utils_dir = current_dir / 'utils'
 sys.path.append(str(utils_dir.parent)) # Add 'tests' folder to sys.path
 
+# اضافه کردن پوشه test به sys.path برای ایمپورت صحیح utils
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
 from utils.test_base import LiquidityTestBase
 from utils.web3_utils import send_transaction, init_web3, get_contract, wrap_eth_to_weth, w3 # Import w3
 
@@ -45,10 +48,30 @@ logging.basicConfig(
 logger = logging.getLogger('predictive_test')
 
 # --- Define path for deployed addresses and results ---
-PROJECT_ROOT = Path(__file__).resolve().parent.parent # Goes up from tests folder to project root
+PROJECT_ROOT = Path(__file__).resolve().parents[2]  # اشاره به Phase3_Smart_Contract
 ADDRESS_FILE = PROJECT_ROOT / 'deployed_addresses.json'
 RESULTS_FILE = PROJECT_ROOT / 'position_results.csv'
 LSTM_API_URL = os.getenv('LSTM_API_URL', 'http://127.0.0.1:5000/predict') # Get from ENV or default
+logger.info(f"Looking for deployed_addresses.json at: {ADDRESS_FILE}")
+
+def get_predictive_address():
+    """اگر فایل وجود داشت، آخرین آدرس predictiveManager را بخوان، اگر نبود None برگردان. همچنین محتوای فایل را لاگ کن برای دیباگ."""
+    import time
+    if ADDRESS_FILE.exists():
+        # تاخیر کوتاه برای اطمینان از آماده بودن فایل
+        time.sleep(1)
+        try:
+            with open(ADDRESS_FILE, 'r') as f:
+                content = f.read()
+                logger.info(f"deployed_addresses.json content: {content}")
+                addresses = json.loads(content)
+                return addresses.get('predictiveManager')
+        except Exception as e:
+            logger.error(f"Error reading deployed_addresses.json: {e}")
+            return None
+    else:
+        logger.error(f"Address file not found: {ADDRESS_FILE}")
+    return None
 
 class PredictiveTest(LiquidityTestBase):
     """Implementation for PredictiveLiquidityManager contract testing on a fork."""
@@ -66,7 +89,6 @@ class PredictiveTest(LiquidityTestBase):
             'contract_type': 'Predictive',
             'action_taken': 'init', # 'init', 'skipped', 'adjusted_success', 'adjusted_failed', 'funding_failed'
             'tx_hash': None,
-            # 'input_price': 0, # Removed, using actualPrice from pool
             'predictedPrice_api': None, # Price from LSTM API
             'predictedTick_calculated': None, # Tick calculated from API price
             'actualPrice_pool': None, # Price derived from pool's sqrtPriceX96
@@ -108,8 +130,6 @@ class PredictiveTest(LiquidityTestBase):
         """Get predicted ETH price from the LSTM API."""
         try:
             logger.info(f"Querying LSTM API at {LSTM_API_URL}...")
-            # --- ADJUST API CALL AS NEEDED ---
-            # This assumes your API returns JSON like {'predicted_price': 3450.67}
             response = requests.get(LSTM_API_URL, timeout=15) # Increased timeout
             response.raise_for_status() # Raise exception for bad status codes
             data = response.json()
@@ -139,30 +159,16 @@ class PredictiveTest(LiquidityTestBase):
             logger.error("Token decimals not set. Run setup first.")
             return None
         try:
-            # Determine which token corresponds to the 'price' (e.g., ETH in ETH/USD)
-            # This logic assumes price is Price(Token1)/Price(Token0), e.g. WETH/USDC
-            # If your price prediction is USD/ETH, you need to invert it first.
             price_decimal = Decimal(str(price))
-
-            # Calculate price ratio considering decimals: P_t1/P_t0 * 10^(dec0 - dec1)
             adjusted_ratio = price_decimal * (Decimal(10) ** (self.token0_decimals - self.token1_decimals))
-
-            # Calculate sqrtPriceX96 = sqrt(adjusted_ratio) * 2^96
             sqrt_ratio = adjusted_ratio.sqrt()
             sqrt_price_x96 = sqrt_ratio * TWO_POW_96
-
-            # Calculate tick = floor(log_sqrt(1.0001)(sqrtPriceX96 / 2^96))
-            # Using Decimal for logarithm calculation might be overly complex,
-            # standard math log should be sufficient given the scale.
-            # Ensure sqrt_price_x96 is converted to float for math.log
             log_arg = float(sqrt_price_x96 / TWO_POW_96)
             if log_arg <= 0:
                 logger.error(f"Cannot calculate log for non-positive sqrtPrice ratio: {log_arg}")
                 return None
 
             tick = math.floor(math.log(log_arg, 1.0001))
-
-            # Clamp tick to valid range
             MIN_TICK = -887272
             MAX_TICK = 887272
             tick = max(MIN_TICK, min(MAX_TICK, tick))
@@ -178,7 +184,6 @@ class PredictiveTest(LiquidityTestBase):
     def update_pool_and_position_metrics(self):
         """Fetches current pool price/tick and contract position state."""
         try:
-            # Get Pool State (Slot0)
             if self.pool_contract:
                 slot0 = self.pool_contract.functions.slot0().call()
                 sqrt_price_x96_pool = slot0[0]
@@ -186,7 +191,6 @@ class PredictiveTest(LiquidityTestBase):
                 self.metrics['sqrtPriceX96_pool'] = sqrt_price_x96_pool
                 self.metrics['currentTick_pool'] = current_tick_pool
 
-                # Calculate actual price from pool sqrtPriceX96
                 price_ratio = (Decimal(sqrt_price_x96_pool) / TWO_POW_96) ** 2
                 price_t1_t0_adj = price_ratio / (Decimal(10)**(self.token0_decimals - self.token1_decimals))
                 actual_price = float(price_t1_t0_adj) if price_t1_t0_adj else 0.0
@@ -195,8 +199,7 @@ class PredictiveTest(LiquidityTestBase):
             else:
                 logger.warning("Pool contract not available, cannot fetch pool state.")
 
-            # Get Contract Position State
-            position_info = self.get_position_info() # Uses method from base class
+            position_info = self.get_position_info()
             if position_info:
                 self.metrics['finalTickLower_contract'] = position_info.get('tickLower', 0)
                 self.metrics['finalTickUpper_contract'] = position_info.get('tickUpper', 0)
@@ -207,26 +210,109 @@ class PredictiveTest(LiquidityTestBase):
 
         except Exception as e:
             logger.exception(f"Error updating pool/position metrics: {e}")
-            # Store error in metrics if needed, but don't stop the flow yet
-            if not self.metrics['error_message']: # Don't overwrite previous errors
+            if not self.metrics['error_message']:
                 self.metrics['error_message'] = f"MetricsUpdateError: {e}"
 
+    def fund_contract_if_needed(self, min_weth=Web3.to_wei(0.05, 'ether'), min_usdc=50 * 10**6):
+        """Ensure the contract has at least min_weth and min_usdc. If not, fund it from deployer."""
+        from utils.web3_utils import get_contract, send_transaction, wrap_eth_to_weth, w3, init_web3
+        import os
+        from eth_account import Account
+        if not w3 or not w3.is_connected():
+            if not init_web3():
+                logger.error("Web3 initialization failed in fund_contract_if_needed.")
+                return False
 
-    # --- Funding Logic Removed ---
-    # Remove the fund_contract method from here.
-    # Ensure the deployer account is funded with ETH, WETH, and USDC
-    # *before* running this Python script, ideally during the fork setup.
-    # You can use Hardhat tasks or RPC methods like `hardhat_setBalance`
-    # and `hardhat_setStorageAt` (for token balances) in your setup script.
+        # Get deployer account
+        private_key = os.getenv('PRIVATE_KEY')
+        if not private_key:
+            logger.error("PRIVATE_KEY environment variable not set.")
+            return False
+        account = Account.from_key(private_key)
+        contract_addr = self.contract_address
+
+        # Token addresses
+        token0 = self.token0
+        token1 = self.token1
+        token0_decimals = self.token0_decimals
+        token1_decimals = self.token1_decimals
+
+        # Identify which token is WETH and which is USDC by decimals (WETH=18, USDC=6)
+        if token0_decimals == 18:
+            weth_token = token0
+            usdc_token = token1
+        else:
+            weth_token = token1
+            usdc_token = token0
+
+        weth_contract = get_contract(weth_token, "IERC20")
+        usdc_contract = get_contract(usdc_token, "IERC20")
+
+        # Check contract balances
+        weth_balance = weth_contract.functions.balanceOf(contract_addr).call()
+        usdc_balance = usdc_contract.functions.balanceOf(contract_addr).call()
+
+        # Fund WETH if needed
+        if weth_balance < min_weth:
+            # Check deployer WETH balance
+            deployer_weth = weth_contract.functions.balanceOf(account.address).call()
+            if deployer_weth < (min_weth - weth_balance):
+                # Try to wrap ETH to WETH if possible
+                needed = min_weth - weth_balance - deployer_weth
+                eth_balance = w3.eth.get_balance(account.address)
+                if eth_balance > needed:
+                    wrap_eth_to_weth(needed)
+                    deployer_weth = weth_contract.functions.balanceOf(account.address).call()
+            # Transfer WETH to contract
+            amount = min_weth - weth_balance
+            if deployer_weth >= amount:
+                tx = weth_contract.functions.transfer(contract_addr, amount).build_transaction({
+                    'from': account.address,
+                    'nonce': w3.eth.get_transaction_count(account.address),
+                    'chainId': int(w3.net.version)
+                })
+                send_transaction(tx)
+                logger.info(f"Funded contract with {Web3.from_wei(amount, 'ether')} WETH.")
+            else:
+                logger.error("Not enough WETH to fund contract.")
+
+        # Fund USDC if needed
+        if usdc_balance < min_usdc:
+            deployer_usdc = usdc_contract.functions.balanceOf(account.address).call()
+            amount = min_usdc - usdc_balance
+            if deployer_usdc >= amount:
+                tx = usdc_contract.functions.transfer(contract_addr, amount).build_transaction({
+                    'from': account.address,
+                    'nonce': w3.eth.get_transaction_count(account.address),
+                    'chainId': int(w3.net.version)
+                })
+                send_transaction(tx)
+                logger.info(f"Funded contract with {amount / 10**6} USDC.")
+            else:
+                logger.error("Not enough USDC to fund contract.")
+
+        # Log final balances
+        weth_balance = weth_contract.functions.balanceOf(contract_addr).call()
+        usdc_balance = usdc_contract.functions.balanceOf(contract_addr).call()
+        logger.info(f"Final contract balances: WETH={Web3.from_wei(weth_balance, 'ether')}, USDC={usdc_balance / 10**6}")
+        return True
 
     def adjust_position(self) -> bool:
-        """Adjusts the liquidity position based on the prediction."""
+        self.fund_contract_if_needed()  # Ensure contract is funded before adjustment
+        from utils.web3_utils import w3, init_web3
+        if not w3 or not w3.is_connected():
+            if not init_web3():
+                logger.error("Web3 initialization failed in adjust_position.")
+                self.metrics['action_taken'] = 'adjusted_failed'
+                self.metrics['error_message'] = 'Web3 initialization failed.'
+                self.save_metrics(receipt=None, success=False, error_message=self.metrics['error_message'])
+                return False
+
         self.metrics = self._reset_metrics() # Reset metrics at the start of adjustment
         receipt = None # Initialize receipt to None
         adjustment_success = False
 
         try:
-            # --- 1. Get Prediction ---
             predicted_price = self.get_predicted_price_from_api()
             if predicted_price is None:
                 logger.error("Failed to get predicted price from API. Skipping adjustment.")
@@ -234,7 +320,6 @@ class PredictiveTest(LiquidityTestBase):
                 self.save_metrics(receipt=None, success=False, error_message=self.metrics['error_message'] or "API prediction failed")
                 return False
 
-            # --- 2. Calculate Target Tick ---
             predicted_tick = self.calculate_tick_from_price(predicted_price)
             if predicted_tick is None:
                 logger.error("Failed to calculate target tick from prediction. Skipping adjustment.")
@@ -242,20 +327,8 @@ class PredictiveTest(LiquidityTestBase):
                 self.save_metrics(receipt=None, success=False, error_message=self.metrics['error_message'] or "Tick calculation failed")
                 return False
 
-            # --- 3. Update current pool/position metrics (before potential adjustment) ---
             self.update_pool_and_position_metrics()
 
-            # --- 4. Check if Adjustment is Needed (using contract's logic preview) ---
-            # Optional: You could call `_calculateTicks` view function if you add it to the contract
-            # or replicate the logic here to decide if the call is needed, potentially saving gas.
-            # For now, we rely on the contract's internal check.
-
-            # --- 5. Ensure Sufficient Balances (Optional Check) ---
-            # Add checks here if you suspect the initial funding might be insufficient
-            # logger.info("Checking deployer token balances...")
-            # Sufficient funds are assumed to be set during fork initialization.
-
-            # --- 6. Call Contract to Adjust ---
             logger.info(f"Calling updatePredictionAndAdjust with predictedTick: {predicted_tick}")
             private_key = os.getenv('PRIVATE_KEY')
             if not private_key:
@@ -263,29 +336,23 @@ class PredictiveTest(LiquidityTestBase):
             account = Account.from_key(private_key)
             nonce = w3.eth.get_transaction_count(account.address)
 
-            # Build Transaction using contract instance
             tx_function = self.contract.functions.updatePredictionAndAdjust(predicted_tick)
             tx_params = {
                 'from': account.address,
                 'nonce': nonce,
                 'chainId': int(w3.net.version)
-                # Gas/GasPrice added by send_transaction
             }
-            # Estimate gas specifically for this function call for better accuracy
             try:
                 estimated_gas = tx_function.estimate_gas({'from': account.address})
-                tx_params['gas'] = int(estimated_gas * 1.2) # Add 20% buffer
+                tx_params['gas'] = int(estimated_gas * 1.2)
                 logger.info(f"Estimated gas for adjustment: {estimated_gas}, using: {tx_params['gas']}")
             except Exception as est_err:
                 logger.warning(f"Gas estimation failed for adjustment: {est_err}. Using default 1,500,000")
-                tx_params['gas'] = 1500000 # Fallback
+                tx_params['gas'] = 1500000
 
             built_tx = tx_function.build_transaction(tx_params)
-
-            # Send transaction using utility function
             receipt = send_transaction(built_tx)
 
-            # --- 7. Process Result ---
             if receipt and receipt.status == 1:
                 logger.info("Position adjustment transaction successful.")
                 self.metrics['action_taken'] = 'adjusted_success'
@@ -293,7 +360,6 @@ class PredictiveTest(LiquidityTestBase):
             else:
                 logger.error("Position adjustment transaction failed or reverted.")
                 self.metrics['action_taken'] = 'adjusted_failed'
-                # Try to capture revert reason if possible (send_transaction might already log it)
                 if not self.metrics['error_message']:
                     self.metrics['error_message'] = "TransactionRevertedOnChain"
                 adjustment_success = False
@@ -305,23 +371,17 @@ class PredictiveTest(LiquidityTestBase):
             adjustment_success = False
 
         finally:
-            # --- 8. Update Metrics and Save (Always run) ---
-            # Fetch final state after transaction attempt
             self.update_pool_and_position_metrics()
-            # Save all collected metrics
             self.save_metrics(receipt=receipt, success=adjustment_success, error_message=self.metrics['error_message'])
 
         return adjustment_success
-
 
     def save_metrics(self, receipt: dict = None, success: bool = False, error_message: str = None):
         """Save collected metrics to the CSV file."""
         try:
             self.metrics['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            # action_taken is set during the adjust_position flow
 
             if error_message and not self.metrics['error_message']:
-                # Use error message passed in if metrics one is empty
                 self.metrics['error_message'] = error_message
 
             if receipt:
@@ -332,33 +392,29 @@ class PredictiveTest(LiquidityTestBase):
                 if effective_gas_price:
                     gas_cost_wei = self.metrics['gas_used'] * effective_gas_price
                     self.metrics['gas_cost_eth'] = float(Web3.from_wei(gas_cost_wei, 'ether'))
-                else: # Handle legacy txns if needed (less likely on fork)
+                else:
                     gas_price = receipt.get('gasPrice')
                     if gas_price:
                         gas_cost_wei = self.metrics['gas_used'] * gas_price
                         self.metrics['gas_cost_eth'] = float(Web3.from_wei(gas_cost_wei, 'ether'))
 
-            # Ensure RESULTS_FILE path exists
             RESULTS_FILE.parent.mkdir(parents=True, exist_ok=True)
             file_exists = RESULTS_FILE.is_file()
 
-            # Define explicit columns order matching the metrics dict keys used
             columns = [
                 'timestamp', 'contract_type', 'action_taken', 'tx_hash',
                 'predictedPrice_api', 'predictedTick_calculated',
                 'actualPrice_pool', 'sqrtPriceX96_pool', 'currentTick_pool',
-                # 'targetTickLower_calculated', 'targetTickUpper_calculated', # Removed as less important than final
                 'finalTickLower_contract', 'finalTickUpper_contract', 'liquidity_contract',
                 'gas_used', 'gas_cost_eth', 'error_message'
             ]
 
-            # Prepare row data, ensuring all columns exist in metrics or default to ""
             row_data = {col: self.metrics.get(col, "") for col in columns}
 
             with open(RESULTS_FILE, 'a', newline='', encoding='utf-8') as f:
                 writer = csv.DictWriter(f, fieldnames=columns)
                 if not file_exists:
-                    writer.writeheader() # Write header only if file is new
+                    writer.writeheader()
                 writer.writerow(row_data)
 
             logger.info(f"Metrics saved to {RESULTS_FILE}")
@@ -372,23 +428,21 @@ def main():
     logger.info("Starting Predictive Liquidity Manager Test on Fork")
     logger.info("="*50)
 
-    try:
-        # --- 1. Load Contract Address ---
-        if not ADDRESS_FILE.exists():
-            logger.error(f"Address file not found: {ADDRESS_FILE}")
-            raise FileNotFoundError(f"Address file not found: {ADDRESS_FILE}")
+    if not init_web3():
+        logger.error("Web3 initialization failed. Exiting test.")
+        return
 
-        with open(ADDRESS_FILE, 'r') as f:
-            addresses = json.load(f)
-            predictive_address = addresses.get('predictiveManager')
-            if not predictive_address:
-                logger.error("Address 'predictiveManager' not found in address file.")
-                raise ValueError("Address 'predictiveManager' not found in address file.")
+    try:
+        predictive_address = get_predictive_address()
+        if predictive_address is None:
+            if ADDRESS_FILE.exists():
+                ADDRESS_FILE.unlink()
+            logger.error(f"Address 'predictiveManager' not found in address file. New file will be created on next deploy.")
+            raise FileNotFoundError(f"Address 'predictiveManager' not found in address file.")
         logger.info(f"Loaded Predictive Manager Address: {predictive_address}")
 
-        # --- 2. Initialize and Run Test Steps ---
         test = PredictiveTest(predictive_address)
-        success = test.execute_test_steps() # This now includes setup, balance check, and adjustment
+        success = test.execute_test_steps()
 
         if success:
             logger.info("="*50)

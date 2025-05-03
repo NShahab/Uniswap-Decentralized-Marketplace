@@ -1,17 +1,16 @@
 #!/bin/bash
 
+# --- Helper Functions ---
+log() {
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+}
+
 # --- Configuration ---
-PROJECT_DIR="/home/youruser/Uniswap-Decentralized-Marketplace/Phase3_Smart_Contract" # مسیر صحیح پروژه روی VPS لینوکسی
+PROJECT_DIR="/root/Uniswap-Decentralized-Marketplace/Phase3_Smart_Contract" # مسیر صحیح پروژه روی VPS لینوکسی
 LOG_FILE="$PROJECT_DIR/fork_test_run.log"
 ADDRESS_FILE="$PROJECT_DIR/deployed_addresses.json"
 PYTHON_SCRIPT_PATH="$PROJECT_DIR/test/predictive/predictive_test.py" # مسیر صحیح اسکریپت پایتون
 DEPLOY_SCRIPT_PATH="$PROJECT_DIR/scripts/deployPredictiveManager.js" # مسیر صحیح اسکریپت دیپلوی
-
-# آدرس عمومی کیف پول را از .env بخوان
-if [ -z "$DEPLOYER_ADDRESS" ]; then
-  log "ERROR: DEPLOYER_ADDRESS is not set in .env file."
-  exit 1
-fi
 
 # Initial ETH balance for the deployer on the fork (in Wei, hex format)
 # Example: 100 ETH = 100 * 10^18 = 100000000000000000000 Wei
@@ -21,28 +20,23 @@ INITIAL_ETH_HEX="0x56BC75E2D63100000" # 100 ETH
 # Local fork RPC URL (Hardhat default)
 LOCAL_RPC_URL="http://127.0.0.1:8545"
 
-# --- Helper Functions ---
-log() {
-  echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
-}
-
 kill_hardhat_node() {
-  log "Attempting to stop Hardhat node..."
-  # Find process running 'hardhat node' and kill it
-  PID=$(pgrep -f 'hardhat node')
-  if [ -n "$PID" ]; then
-    log "Found Hardhat node process with PID: $PID. Killing..."
-    kill "$PID"
-    sleep 5 # Wait a bit for the process to terminate
-    if kill -0 "$PID" 2>/dev/null; then
-      log "Node did not terminate gracefully. Sending SIGKILL."
-      kill -9 "$PID"
-    else
-      log "Hardhat node stopped successfully."
-    fi
-  else
-    log "No Hardhat node process found running."
-  fi
+  log "Attempting to stop Hardhat node..."
+  # Find process running 'hardhat node' and kill it
+  PID=$(pgrep -f 'hardhat node')
+  if [ -n "$PID" ]; then
+    log "Found Hardhat node process with PID: $PID. Killing..."
+    kill "$PID"
+    sleep 5 # Wait a bit for the process to terminate
+    if kill -0 "$PID" 2>/dev/null; then
+      log "Node did not terminate gracefully. Sending SIGKILL."
+      kill -9 "$PID"
+    else
+      log "Hardhat node stopped successfully."
+    fi
+  else
+    log "No Hardhat node process found running."
+  fi
 }
 
 # --- Main Script ---
@@ -52,6 +46,9 @@ log "=================================================="
 
 # Ensure we are in the project directory
 cd "$PROJECT_DIR" || { log "ERROR: Could not change directory to $PROJECT_DIR"; exit 1; }
+
+# Activate Python virtual environment
+source "$PROJECT_DIR/venv/bin/activate"
 
 # Clean up previous run (optional)
 log "Cleaning up previous Hardhat node if any..."
@@ -65,12 +62,12 @@ set +o allexport
 
 # Check for necessary environment variables
 if [ -z "$MAINNET_RPC_URL" ]; then
-  log "ERROR: MAINNET_RPC_URL is not set in .env file."
-  exit 1
+  log "ERROR: MAINNET_RPC_URL is not set in .env file."
+  exit 1
 fi
 if [ -z "$PRIVATE_KEY" ]; then
-  log "ERROR: PRIVATE_KEY is not set in .env file."
-  exit 1
+  log "ERROR: PRIVATE_KEY is not set in .env file."
+  exit 1
 fi
 if [ -z "$DEPLOYER_ADDRESS" ]; then
   log "ERROR: DEPLOYER_ADDRESS is not set in .env file."
@@ -87,8 +84,8 @@ sleep 20 # Increased wait time for node and fork initialization
 
 # Check if Hardhat node is running
 if ! kill -0 $HARDHAT_PID 2>/dev/null; then
-  log "ERROR: Hardhat node failed to start. Check hardhat_node.log."
-  exit 1
+  log "ERROR: Hardhat node failed to start. Check hardhat_node.log."
+  exit 1
 fi
 log "Hardhat node seems to be running."
 
@@ -109,9 +106,9 @@ npx hardhat run "$DEPLOY_SCRIPT_PATH" --network localhost >> "$LOG_FILE" 2>&1
 DEPLOY_EXIT_CODE=$?
 
 if [ $DEPLOY_EXIT_CODE -ne 0 ]; then
-  log "ERROR: Contract deployment failed (Exit Code: $DEPLOY_EXIT_CODE). Check $LOG_FILE."
-  kill_hardhat_node
-  exit 1
+  log "ERROR: Contract deployment failed (Exit Code: $DEPLOY_EXIT_CODE). Check $LOG_FILE."
+  kill_hardhat_node
+  exit 1
 fi
 
 # Check if address file was created
@@ -133,10 +130,10 @@ python "$PYTHON_SCRIPT_PATH" >> "$LOG_FILE" 2>&1
 PYTHON_EXIT_CODE=$?
 
 if [ $PYTHON_EXIT_CODE -ne 0 ]; then
-  log "ERROR: Python test script failed (Exit Code: $PYTHON_EXIT_CODE). Check $LOG_FILE and predictive_test.log."
-  # Still stop the node even if python fails
+  log "ERROR: Python test script failed (Exit Code: $PYTHON_EXIT_CODE). Check $LOG_FILE and predictive_test.log."
+  # Still stop the node even if python fails
   kill_hardhat_node
-  exit 1
+  exit 1
 fi
 log "Python test script finished successfully."
 

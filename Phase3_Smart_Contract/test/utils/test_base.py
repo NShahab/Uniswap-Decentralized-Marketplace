@@ -4,6 +4,7 @@ import os
 import logging
 from abc import ABC, abstractmethod
 from web3 import Web3
+from decimal import Decimal  # Add this import for Decimal
 from .web3_utils import init_web3, get_contract, w3  # Import w3 instance
 
 logger = logging.getLogger('test_base')

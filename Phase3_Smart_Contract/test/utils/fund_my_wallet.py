@@ -16,6 +16,13 @@ USDC_WHALE = "0xbe0eb53f46cd790cd13851d5eff43d12404d33e8"
 WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
 USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"
 
+# تبدیل همه آدرس‌ها به فرمت checksum
+MY_ADDRESS = Web3.to_checksum_address(MY_ADDRESS)
+WETH_WHALE = Web3.to_checksum_address(WETH_WHALE)
+USDC_WHALE = Web3.to_checksum_address(USDC_WHALE)
+WETH_ADDRESS = Web3.to_checksum_address(WETH_ADDRESS)
+USDC_ADDRESS = Web3.to_checksum_address(USDC_ADDRESS)
+
 # ABI ساده فقط با متدهای transfer و balanceOf
 ERC20_ABI = [
     {
@@ -51,8 +58,8 @@ def impersonate_and_transfer(token_address, whale_address, recipient, amount, de
     ).build_transaction({
         'from': whale_address,
         'nonce': w3.eth.get_transaction_count(whale_address),
-        'gas': 100000,
-        'gasPrice': w3.toWei('10', 'gwei')
+        'gas': 100000
+        # حذف gasPrice برای سازگاری با web3.py v6+
     })
 
     tx_hash = w3.eth.send_transaction(tx)
@@ -68,8 +75,3 @@ def set_eth_balance(address, eth_amount):
         "id":1
     })
     print(f"✅ Set ETH balance of {address[:6]}... to {eth_amount} ETH")
-
-# اجرای کارها
-set_eth_balance(MY_ADDRESS, 100)
-impersonate_and_transfer(WETH_ADDRESS, WETH_WHALE, MY_ADDRESS, 100, 18)
-impersonate_and_transfer(USDC_ADDRESS, USDC_WHALE, MY_ADDRESS, 1000, 6)
