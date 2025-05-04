@@ -203,7 +203,7 @@ def send_transaction(tx_params):
                 logger.error(f"Gas estimation failed: {gas_err}. Using default 1,000,000.")
                 tx_params['gas'] = 1000000 # Fallback gas limit
 
-        # حذف افزودن gasPrice برای سازگاری با web3.py v6+
+        # ??? ?????? gasPrice ???? ??????? ?? web3.py v6+
         # if 'gasPrice' not in tx_params:
         #     tx_params['gasPrice'] = w3.eth.gas_price
         #     logger.debug(f"Using network gas price: {tx_params['gasPrice']}")
@@ -232,17 +232,14 @@ def send_transaction(tx_params):
         return None
 
 def wrap_eth_to_weth(amount_wei):
-    """Wrap ETH to WETH by calling deposit on WETH contract."""
+    """Wrap ETH to WETH by sending ETH to the WETH contract (no data field needed)."""
     global w3
     if not w3 or not w3.is_connected():
         raise ConnectionError("Web3 not initialized or connection failed")
 
     try:
         account = Account.from_key(PRIVATE_KEY)
-        # Ensure WETH_ADDRESS is checksummed
         checksum_weth_address = Web3.to_checksum_address(WETH_ADDRESS)
-        weth = w3.eth.contract(address=checksum_weth_address, abi=WETH_ABI + IERC20_ABI) # Add IERC20 for balance check etc.
-
         logger.info(f"Attempting to wrap {Web3.from_wei(amount_wei, 'ether')} ETH for account {account.address}")
         current_eth_balance = w3.eth.get_balance(account.address)
         if current_eth_balance < amount_wei:
@@ -251,12 +248,12 @@ def wrap_eth_to_weth(amount_wei):
 
         tx_params = {
             'from': account.address,
-            'to': checksum_weth_address, # Use checksummed address
+            'to': checksum_weth_address,
             'value': int(amount_wei),
             'nonce': w3.eth.get_transaction_count(account.address),
-            # Gas/GasPrice will be handled by send_transaction
             'chainId': int(w3.net.version),
-            'data': weth.encodeABI(fn_name='deposit') # Encode function call
+            'gasPrice': w3.eth.gas_price  # اضافه کردن gasPrice برای سازگاری با هاردهد
+            # No 'data' field needed for WETH9 deposit
         }
 
         receipt = send_transaction(tx_params)
