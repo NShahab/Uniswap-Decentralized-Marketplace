@@ -1,147 +1,204 @@
 #!/bin/bash
 
-# --- Helper Functions ---
-log() {
-  echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
-}
-
 # --- Configuration ---
-PROJECT_DIR="/root/Uniswap-Decentralized-Marketplace/Phase3_Smart_Contract" # مسیر صحیح پروژه روی VPS لینوکسی
+# Project directory on the Linux VPS
+PROJECT_DIR="/root/Uniswap-Decentralized-Marketplace/Phase3_Smart_Contract" # <<<=== !!! Verify this path !!!
+# Log file for this script's output
 LOG_FILE="$PROJECT_DIR/fork_test_run.log"
-ADDRESS_FILE="$PROJECT_DIR/deployed_addresses.json"
-PYTHON_SCRIPT_PATH="$PROJECT_DIR/test/predictive/predictive_test.py" # مسیر صحیح اسکریپت پایتون
-DEPLOY_SCRIPT_PATH="$PROJECT_DIR/scripts/deployPredictiveManager.js" # مسیر صحیح اسکریپت دیپلوی
 
-# Initial ETH balance for the deployer on the fork (in Wei, hex format)
-# Example: 100 ETH = 100 * 10^18 = 100000000000000000000 Wei
-# In hex: 0x56BC75E2D63100000
-INITIAL_ETH_HEX="0x56BC75E2D63100000" # 100 ETH
+# Deployment Scripts
+DEPLOY_SCRIPT_PREDICTIVE_PATH="$PROJECT_DIR/scripts/deployPredictiveManager.js"
+DEPLOY_SCRIPT_BASELINE_PATH="$PROJECT_DIR/scripts/deployMinimal.js"
+
+# Python Test Scripts
+PYTHON_SCRIPT_PREDICTIVE_PATH="$PROJECT_DIR/test/predictive/predictive_test.py" # Corrected path
+PYTHON_SCRIPT_BASELINE_PATH="$PROJECT_DIR/test/baseline_test.py"             # Verify path
+
+# Address Files (Separate for each contract)
+ADDRESS_FILE_PREDICTIVE="$PROJECT_DIR/predictiveManager_address.json"
+ADDRESS_FILE_BASELINE="$PROJECT_DIR/baselineMinimal_address.json"
+
+# Python script to fund the deployer wallet
+FUNDING_SCRIPT_PATH="$PROJECT_DIR/test/utils/fund_my_wallet.py" # Corrected path
 
 # Local fork RPC URL (Hardhat default)
 LOCAL_RPC_URL="http://127.0.0.1:8545"
 
+# Python Virtual Environment Path (adjust if needed)
+VENV_ACTIVATE_PATH="$PROJECT_DIR/venv/bin/activate"
+
+# --- Helper Functions ---
+log() {
+  # Logs a message to both stdout and the LOG_FILE
+  echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" | tee -a "$LOG_FILE"
+}
+
 kill_hardhat_node() {
+  # Attempts to gracefully stop the Hardhat node, force killing if necessary
   log "Attempting to stop Hardhat node..."
-  # Find process running 'hardhat node' and kill it
-  PID=$(pgrep -f 'hardhat node')
-  if [ -n "$PID" ]; then
-    log "Found Hardhat node process with PID: $PID. Killing..."
-    kill "$PID"
-    sleep 5 # Wait a bit for the process to terminate
-    if kill -0 "$PID" 2>/dev/null; then
-      log "Node did not terminate gracefully. Sending SIGKILL."
-      kill -9 "$PID"
-    else
-      log "Hardhat node stopped successfully."
-    fi
+  if pgrep -f 'hardhat node' > /dev/null; then
+      log "Found running Hardhat node process(es). Sending SIGTERM..."
+      pkill -f 'hardhat node'
+      sleep 5
+      if pgrep -f 'hardhat node' > /dev/null; then
+          log "Node did not terminate gracefully. Sending SIGKILL."
+          pkill -9 -f 'hardhat node'
+          log "Hardhat node stopped using SIGKILL."
+      else
+          log "Hardhat node stopped successfully."
+      fi
   else
-    log "No Hardhat node process found running."
+      log "No Hardhat node process found running."
+  fi
+}
+
+# Function to check script success and exit on failure
+check_exit_code() {
+  # $1: Exit code of the previous command
+  # $2: Error message description
+  if [ $1 -ne 0 ]; then
+    log "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    log "ERROR: $2 failed (Exit Code: $1). Check $LOG_FILE for details."
+    log "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    kill_hardhat_node
+    exit 1
   fi
 }
 
 # --- Main Script ---
 log "=================================================="
-log "Starting Fork Test Run"
+log "Starting Fork Test Run (Predictive & Baseline)"
 log "=================================================="
 
-# Ensure we are in the project directory
-cd "$PROJECT_DIR" || { log "ERROR: Could not change directory to $PROJECT_DIR"; exit 1; }
+# Navigate to the project directory
+cd "$PROJECT_DIR" || { log "CRITICAL ERROR: Could not change directory to $PROJECT_DIR"; exit 1; }
 
 # Activate Python virtual environment
-source "$PROJECT_DIR/venv/bin/activate"
+if [ -f "$VENV_ACTIVATE_PATH" ]; then
+  log "Activating Python virtual environment..."
+  source "$VENV_ACTIVATE_PATH"
+else
+  log "WARNING: Python venv not found at $VENV_ACTIVATE_PATH. Using system python."
+fi
 
-# Clean up previous run (optional)
+
+# Clean up from previous run
 log "Cleaning up previous Hardhat node if any..."
 kill_hardhat_node
-rm -f "$ADDRESS_FILE" # Remove old address file
+log "Removing old address files if they exist..."
+rm -f "$ADDRESS_FILE_PREDICTIVE"
+rm -f "$ADDRESS_FILE_BASELINE"
 
 # Load environment variables from .env file
-set -o allexport
-source .env || log "WARNING: .env file not found or could not be sourced."
-set +o allexport
+if [ -f ".env" ]; then
+    log "Loading environment variables from .env file..."
+    set -o allexport; source .env; set +o allexport
+else
+    log "WARNING: .env file not found in $PROJECT_DIR."
+fi
 
 # Check for necessary environment variables
-if [ -z "$MAINNET_RPC_URL" ]; then
-  log "ERROR: MAINNET_RPC_URL is not set in .env file."
-  exit 1
-fi
-if [ -z "$PRIVATE_KEY" ]; then
-  log "ERROR: PRIVATE_KEY is not set in .env file."
-  exit 1
-fi
-if [ -z "$DEPLOYER_ADDRESS" ]; then
-  log "ERROR: DEPLOYER_ADDRESS is not set in .env file."
-  exit 1
-fi
+if [ -z "$MAINNET_RPC_URL" ]; then log "ERROR: MAINNET_RPC_URL not set."; exit 1; fi
+if [ -z "$PRIVATE_KEY" ]; then log "ERROR: PRIVATE_KEY not set."; exit 1; fi
+if [ -z "$DEPLOYER_ADDRESS" ]; then log "ERROR: DEPLOYER_ADDRESS not set."; exit 1; fi
+
 
 # 1. Start Hardhat Node with Forking in Background
 log "Starting Hardhat node with mainnet fork..."
-# Using --hostname 0.0.0.0 allows connections from other containers/machines if needed
 nohup npx hardhat node --hostname 0.0.0.0 > hardhat_node.log 2>&1 &
 HARDHAT_PID=$!
-log "Hardhat node started in background with PID: $HARDHAT_PID. Waiting for it to boot..."
-sleep 20 # Increased wait time for node and fork initialization
+log "Hardhat node started (PID: $HARDHAT_PID). Waiting 40 seconds for boot..."
+sleep 40 # Increased wait time
 
-# Check if Hardhat node is running
+# Check if Hardhat node process exists
 if ! kill -0 $HARDHAT_PID 2>/dev/null; then
-  log "ERROR: Hardhat node failed to start. Check hardhat_node.log."
+  log "ERROR: Hardhat node process $HARDHAT_PID is not running after wait. Check hardhat_node.log."
   exit 1
 fi
-log "Hardhat node seems to be running."
+log "Hardhat node process check passed (PID: $HARDHAT_PID)."
 
-# 2. Fund Deployer Account on the Fork (using fund_my_wallet.py)
-log "Funding deployer account ($DEPLOYER_ADDRESS) with ETH, WETH, and USDC using fund_my_wallet.py..."
-python3 test/utils/fund_my_wallet.py >> "$LOG_FILE" 2>&1
-FUND_EXIT_CODE=$?
-if [ $FUND_EXIT_CODE -ne 0 ]; then
-  log "ERROR: fund_my_wallet.py failed (Exit Code: $FUND_EXIT_CODE). Check $LOG_FILE."
-  kill_hardhat_node
-  exit 1
-fi
-log "Funding successful (using fund_my_wallet.py)."
-
-# 3. Deploy Contracts
-log "Deploying contracts..."
-npx hardhat run "$DEPLOY_SCRIPT_PATH" --network localhost >> "$LOG_FILE" 2>&1
-DEPLOY_EXIT_CODE=$?
-
-if [ $DEPLOY_EXIT_CODE -ne 0 ]; then
-  log "ERROR: Contract deployment failed (Exit Code: $DEPLOY_EXIT_CODE). Check $LOG_FILE."
-  kill_hardhat_node
-  exit 1
-fi
-
-# Check if address file was created
-if [ ! -f "$ADDRESS_FILE" ]; then
-    log "ERROR: Deployment script finished but address file '$ADDRESS_FILE' was not created."
+# Check if Hardhat node RPC is responsive
+log "Checking Hardhat node RPC responsiveness at $LOCAL_RPC_URL..."
+if curl --output /dev/null --silent --head --fail --max-time 10 "$LOCAL_RPC_URL"; then
+    log "Hardhat node RPC endpoint is responsive."
+else
+    log "ERROR: Hardhat node RPC ($LOCAL_RPC_URL) NOT responding. Check 'hardhat_node.log'."
     kill_hardhat_node
     exit 1
 fi
 
-log "Contracts deployed successfully. Address saved to $ADDRESS_FILE."
+
+# 2. Fund Deployer Account
+log "Funding deployer account ($DEPLOYER_ADDRESS) using $FUNDING_SCRIPT_PATH..."
+python3 "$FUNDING_SCRIPT_PATH" >> "$LOG_FILE" 2>&1
+check_exit_code $? "Funding script ($FUNDING_SCRIPT_PATH)"
+log "Funding script executed successfully."
 
 
-# 4. Run Python Test Script
-log "Running Python test script..."
-# Ensure the correct Python environment is activated if needed (e.g., source venv/bin/activate)
-# Make sure MAINNET_FORK_RPC_URL is set in .env or environment for the python script
-export MAINNET_FORK_RPC_URL="$LOCAL_RPC_URL" # Explicitly set for the python script
-python "$PYTHON_SCRIPT_PATH" >> "$LOG_FILE" 2>&1
-PYTHON_EXIT_CODE=$?
-
-if [ $PYTHON_EXIT_CODE -ne 0 ]; then
-  log "ERROR: Python test script failed (Exit Code: $PYTHON_EXIT_CODE). Check $LOG_FILE and predictive_test.log."
-  # Still stop the node even if python fails
-  kill_hardhat_node
-  exit 1
+# 3. Deploy Predictive Contract
+log "Deploying Predictive contract ($DEPLOY_SCRIPT_PREDICTIVE_PATH)..."
+npx hardhat run "$DEPLOY_SCRIPT_PREDICTIVE_PATH" --network localhost >> "$LOG_FILE" 2>&1
+check_exit_code $? "Predictive contract deployment"
+# Verify address file exists
+if [ ! -f "$ADDRESS_FILE_PREDICTIVE" ]; then
+    log "ERROR: Predictive address file '$ADDRESS_FILE_PREDICTIVE' was not created."
+    kill_hardhat_node; exit 1;
 fi
-log "Python test script finished successfully."
+log "Predictive contract deployed. Address saved to $ADDRESS_FILE_PREDICTIVE."
 
 
-# 5. Stop Hardhat Node
+# 4. Deploy Baseline Contract
+log "Deploying Baseline contract ($DEPLOY_SCRIPT_BASELINE_PATH)..."
+npx hardhat run "$DEPLOY_SCRIPT_BASELINE_PATH" --network localhost >> "$LOG_FILE" 2>&1
+check_exit_code $? "Baseline contract deployment"
+# Verify address file exists
+if [ ! -f "$ADDRESS_FILE_BASELINE" ]; then
+    log "ERROR: Baseline address file '$ADDRESS_FILE_BASELINE' was not created."
+    kill_hardhat_node; exit 1;
+fi
+log "Baseline contract deployed. Address saved to $ADDRESS_FILE_BASELINE."
+
+
+# 5. Run Predictive Python Test Script
+log "Running Predictive Python test script ($PYTHON_SCRIPT_PREDICTIVE_PATH)..."
+export MAINNET_FORK_RPC_URL="$LOCAL_RPC_URL" # Export RPC for Python script
+python3 "$PYTHON_SCRIPT_PREDICTIVE_PATH" >> "$LOG_FILE" 2>&1
+PYTHON_PREDICTIVE_EXIT_CODE=$? # Save exit code
+if [ $PYTHON_PREDICTIVE_EXIT_CODE -ne 0 ]; then
+  log "ERROR: Predictive Python test script failed (Exit Code: $PYTHON_PREDICTIVE_EXIT_CODE)."
+  # Continue to baseline test even if predictive fails? Set overall error flag.
+else
+  log "Predictive Python test script finished successfully."
+fi
+
+
+# 6. Run Baseline Python Test Script
+log "Running Baseline Python test script ($PYTHON_SCRIPT_BASELINE_PATH)..."
+export MAINNET_FORK_RPC_URL="$LOCAL_RPC_URL" # Ensure it's set again if needed
+python3 "$PYTHON_SCRIPT_BASELINE_PATH" >> "$LOG_FILE" 2>&1
+PYTHON_BASELINE_EXIT_CODE=$? # Save exit code
+if [ $PYTHON_BASELINE_EXIT_CODE -ne 0 ]; then
+  log "ERROR: Baseline Python test script failed (Exit Code: $PYTHON_BASELINE_EXIT_CODE)."
+else
+  log "Baseline Python test script finished successfully."
+fi
+
+
+# 7. Stop Hardhat Node
 kill_hardhat_node
+
+# Deactivate virtual environment (optional)
+if type deactivate &> /dev/null; then
+    log "Deactivating Python virtual environment."
+    deactivate
+fi
 
 log "Fork Test Run Completed."
 log "=================================================="
 
-exit 0
+# Final exit code based on test script results
+if [ $PYTHON_PREDICTIVE_EXIT_CODE -eq 0 ] && [ $PYTHON_BASELINE_EXIT_CODE -eq 0 ]; then
+  exit 0 # Success
+else
+  exit 1 # Failure
+fi

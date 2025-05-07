@@ -1,150 +1,89 @@
-// scripts/deploy.js
+// scripts/deployMinimal.js
 const hre = require("hardhat");
 const { ethers } = require("hardhat");
-const fs = require("fs");
-const path = require("path");
-
-// آدرس‌های رسمی Uniswap V3 در شبکه Sepolia
-const UNISWAP_V3 = {
-    FACTORY: "0x0227628f3F023bb0B980b67D528571c95c6DaC1c",
-    POSITION_MANAGER: "0x1238536071E1c677A632429e3655c799b22cDA52",
-    SWAP_ROUTER: "0x3bFA4769FB09eefC5a80d6E87c3B9C650f7Ae48E"
-};
-
-// آدرس توکن‌ها در Sepolia
-const TOKENS = {
-    USDC: "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238", // USDC رسمی Sepolia
-    WETH: "0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9"  // WETH رسمی Sepolia
-};
-
-// تنظیمات استقرار
-const DEPLOY_SETTINGS = {
-    FEE_TIER: 3000, // 0.3%
-    GAS_LIMIT: 5000000, // 5 میلیون گس
-    GAS_PRICE: ethers.utils.parseUnits("50", "gwei") // 50 gwei
-};
+const fs = require('fs');
+const path = require('path');
 
 async function main() {
+    console.log("Starting BaselineMinimal deployment process on the forked network...");
+
+    // --- Mainnet Addresses ---
+    const UNISWAP_V3_FACTORY_MAINNET = "0x1F98431c8aD98523631AE4a59f267346ea31F984";
+    const POSITION_MANAGER_MAINNET = "0xC36442b4a4522E871399CD717aBDD847Ab11FE88";
+    const SWAP_ROUTER_MAINNET = "0xE592427A0AEce92De3Edee1F18E0157C05861564"; // Mainnet SwapRouter (V3 Router 2)
+    const WETH_MAINNET = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2";
+    const USDC_MAINNET = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"; // Mainnet USDC (6 decimals)
+    const POOL_FEE = 500; // 0.05% fee tier for WETH/USDC (as per your file)
+
+    const [deployer] = await hre.ethers.getSigners();
+    console.log("Deploying contracts with the account:", deployer.address);
+    console.log("Account balance:", (await deployer.getBalance()).toString());
+
+    // --- Verify Pool Existence ---
+    console.log(`Checking if the mainnet pool exists (WETH/USDC Fee: ${POOL_FEE})...`);
+    const factory = await hre.ethers.getContractAt("IUniswapV3Factory", UNISWAP_V3_FACTORY_MAINNET);
+    const token0ForPool = USDC_MAINNET < WETH_MAINNET ? USDC_MAINNET : WETH_MAINNET;
+    const token1ForPool = USDC_MAINNET < WETH_MAINNET ? WETH_MAINNET : USDC_MAINNET;
+    const poolAddress = await factory.getPool(token0ForPool, token1ForPool, POOL_FEE);
+
+    if (poolAddress === "0x0000000000000000000000000000000000000000") {
+        console.error(`ERROR: Pool ${token0ForPool}/${token1ForPool} with fee ${POOL_FEE} does not exist on Mainnet Fork!`);
+        process.exit(1);
+    } else {
+        console.log(`Pool exists on Mainnet Fork at: ${poolAddress}`);
+    }
+
+    // --- Deploy BaselineMinimal contract ---
+    console.log("\nDeploying BaselineMinimal contract...");
+    const BaselineMinimal = await hre.ethers.getContractFactory("BaselineMinimal");
+    const constructorToken0 = USDC_MAINNET < WETH_MAINNET ? USDC_MAINNET : WETH_MAINNET;
+    const constructorToken1 = USDC_MAINNET < WETH_MAINNET ? WETH_MAINNET : USDC_MAINNET;
+
+    console.log("\nDeploying BaselineMinimal with parameters:");
+    console.log("  Factory:", UNISWAP_V3_FACTORY_MAINNET);
+    console.log("  Position Manager:", POSITION_MANAGER_MAINNET);
+    console.log("  Swap Router:", SWAP_ROUTER_MAINNET);
+    console.log("  Token0 (constructor):", constructorToken0);
+    console.log("  Token1 (constructor):", constructorToken1);
+    console.log("  Fee Tier:", POOL_FEE);
+    console.log("  Initial Owner:", deployer.address);
+
+    const baselineMinimal = await BaselineMinimal.deploy(
+        UNISWAP_V3_FACTORY_MAINNET,
+        POSITION_MANAGER_MAINNET,
+        SWAP_ROUTER_MAINNET,
+        constructorToken0,
+        constructorToken1,
+        POOL_FEE,
+        deployer.address // Set deployer as owner initially
+    );
+    await baselineMinimal.deployed();
+    const receipt = await baselineMinimal.deployTransaction.wait(1);
+
+    console.log("\nBaselineMinimal Deployed!");
+    console.log(`  Address: ${baselineMinimal.address}`);
+    console.log(`  Transaction Hash: ${receipt.transactionHash}`);
+    console.log(`  Block Number: ${receipt.blockNumber}`);
+
+    // --- Save Deployed Address to Dedicated File ---
+    const addresses = { address: baselineMinimal.address }; // Simple structure
+    const outputPath = path.join(__dirname, '..', 'baselineMinimal_address.json'); // Dedicated file
+
     try {
-        const [deployer] = await hre.ethers.getSigners();
-
-        console.log("\n=============== Deployment Information ===============");
-        console.log(`Network: ${hre.network.name}`);
-        console.log(`Deployer: ${deployer.address}`);
-        console.log(`Deployer Balance: ${ethers.utils.formatEther(await deployer.getBalance())} ETH`);
-        console.log("=====================================================");
-
-        console.log("\n=============== Contract Addresses ===============");
-        console.log(`Uniswap V3 Factory: ${UNISWAP_V3.FACTORY}`);
-        console.log(`Position Manager: ${UNISWAP_V3.POSITION_MANAGER}`);
-        console.log(`Swap Router: ${UNISWAP_V3.SWAP_ROUTER}`);
-        console.log(`USDC: ${TOKENS.USDC}`);
-        console.log(`WETH: ${TOKENS.WETH}`);
-        console.log(`Fee Tier: ${DEPLOY_SETTINGS.FEE_TIER} (0.3%)`);
-        console.log("=================================================");
-
-        console.log("\n=============== Deployment Settings ===============");
-        console.log(`Gas Limit: ${DEPLOY_SETTINGS.GAS_LIMIT}`);
-        console.log(`Gas Price: ${ethers.utils.formatUnits(DEPLOY_SETTINGS.GAS_PRICE, "gwei")} gwei`);
-
-        const estimatedCost = DEPLOY_SETTINGS.GAS_LIMIT *
-            parseFloat(ethers.utils.formatUnits(DEPLOY_SETTINGS.GAS_PRICE, "ether"));
-        console.log(`Estimated Max Cost: ${estimatedCost.toFixed(6)} ETH`);
-        console.log("=================================================");
-
-        console.log("\nDeploying BaselineMinimal contract...");
-        const BaselineMinimal = await hre.ethers.getContractFactory("BaselineMinimal");
-
-        console.log("\nDeploying... (This may take a few minutes)");
-        const baselineMinimal = await BaselineMinimal.deploy(
-            UNISWAP_V3.FACTORY,
-            UNISWAP_V3.POSITION_MANAGER,
-            UNISWAP_V3.SWAP_ROUTER,
-            TOKENS.USDC,
-            TOKENS.WETH,
-            DEPLOY_SETTINGS.FEE_TIER,
-            {
-                gasLimit: DEPLOY_SETTINGS.GAS_LIMIT,
-                gasPrice: DEPLOY_SETTINGS.GAS_PRICE
-            }
-        );
-
-        console.log("\nWaiting for deployment confirmation...");
-        const receipt = await baselineMinimal.deployTransaction.wait(2);
-
-        console.log("\n=============== Deployment Result ===============");
-        console.log(`✅ Contract deployed successfully!`);
-        console.log(`Contract Address: ${baselineMinimal.address}`);
-        console.log(`Transaction Hash: ${receipt.transactionHash}`);
-        console.log(`Block Number: ${receipt.blockNumber}`);
-        console.log(`Gas Used: ${receipt.gasUsed.toString()}`);
-        console.log(`Actual Cost: ${ethers.utils.formatEther(receipt.gasUsed.mul(receipt.effectiveGasPrice))} ETH`);
-        console.log("================================================");
-
-        // ذخیره اطلاعات در فایل .env
-        updateEnvFile({
-            BASELINE_MINIMAL_ADDRESS: baselineMinimal.address,
-            UNISWAP_FACTORY: UNISWAP_V3.FACTORY,
-            POSITION_MANAGER: UNISWAP_V3.POSITION_MANAGER,
-            SWAP_ROUTER: UNISWAP_V3.SWAP_ROUTER,
-            USDC_ADDRESS: TOKENS.USDC,
-            WETH_ADDRESS: TOKENS.WETH
-        });
-
-        console.log("\n=============== Next Steps ===============");
-        console.log("1. Verify contract on Etherscan:");
-        console.log(`   npx hardhat verify --network sepolia \\
-      ${baselineMinimal.address} \\
-      "${UNISWAP_V3.FACTORY}" \\
-      "${UNISWAP_V3.POSITION_MANAGER}" \\
-      "${UNISWAP_V3.SWAP_ROUTER}" \\
-      "${TOKENS.USDC}" \\
-      "${TOKENS.WETH}" \\
-      ${DEPLOY_SETTINGS.FEE_TIER}`);
-        console.log("\n2. Fund the contract with initial liquidity");
-        console.log("\n3. Call adjustLiquidityWithCurrentPrice() to initialize the position");
-        console.log("=========================================");
-
-    } catch (error) {
-        console.error("\n❌ Deployment failed!");
-        console.error("Error:", error.message);
-
-        if (error.transaction) {
-            console.log("\nTransaction Details:");
-            console.log(`Hash: ${error.transaction.hash}`);
-            console.log(`From: ${error.transaction.from}`);
-            console.log(`To: ${error.transaction.to}`);
-            console.log(`Gas Limit: ${error.transaction.gasLimit.toString()}`);
-            console.log(`Gas Price: ${ethers.utils.formatUnits(error.transaction.gasPrice || 0, "gwei")} gwei`);
-        }
-
+        // Overwrite the file with the new address
+        fs.writeFileSync(outputPath, JSON.stringify(addresses, null, 2));
+        console.log(`\n✅ BaselineMinimal address saved to ${outputPath}`);
+    } catch (err) {
+        console.error("FATAL ERROR: Could not save baseline address to JSON file:", err);
         process.exit(1);
     }
-}
 
-function updateEnvFile(envVars) {
-    const envPath = path.resolve(__dirname, '../.env');
-    let envContent = fs.existsSync(envPath) ? fs.readFileSync(envPath, 'utf8') : '';
-
-    // حذف مقادیر قدیمی اگر وجود داشته باشند
-    Object.keys(envVars).forEach(key => {
-        const regex = new RegExp(`^${key}=.*$`, 'gm');
-        envContent = envContent.replace(regex, '');
-    });
-
-    // اضافه کردن مقادیر جدید
-    envContent += '\n# ====== BaselineMinimal Deployment ======\n';
-    Object.entries(envVars).forEach(([key, value]) => {
-        envContent += `${key}="${value}"\n`;
-    });
-
-    fs.writeFileSync(envPath, envContent.trim());
-    console.log("\nContract addresses saved to .env file");
+    console.log("\nBaseline deployment script finished.");
 }
 
 main()
     .then(() => process.exit(0))
     .catch((error) => {
-        console.error("Unhandled error:", error);
+        console.error("Baseline deployment script failed:", error);
         process.exit(1);
     });
