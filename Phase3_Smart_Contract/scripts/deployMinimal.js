@@ -54,8 +54,7 @@ async function main() {
         SWAP_ROUTER_MAINNET,
         constructorToken0,
         constructorToken1,
-        POOL_FEE,
-        deployer.address // Set deployer as owner initially
+        POOL_FEE
     );
     await baselineMinimal.deployed();
     const receipt = await baselineMinimal.deployTransaction.wait(1);

@@ -1,4 +1,3 @@
-# test/baseline_test.py
 import os
 import sys
 import json
@@ -12,49 +11,52 @@ from web3 import Web3
 from eth_account import Account
 from decimal import Decimal, getcontext
 
+
+# --- Adjust path imports ---
+current_file_path = Path(__file__).resolve()
+project_root = current_file_path.parent.parent.parent # test/baseline/baseline_test.py -> Phase3_Smart_Contract
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+# Import the web3_utils module itself
+import test.utils.web3_utils as web3_utils
+
+
 # Precision for Decimal calculations
 getcontext().prec = 78
 
-# --- Adjust path imports ---
-current_dir = Path(__file__).parent
-project_root_guess = current_dir.parent.parent # Assumes baseline is in test, test is in root
-utils_dir = project_root_guess / 'test' / 'utils' # Adjust if structure differs
-sys.path.insert(0, str(project_root_guess))
-
 try:
     from test.utils.test_base import LiquidityTestBase
-    from test.utils.web3_utils import (
-        send_transaction, init_web3, get_contract, load_contract_abi,
-        wrap_eth_to_weth, w3 # Import necessary utils
-    )
+    from test.utils.web3_utils import send_transaction, get_contract
 except ImportError as e:
-     print(f"ERROR importing utils: {e}. Check sys.path and folder structure.", file=sys.stderr)
-     sys.exit(1)
+    print(f"ERROR importing from test.utils in baseline_test.py: {e}. Check sys.path and __init__.py files.", file=sys.stderr)
+    sys.exit(1)
 
 # --- Constants ---
-MIN_WETH_TO_FUND_CONTRACT = Web3.to_wei(0.02, 'ether') # Min WETH contract should have
-MIN_USDC_TO_FUND_CONTRACT = 20 * (10**6) # Min USDC contract should have (20 USDC)
+MIN_WETH_TO_FUND_CONTRACT = Web3.to_wei(0.02, 'ether')
+MIN_USDC_TO_FUND_CONTRACT = 20 * (10**6) # 20 USDC
 TWO_POW_96 = Decimal(2**96)
 MIN_TICK_CONST = -887272
 MAX_TICK_CONST = 887272
 
+
 # --- Setup Logging ---
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-    handlers=[
-        logging.FileHandler("baseline_test.log"), # Log to a file
-        logging.StreamHandler() # Also log to console
-    ]
-)
+if not logging.getLogger('baseline_test').hasHandlers():
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler("baseline_test.log"), # Log to a file in execution directory
+            logging.StreamHandler()
+        ]
+    )
 logger = logging.getLogger('baseline_test')
 
 # --- Define path for addresses and results ---
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent # Adjust if needed
-ADDRESS_FILE_BASELINE = PROJECT_ROOT / 'baselineMinimal_address.json' # Dedicated file
-RESULTS_FILE = PROJECT_ROOT / 'position_results_baseline.csv' # Dedicated results file
+ADDRESS_FILE_BASELINE = project_root / 'baselineMinimal_address.json'
+RESULTS_FILE = project_root / 'position_results_baseline.csv'
 
-logger.info(f"Project Root: {PROJECT_ROOT}")
+logger.info(f"Project Root for Baseline Test (from baseline_test.py): {project_root}")
 logger.info(f"Baseline Address File: {ADDRESS_FILE_BASELINE}")
 logger.info(f"Baseline Results File: {RESULTS_FILE}")
 
@@ -64,11 +66,6 @@ class BaselineTest(LiquidityTestBase):
 
     def __init__(self, contract_address: str):
         super().__init__(contract_address, "BaselineMinimal")
-        self.factory_contract = None
-        self.tick_spacing = None
-        self.pool_address = None
-        self.pool_contract = None
-        # Define action states for logging/tracking
         self.ACTION_STATES = {
             "INIT": "init", "SETUP_FAILED": "setup_failed",
             "POOL_READ_FAILED": "pool_read_failed", "CALCULATION_FAILED": "calculation_failed",
@@ -79,129 +76,171 @@ class BaselineTest(LiquidityTestBase):
             "METRICS_UPDATE_FAILED": "metrics_update_failed",
             "UNEXPECTED_ERROR": "unexpected_error"
         }
+        self.factory_contract = None
+        self.tick_spacing = None
+        self.pool_address = None
+        self.pool_contract = None
+        
         self.metrics = self._reset_metrics()
 
     def _reset_metrics(self):
-        """Resets metrics for a new run."""
-        # (Keep your detailed metrics structure)
         return {
             'timestamp': None, 'contract_type': 'Baseline',
             'action_taken': self.ACTION_STATES["INIT"], 'tx_hash': None,
             'actualPrice_pool': None, 'sqrtPriceX96_pool': None, 'currentTick_pool': None,
             'targetTickLower_offchain': None, 'targetTickUpper_offchain': None,
-            'currentTickLower': None, 'currentTickUpper': None, 'currentLiquidity': None,
-            'finalTickLower': None, 'finalTickUpper': None, 'finalLiquidity': None,
+            'currentTickLower_contract': None, 'currentTickUpper_contract': None, 'currentLiquidity_contract': None,
+            'finalTickLower_contract': None, 'finalTickUpper_contract': None, 'finalLiquidity_contract': None,
             'gas_used': None, 'gas_cost_eth': None, 'error_message': ""
         }
 
     def setup(self) -> bool:
-        """Initialize base, factory, pool and get tickSpacing."""
-        # (Same setup logic as predictive, just logging context differs slightly)
         if not super().setup():
             self.metrics['action_taken'] = self.ACTION_STATES["SETUP_FAILED"]
             self.metrics['error_message'] = "Base setup failed"
-            # self.save_metrics() # Avoid saving here
             return False
         try:
+            if not web3_utils.w3 or not web3_utils.w3.is_connected():
+                logger.error("web3_utils.w3 not available in BaselineTest setup after base.setup()")
+                self.metrics['action_taken'] = self.ACTION_STATES["SETUP_FAILED"]
+                self.metrics['error_message'] = "web3_utils.w3 unavailable post base setup"
+                return False
+
             factory_address = self.contract.functions.factory().call()
             self.factory_contract = get_contract(factory_address, "IUniswapV3Factory")
             fee = self.contract.functions.fee().call()
             self.pool_address = self.factory_contract.functions.getPool(self.token0, self.token1, fee).call()
-            if self.pool_address == '0x' + '0'*40:
-                 raise ValueError(f"Baseline pool address not found for {self.token0}/{self.token1} fee {fee}")
+
+            if not self.pool_address or self.pool_address == '0x' + '0' * 40:
+                logger.error(f"Baseline pool address not found for {self.token0}/{self.token1} fee {fee}")
+                self.metrics['action_taken'] = self.ACTION_STATES["SETUP_FAILED"]
+                self.metrics['error_message'] = f"Pool not found {self.token0}/{self.token1} fee {fee}"
+                return False
+
             self.pool_contract = get_contract(self.pool_address, "IUniswapV3Pool")
             logger.info(f"Baseline Pool contract initialized at {self.pool_address}")
+            
             self.tick_spacing = self.pool_contract.functions.tickSpacing().call()
             if not self.tick_spacing or self.tick_spacing <= 0:
-                 raise ValueError(f"Invalid tickSpacing read from pool: {self.tick_spacing}")
+                logger.error(f"Invalid tickSpacing read from pool: {self.tick_spacing}")
+                self.metrics['action_taken'] = self.ACTION_STATES["SETUP_FAILED"]
+                self.metrics['error_message'] = f"Invalid tickSpacing: {self.tick_spacing}"
+                return False
             logger.info(f"Baseline Tick spacing from pool: {self.tick_spacing}")
             return True
         except Exception as e:
             logger.exception(f"Baseline setup failed getting pool/tickSpacing: {e}")
             self.metrics['action_taken'] = self.ACTION_STATES["SETUP_FAILED"]
             self.metrics['error_message'] = f"Setup pool/tick error: {str(e)}"
-            # self.save_metrics() # Avoid saving here
             return False
 
     def get_pool_state(self) -> tuple[int | None, int | None]:
-        """Reads current sqrtPriceX96 and tick from the pool."""
-        # (Same logic as predictive)
-        if not self.pool_contract: return None, None
+        if not self.pool_contract:
+            logger.error("Pool contract not initialized for get_pool_state.")
+            return None, None
+        if not web3_utils.w3 or not web3_utils.w3.is_connected():
+            logger.error("Web3 not connected in get_pool_state.")
+            return None, None
         try:
             slot0 = self.pool_contract.functions.slot0().call()
             sqrt_price_x96, tick = slot0[0], slot0[1]
             self.metrics['sqrtPriceX96_pool'] = sqrt_price_x96
             self.metrics['currentTick_pool'] = tick
             self.metrics['actualPrice_pool'] = self._calculate_actual_price(sqrt_price_x96)
-            # logger.debug(f"Pool State: Tick={tick}, ActualPrice={self.metrics['actualPrice_pool']:.2f}")
             return sqrt_price_x96, tick
         except Exception as e:
             logger.exception(f"Failed to get pool state: {e}")
+            self.metrics['action_taken'] = self.ACTION_STATES["POOL_READ_FAILED"]
+            self.metrics['error_message'] = f"Pool state read error: {str(e)}"
             return None, None
-
-    def _calculate_actual_price(self, sqrt_price_x96):
-        """Calculates readable price from sqrtPriceX96 off-chain."""
-        # (Same logic as predictive)
-        if not sqrt_price_x96 or sqrt_price_x96 == 0: return 0.0
-        try:
-            sqrt_price_x96_dec = Decimal(sqrt_price_x96)
-            price_ratio = (sqrt_price_x96_dec / TWO_POW_96)**2
-            price_t1_t0_adj = price_ratio * (Decimal(10)**(self.token1_decimals - self.token0_decimals))
-            return float(price_t1_t0_adj)
-        except Exception: return 0.0
-
-
+    
     def calculate_target_ticks_offchain(self, current_tick: int) -> tuple[int | None, int | None]:
-        """Calculates target ticks off-chain based on contract logic (width=4)."""
-        # (Same logic as predictive)
-        if self.tick_spacing is None or current_tick is None: return None, None
+        if self.tick_spacing is None or current_tick is None:
+            logger.error("Tick spacing or current_tick not available for target tick calculation.")
+            self.metrics['action_taken'] = self.ACTION_STATES["CALCULATION_FAILED"]
+            self.metrics['error_message'] = "Missing data for target tick calc"
+            return None, None
         try:
-            width_multiplier = 4
-            half_width = (self.tick_spacing * width_multiplier) // 2
-            if half_width < self.tick_spacing: half_width = self.tick_spacing
-            target_lower_tick = math.floor((current_tick - half_width) / self.tick_spacing) * self.tick_spacing
-            target_upper_tick = math.floor((current_tick + half_width) / self.tick_spacing) * self.tick_spacing
-            if target_lower_tick >= target_upper_tick: target_upper_tick = target_lower_tick + self.tick_spacing
+            width_multiplier = 4 
+            half_total_tick_width = (self.tick_spacing * width_multiplier) // 2
+            
+            if half_total_tick_width < self.tick_spacing:
+                 half_total_tick_width = self.tick_spacing
+
+            target_lower_tick = math.floor((current_tick - half_total_tick_width) / self.tick_spacing) * self.tick_spacing
+            target_upper_tick = math.floor((current_tick + half_total_tick_width) / self.tick_spacing) * self.tick_spacing
+            
+            if target_lower_tick >= target_upper_tick:
+                target_upper_tick = target_lower_tick + self.tick_spacing
+
             target_lower_tick = max(MIN_TICK_CONST, target_lower_tick)
             target_upper_tick = min(MAX_TICK_CONST, target_upper_tick)
+
             if target_lower_tick >= target_upper_tick:
-                 if target_upper_tick == MAX_TICK_CONST: target_lower_tick = target_upper_tick - self.tick_spacing
-                 else: target_upper_tick = target_lower_tick + self.tick_spacing
-                 target_lower_tick = max(MIN_TICK_CONST, target_lower_tick)
-            if target_lower_tick >= target_upper_tick or target_lower_tick < MIN_TICK_CONST or target_upper_tick > MAX_TICK_CONST:
-                 raise ValueError("Invalid tick range")
-            logger.info(f"Off-chain calculated target ticks: Lower={target_lower_tick}, Upper={target_upper_tick}")
+                if target_upper_tick == MAX_TICK_CONST: 
+                    target_lower_tick = target_upper_tick - self.tick_spacing
+                else: 
+                    target_upper_tick = target_lower_tick + self.tick_spacing
+                target_lower_tick = max(MIN_TICK_CONST, target_lower_tick)
+
+            if target_lower_tick >= target_upper_tick or \
+               target_lower_tick < MIN_TICK_CONST or target_upper_tick > MAX_TICK_CONST:
+                logger.error(f"Invalid tick range after calculation: L={target_lower_tick}, U={target_upper_tick}")
+                raise ValueError("Invalid tick range generated")
+
+            logger.info(f"Off-chain calculated target ticks: Lower={target_lower_tick}, Upper={target_upper_tick} (Current: {current_tick}, Spacing: {self.tick_spacing})")
             self.metrics['targetTickLower_offchain'] = target_lower_tick
             self.metrics['targetTickUpper_offchain'] = target_upper_tick
             return target_lower_tick, target_upper_tick
         except Exception as e:
             logger.exception(f"Error calculating target ticks off-chain: {e}")
+            self.metrics['action_taken'] = self.ACTION_STATES["CALCULATION_FAILED"]
+            self.metrics['error_message'] = f"Target tick calc error: {str(e)}"
             return None, None
 
     def fund_contract_if_needed(self, min_weth=MIN_WETH_TO_FUND_CONTRACT, min_usdc=MIN_USDC_TO_FUND_CONTRACT) -> bool:
-        """Checks contract WETH/USDC balance and funds from deployer if needed."""
-        # Use the *exact same* funding logic as implemented in the corrected predictive_test.py
-        # --- Start copied/adapted funding logic ---
-        if not w3 or not w3.is_connected():
-            if not init_web3(): return False
+        if not web3_utils.w3 or not web3_utils.w3.is_connected():
+            if not web3_utils.init_web3():
+                logger.error("Web3 connection failed in fund_contract_if_needed.")
+                self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+                self.metrics['error_message'] = "W3 init fail in fund_contract"
+                return False
+        
+        if not web3_utils.w3 or not web3_utils.w3.is_connected():
+            logger.error("web3_utils.w3 is still not available after init attempt in fund_contract_if_needed.")
+            self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+            self.metrics['error_message'] = "W3 unavailable post init in fund_contract"
+            return False
 
-        private_key = os.getenv('PRIVATE_KEY')
-        if not private_key:
-             logger.error("PRIVATE_KEY needed for funding.")
-             return False
-        account = Account.from_key(private_key)
-        contract_addr = self.contract_address
+        private_key_env = os.getenv('PRIVATE_KEY')
+        if not private_key_env:
+            logger.error("PRIVATE_KEY environment variable not set for funding.")
+            self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+            self.metrics['error_message'] = "PRIVATE_KEY missing for funding"
+            return False
+        try:
+            account = Account.from_key(private_key_env)
+        except Exception as e:
+            logger.error(f"Failed to create account from PRIVATE_KEY: {e}")
+            self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+            self.metrics['error_message'] = f"Bad PRIVATE_KEY: {e}"
+            return False
+
+        contract_addr_checksum = Web3.to_checksum_address(self.contract_address)
 
         try:
             token0_is_usdc = self.token0_decimals == 6
             weth_token_addr = self.token1 if token0_is_usdc else self.token0
             usdc_token_addr = self.token0 if token0_is_usdc else self.token1
+            usdc_decimals_val = self.token0_decimals if token0_is_usdc else self.token1_decimals
+
+
             weth_contract = get_contract(weth_token_addr, "IERC20")
             usdc_contract = get_contract(usdc_token_addr, "IERC20")
 
-            contract_weth_bal = weth_contract.functions.balanceOf(contract_addr).call()
-            contract_usdc_bal = usdc_contract.functions.balanceOf(contract_addr).call()
-            logger.info(f"Contract balances before funding check: WETH={Web3.from_wei(contract_weth_bal, 'ether')}, USDC={contract_usdc_bal / 10**6}")
+            contract_weth_bal = weth_contract.functions.balanceOf(contract_addr_checksum).call()
+            contract_usdc_bal = usdc_contract.functions.balanceOf(contract_addr_checksum).call()
+            logger.info(f"Contract balances before funding check: WETH={Web3.from_wei(contract_weth_bal, 'ether')}, USDC={contract_usdc_bal / (10**usdc_decimals_val):.6f}")
 
             fund_weth = contract_weth_bal < min_weth
             fund_usdc = contract_usdc_bal < min_usdc
@@ -211,250 +250,324 @@ class BaselineTest(LiquidityTestBase):
                 return True
 
             logger.info("Attempting to fund contract...")
-            nonce = w3.eth.get_transaction_count(account.address)
-            funded_something = False
+            current_nonce = web3_utils.w3.eth.get_transaction_count(account.address)
 
             if fund_weth:
                 needed_weth = min_weth - contract_weth_bal
                 logger.info(f"Contract needs {Web3.from_wei(needed_weth, 'ether')} WETH.")
                 deployer_weth_bal = weth_contract.functions.balanceOf(account.address).call()
-                if deployer_weth_bal < needed_weth:
-                    logger.warning(f"Deployer low on WETH ({Web3.from_wei(deployer_weth_bal, 'ether')}). Wrapping ETH...")
-                    eth_needed = needed_weth - deployer_weth_bal + Web3.to_wei(0.001, 'ether')
-                    if wrap_eth_to_weth(eth_needed):
-                         time.sleep(2)
-                         deployer_weth_bal = weth_contract.functions.balanceOf(account.address).call()
-                    else:
-                         logger.error("Failed to wrap ETH.")
-                         return False
-                if deployer_weth_bal >= needed_weth:
-                    logger.info(f"Transferring {Web3.from_wei(needed_weth, 'ether')} WETH to contract...")
-                    tx_params = weth_contract.functions.transfer(contract_addr, needed_weth).build_transaction({'from': account.address, 'nonce': nonce, 'chainId': int(w3.net.version)})
-                    receipt = send_transaction(tx_params)
-                    if receipt and receipt.status == 1:
-                        logger.info("WETH transfer successful.")
-                        nonce += 1; funded_something = True; time.sleep(2)
-                    else: logger.error("WETH transfer failed."); return False
-                else: logger.error("Deployer still has insufficient WETH."); return False
 
+                if deployer_weth_bal < needed_weth:
+                    logger.warning(f"Deployer has insufficient WETH ({Web3.from_wei(deployer_weth_bal, 'ether')}). Attempting to wrap ETH...")
+                    eth_needed_for_wrap = needed_weth - deployer_weth_bal + Web3.to_wei(0.001, 'ether')
+                    if web3_utils.wrap_eth_to_weth(eth_needed_for_wrap):
+                        time.sleep(3)
+                        deployer_weth_bal = weth_contract.functions.balanceOf(account.address).call()
+                    else:
+                        logger.error("Failed to wrap ETH for WETH funding.")
+                        self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+                        self.metrics['error_message'] = "ETH wrapping failed"
+                        return False
+
+                if deployer_weth_bal >= needed_weth:
+                    logger.info(f"Transferring {Web3.from_wei(needed_weth, 'ether')} WETH from deployer to contract {contract_addr_checksum}...")
+                    tx_transfer_params = {'from': account.address, 'nonce': current_nonce, 'chainId': int(web3_utils.w3.net.version)}
+                    built_tx = weth_contract.functions.transfer(contract_addr_checksum, needed_weth).build_transaction(tx_transfer_params)
+                    receipt = send_transaction(built_tx)
+                    if receipt and receipt.status == 1:
+                        logger.info(f"WETH transfer successful. Tx: {receipt.transactionHash.hex()}")
+                        current_nonce += 1
+                        time.sleep(3)
+                    else:
+                        logger.error(f"WETH transfer to contract failed. Receipt: {receipt}")
+                        self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+                        self.metrics['error_message'] = "WETH transfer tx failed"
+                        return False
+                else:
+                    logger.error(f"Deployer still has insufficient WETH ({Web3.from_wei(deployer_weth_bal, 'ether')}) after wrap attempt.")
+                    self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+                    self.metrics['error_message'] = "Insufficient WETH post-wrap"
+                    return False
+            
             if fund_usdc:
                 needed_usdc = min_usdc - contract_usdc_bal
-                logger.info(f"Contract needs {needed_usdc / (10**6)} USDC.")
+                logger.info(f"Contract needs {needed_usdc / (10**usdc_decimals_val):.6f} USDC.")
                 deployer_usdc_bal = usdc_contract.functions.balanceOf(account.address).call()
-                if deployer_usdc_bal >= needed_usdc:
-                    logger.info(f"Transferring {needed_usdc / (10**6)} USDC to contract...")
-                    tx_params = usdc_contract.functions.transfer(contract_addr, needed_usdc).build_transaction({'from': account.address, 'nonce': nonce, 'chainId': int(w3.net.version)})
-                    receipt = send_transaction(tx_params)
-                    if receipt and receipt.status == 1:
-                         logger.info("USDC transfer successful."); funded_something = True; time.sleep(2)
-                         # Nonce already handled if WETH was sent
-                    else: logger.error("USDC transfer failed."); return False
-                else: logger.error(f"Deployer has insufficient USDC."); return False
 
-            # Log final balances
-            final_weth = weth_contract.functions.balanceOf(contract_addr).call()
-            final_usdc = usdc_contract.functions.balanceOf(contract_addr).call()
-            logger.info(f"Balances after funding: WETH={Web3.from_wei(final_weth, 'ether')}, USDC={final_usdc / 10**6}")
-            if final_weth < min_weth or final_usdc < min_usdc:
-                 logger.error("Contract balances still below minimum after funding.")
-                 return False
+                if deployer_usdc_bal >= needed_usdc:
+                    logger.info(f"Transferring {needed_usdc / (10**usdc_decimals_val):.6f} USDC from deployer to contract {contract_addr_checksum}...")
+                    tx_transfer_params = {'from': account.address, 'nonce': current_nonce, 'chainId': int(web3_utils.w3.net.version)}
+                    built_tx = usdc_contract.functions.transfer(contract_addr_checksum, needed_usdc).build_transaction(tx_transfer_params)
+                    receipt = send_transaction(built_tx)
+                    if receipt and receipt.status == 1:
+                        logger.info(f"USDC transfer successful. Tx: {receipt.transactionHash.hex()}")
+                        time.sleep(3)
+                    else:
+                        logger.error(f"USDC transfer to contract failed. Receipt: {receipt}")
+                        self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+                        self.metrics['error_message'] = "USDC transfer tx failed"
+                        return False
+                else:
+                    logger.error(f"Deployer has insufficient USDC ({deployer_usdc_bal / (10**usdc_decimals_val):.6f}).")
+                    self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+                    self.metrics['error_message'] = "Insufficient USDC"
+                    return False
+
+            contract_weth_bal_final = weth_contract.functions.balanceOf(contract_addr_checksum).call()
+            contract_usdc_bal_final = usdc_contract.functions.balanceOf(contract_addr_checksum).call()
+            logger.info(f"Balances after funding attempt: WETH={Web3.from_wei(contract_weth_bal_final, 'ether')}, USDC={contract_usdc_bal_final / (10**usdc_decimals_val):.6f}")
+            
+            if contract_weth_bal_final < min_weth or contract_usdc_bal_final < min_usdc:
+                logger.error("Contract balances still below minimum after funding attempt.")
+                self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+                self.metrics['error_message'] = "Balances low post-funding"
+                return False
             return True
+
         except Exception as e:
             logger.exception(f"Error during fund_contract_if_needed: {e}")
+            self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
+            self.metrics['error_message'] = f"Fund contract exception: {str(e)}"
             return False
-        # --- End copied/adapted funding logic ---
-
 
     def adjust_position(self) -> bool:
-        """Checks proximity, funds contract, calls adjustment function, saves metrics."""
-        self.metrics = self._reset_metrics() # Reset metrics
-        receipt = None
+        self.metrics = self._reset_metrics()
         adjustment_call_success = False
-        adjusted_onchain = False # Did the contract state it adjusted?
+        adjusted_onchain_event = False 
 
         try:
-            # --- 1. Get Pool State ---
+            if not web3_utils.w3 or not web3_utils.w3.is_connected():
+                logger.error("Web3 not connected at start of adjust_position.")
+                self.metrics['action_taken'] = self.ACTION_STATES["SETUP_FAILED"]
+                self.metrics['error_message'] = "W3 unavailable in adjust_position"
+                self.save_metrics()
+                return False
+
             _, current_tick = self.get_pool_state()
             if current_tick is None:
-                self.metrics['action_taken'] = self.ACTION_STATES["POOL_READ_FAILED"]
-                self.metrics['error_message'] = "Failed to read pool state"
-                self.save_metrics(); return False
+                self.save_metrics()
+                return False
 
-            # --- 2. Get Current Position State ---
             position_info = self.get_position_info()
-            has_current_position = position_info.get('active', False) if position_info else False
-            self.metrics['currentTickLower'] = position_info.get('tickLower') if has_current_position else None
-            self.metrics['currentTickUpper'] = position_info.get('tickUpper') if has_current_position else None
-            self.metrics['currentLiquidity'] = position_info.get('liquidity', 0) if has_current_position else 0
-
-            # --- 3. Calculate Target Ticks Off-chain ---
+            current_pos_active = position_info.get('active', False) if position_info else False
+            self.metrics['currentTickLower_contract'] = position_info.get('tickLower') if current_pos_active else None
+            self.metrics['currentTickUpper_contract'] = position_info.get('tickUpper') if current_pos_active else None
+            self.metrics['currentLiquidity_contract'] = position_info.get('liquidity', 0) if current_pos_active else 0
+            
             target_lower_tick, target_upper_tick = self.calculate_target_ticks_offchain(current_tick)
-            if target_lower_tick is None:
-                self.metrics['action_taken'] = self.ACTION_STATES["CALCULATION_FAILED"]
-                self.metrics['error_message'] = "Failed to calculate target ticks"
-                self.save_metrics(); return False
+            if target_lower_tick is None or target_upper_tick is None:
+                self.save_metrics()
+                return False
 
-            # --- 4. Proximity Check ---
-            if has_current_position:
-                TICK_PROXIMITY_THRESHOLD = self.tick_spacing
-                is_close = (abs(target_lower_tick - self.metrics['currentTickLower']) <= TICK_PROXIMITY_THRESHOLD and
-                            abs(target_upper_tick - self.metrics['currentTickUpper']) <= TICK_PROXIMITY_THRESHOLD)
-                if is_close:
-                    logger.info("Off-chain proximity check: Target ticks close. Skipping adjustment call.")
+            if current_pos_active and self.metrics['currentTickLower_contract'] is not None and self.tick_spacing is not None:
+                TICK_PROXIMITY_THRESHOLD = self.tick_spacing 
+                is_close_enough = (abs(target_lower_tick - self.metrics['currentTickLower_contract']) <= TICK_PROXIMITY_THRESHOLD and
+                                   abs(target_upper_tick - self.metrics['currentTickUpper_contract']) <= TICK_PROXIMITY_THRESHOLD)
+                if is_close_enough:
+                    logger.info("Off-chain proximity check: Target ticks are close to current. Skipping adjustment call.")
                     self.metrics['action_taken'] = self.ACTION_STATES["SKIPPED_PROXIMITY"]
-                    self.metrics['finalTickLower'] = self.metrics['currentTickLower']
-                    self.metrics['finalTickUpper'] = self.metrics['currentTickUpper']
-                    self.metrics['finalLiquidity'] = self.metrics['currentLiquidity']
-                    self.save_metrics(); return True # Successful skip
+                    self.metrics['finalTickLower_contract'] = self.metrics['currentTickLower_contract']
+                    self.metrics['finalTickUpper_contract'] = self.metrics['currentTickUpper_contract']
+                    self.metrics['finalLiquidity_contract'] = self.metrics['currentLiquidity_contract']
+                    self.save_metrics()
+                    return True 
 
-            # --- 5. Fund Contract If Needed ---
             if not self.fund_contract_if_needed():
-                 logger.error("Funding failed. Skipping adjustment.")
-                 self.metrics['action_taken'] = self.ACTION_STATES["FUNDING_FAILED"]
-                 self.metrics['error_message'] = "Contract funding failed"
-                 self.metrics['finalTickLower'] = self.metrics['currentTickLower'] # Keep current state
-                 self.metrics['finalTickUpper'] = self.metrics['currentTickUpper']
-                 self.metrics['finalLiquidity'] = self.metrics['currentLiquidity']
-                 self.save_metrics(); return False
+                logger.error("Funding contract failed. Skipping adjustment.")
+                self.metrics['finalTickLower_contract'] = self.metrics['currentTickLower_contract'] 
+                self.metrics['finalTickUpper_contract'] = self.metrics['currentTickUpper_contract']
+                self.metrics['finalLiquidity_contract'] = self.metrics['currentLiquidity_contract']
+                self.save_metrics()
+                return False
 
-
-            # --- 6. Call Contract ---
             logger.info(f"Calling adjustLiquidityWithCurrentPrice...")
-            private_key = os.getenv('PRIVATE_KEY')
-            account = Account.from_key(private_key)
-            nonce = w3.eth.get_transaction_count(account.address)
+            private_key_env = os.getenv('PRIVATE_KEY')
+            if not private_key_env:
+                logger.error("PRIVATE_KEY not found for adjust_position.")
+                self.metrics['action_taken'] = self.ACTION_STATES["UNEXPECTED_ERROR"]
+                self.metrics['error_message'] = "PRIVATE_KEY missing for adjustment tx"
+                self.save_metrics()
+                return False
+            try:
+                account = Account.from_key(private_key_env)
+            except Exception as e:
+                logger.error(f"Failed to load account from PRIVATE_KEY for adjustment: {e}")
+                self.metrics['action_taken'] = self.ACTION_STATES["UNEXPECTED_ERROR"]
+                self.metrics['error_message'] = f"Bad PRIVATE_KEY for adjustment: {e}"
+                self.save_metrics()
+                return False
+
+
+            current_nonce = web3_utils.w3.eth.get_transaction_count(account.address)
 
             try:
                 tx_function = self.contract.functions.adjustLiquidityWithCurrentPrice()
-                tx_params = {'from': account.address, 'nonce': nonce, 'chainId': int(w3.net.version)}
-                try: # Estimate Gas
-                    estimated_gas = tx_function.estimate_gas({'from': account.address})
+                tx_params = {
+                    'from': account.address,
+                    'nonce': current_nonce,
+                    'chainId': int(web3_utils.w3.net.version)
+                }
+                try:
+                    pre_tx = tx_function.build_transaction({'from': account.address, 'nonce': current_nonce, 'chainId': tx_params['chainId']})
+                    estimated_gas = web3_utils.w3.eth.estimate_gas(pre_tx)
                     tx_params['gas'] = int(estimated_gas * 1.25)
-                    logger.info(f"Est. gas: {estimated_gas}, using: {tx_params['gas']}")
+                    logger.info(f"Estimated gas for baseline adjustment: {estimated_gas}, using: {tx_params['gas']}")
                 except Exception as est_err:
-                    logger.warning(f"Gas estimation failed: {est_err}. Using 1.5M")
+                    logger.warning(f"Gas estimation failed for baseline adjustment: {est_err}. Using default 1,500,000")
                     tx_params['gas'] = 1500000
 
-                receipt = send_transaction(tx_function.build_transaction(tx_params))
+                final_tx_to_send = tx_function.build_transaction(tx_params)
+                receipt = send_transaction(final_tx_to_send)
+
                 self.metrics['tx_hash'] = receipt.transactionHash.hex() if receipt else None
                 self.metrics['action_taken'] = self.ACTION_STATES["TX_SENT"]
 
                 if receipt and receipt.status == 1:
-                    logger.info("Tx successful. Processing events...")
-                    self.metrics['gas_used'] = receipt.gasUsed
-                    if receipt.effectiveGasPrice: self.metrics['gas_cost_eth'] = float(Web3.from_wei(receipt.gasUsed * receipt.effectiveGasPrice, 'ether'))
-                    # Process Event
+                    logger.info(f"Baseline adjustment transaction successful (Status 1). Tx: {self.metrics['tx_hash']}. Processing events...")
+                    self.metrics['gas_used'] = receipt.get('gasUsed', 0)
+                    if receipt.get('effectiveGasPrice'):
+                        self.metrics['gas_cost_eth'] = float(Web3.from_wei(receipt.gasUsed * receipt.effectiveGasPrice, 'ether'))
+                    
                     try:
-                        logs = self.contract.events.BaselineAdjustmentMetrics().process_receipt(receipt, errors=logging.WARN)
-                        if logs:
-                            adjusted_onchain = logs[0]['args']['adjusted']
-                            logger.info(f"Event: Adjusted={adjusted_onchain}")
-                            self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"] if adjusted_onchain else self.ACTION_STATES["TX_SUCCESS_SKIPPED_ONCHAIN"]
-                        else: logger.warning("Event not found."); self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"]
-                    except Exception as log_exc: logger.warning(f"Event error: {log_exc}"); self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"]
+                        event_name = "BaselineAdjustmentMetrics" 
+                        if hasattr(self.contract.events, event_name):
+                            logs = self.contract.events[event_name]().process_receipt(receipt, errors=logging.WARN)
+                            if logs and len(logs) > 0:
+                                adjusted_onchain_event = logs[0]['args'].get('adjusted', False)
+                                logger.info(f"Event '{event_name}' found: Adjusted={adjusted_onchain_event}, Args={logs[0]['args']}")
+                                self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"] if adjusted_onchain_event else self.ACTION_STATES["TX_SUCCESS_SKIPPED_ONCHAIN"]
+                            else:
+                                logger.warning(f"Event '{event_name}' not found in transaction logs, assuming adjustment occurred.")
+                                self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"]
+                                adjusted_onchain_event = True 
+                        else:
+                            logger.warning(f"Contract does not have event '{event_name}'. Assuming adjustment if tx successful.")
+                            self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"]
+                            adjusted_onchain_event = True
+
+                    except Exception as log_exc:
+                        logger.warning(f"Error processing event '{event_name}': {log_exc}. Assuming adjustment if tx successful.")
+                        self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"]
+                        adjusted_onchain_event = True 
+
                     adjustment_call_success = True
-                elif receipt:
-                    logger.error(f"Tx reverted (Status 0). Tx: {self.metrics['tx_hash']}")
-                    self.metrics['action_taken'] = self.ACTION_STATES["TX_REVERTED"]; self.metrics['error_message'] = "tx_reverted_onchain"
-                    self.metrics['gas_used'] = receipt.gasUsed; # Record gas
-                    if receipt.effectiveGasPrice: self.metrics['gas_cost_eth'] = float(Web3.from_wei(receipt.gasUsed * receipt.effectiveGasPrice, 'ether'))
+                elif receipt: 
+                    logger.error(f"Baseline adjustment transaction reverted (Status 0). Tx: {self.metrics['tx_hash']}")
+                    self.metrics['action_taken'] = self.ACTION_STATES["TX_REVERTED"]
+                    self.metrics['error_message'] = "tx_reverted_onchain"
+                    self.metrics['gas_used'] = receipt.get('gasUsed', 0)
+                    if receipt.get('effectiveGasPrice'):
+                       self.metrics['gas_cost_eth'] = float(Web3.from_wei(receipt.gasUsed * receipt.effectiveGasPrice, 'ether'))
                     adjustment_call_success = False
-                else:
-                     logger.error("Tx sending failed.")
-                     if self.metrics['action_taken'] == self.ACTION_STATES["TX_SENT"]: self.metrics['action_taken'] = self.ACTION_STATES["TX_WAIT_FAILED"]; self.metrics['error_message'] = "send_transaction failed"
-                     adjustment_call_success = False
+                else: 
+                    logger.error("Baseline adjustment transaction sending/receipt failed.")
+                    if self.metrics['action_taken'] == self.ACTION_STATES["TX_SENT"]:
+                         self.metrics['action_taken'] = self.ACTION_STATES["TX_WAIT_FAILED"]
+                    if not self.metrics['error_message']: self.metrics['error_message'] = "send_transaction for baseline adjustment failed"
+                    adjustment_call_success = False
+
             except Exception as tx_err:
-                 logger.exception(f"Error during tx call/wait: {tx_err}")
-                 self.metrics['action_taken'] = self.ACTION_STATES["UNEXPECTED_ERROR"]; self.metrics['error_message'] = f"TxError: {str(tx_err)}"
-                 self.save_metrics(); return False
-
-            # --- 7. Read Final State & Save ---
-            final_position_info = self.get_position_info()
-            if final_position_info:
-                self.metrics['finalLiquidity'] = final_position_info.get('liquidity', 0)
-                self.metrics['finalTickLower'] = final_position_info.get('tickLower')
-                self.metrics['finalTickUpper'] = final_position_info.get('tickUpper')
-            else: # Best guess if read fails
-                 logger.warning("Could not read final position info.")
-                 if adjustment_call_success and adjusted_onchain: self.metrics['finalTickLower'], self.metrics['finalTickUpper'] = target_lower_tick, target_upper_tick
-                 else: self.metrics['finalTickLower'], self.metrics['finalTickUpper'] = self.metrics['currentTickLower'], self.metrics['currentTickUpper']
-                 self.metrics['finalLiquidity'] = self.metrics['currentLiquidity'] # Assume no change
-
+                logger.exception(f"Error during baseline adjustment transaction call/wait: {tx_err}")
+                self.metrics['action_taken'] = self.ACTION_STATES["UNEXPECTED_ERROR"]
+                self.metrics['error_message'] = f"TxError: {str(tx_err)}"
+                self.save_metrics()
+                return False
+            
+            final_pos_info = self.get_position_info()
+            if final_pos_info:
+                self.metrics['finalLiquidity_contract'] = final_pos_info.get('liquidity', 0)
+                self.metrics['finalTickLower_contract'] = final_pos_info.get('tickLower')
+                self.metrics['finalTickUpper_contract'] = final_pos_info.get('tickUpper')
+            else: 
+                logger.warning("Could not read final position info after baseline adjustment.")
+                if adjustment_call_success and adjusted_onchain_event: 
+                    self.metrics['finalTickLower_contract'] = target_lower_tick
+                    self.metrics['finalTickUpper_contract'] = target_upper_tick
+                    self.metrics['finalLiquidity_contract'] = self.metrics['currentLiquidity_contract'] 
+                else: 
+                    self.metrics['finalTickLower_contract'] = self.metrics['currentTickLower_contract']
+                    self.metrics['finalTickUpper_contract'] = self.metrics['currentTickUpper_contract']
+                    self.metrics['finalLiquidity_contract'] = self.metrics['currentLiquidity_contract']
+            
             self.save_metrics()
             return adjustment_call_success
 
         except Exception as e:
-            logger.exception("Unexpected error in adjust_position:")
-            self.metrics['action_taken'] = self.ACTION_STATES["UNEXPECTED_ERROR"]; self.metrics['error_message'] = str(e)
-            self.save_metrics(); return False
+            logger.exception("Unexpected error in baseline adjust_position:")
+            self.metrics['action_taken'] = self.ACTION_STATES["UNEXPECTED_ERROR"]
+            if not self.metrics.get('error_message'): self.metrics['error_message'] = str(e)
+            self.save_metrics()
+            return False
 
     def save_metrics(self):
-        """Saves the current state of self.metrics to the CSV file."""
-        # (Keep your existing save_metrics logic, ensure columns match _reset_metrics)
         self.metrics['timestamp'] = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         columns = [
             'timestamp', 'contract_type', 'action_taken', 'tx_hash',
             'actualPrice_pool', 'sqrtPriceX96_pool', 'currentTick_pool',
             'targetTickLower_offchain', 'targetTickUpper_offchain',
-            'currentTickLower', 'currentTickUpper', 'currentLiquidity',
-            'finalTickLower', 'finalTickUpper', 'finalLiquidity',
+            'currentTickLower_contract', 'currentTickUpper_contract', 'currentLiquidity_contract',
+            'finalTickLower_contract', 'finalTickUpper_contract', 'finalLiquidity_contract',
             'gas_used', 'gas_cost_eth', 'error_message'
         ]
         try:
             RESULTS_FILE.parent.mkdir(parents=True, exist_ok=True)
             file_exists = RESULTS_FILE.is_file()
-            for col in columns: self.metrics.setdefault(col, None)
-            row_data = {k: "" if self.metrics.get(k) is None else self.metrics.get(k) for k in columns}
+            row_data = {col: self.metrics.get(col, "") for col in columns}
+
             with open(RESULTS_FILE, 'a', newline='', encoding='utf-8') as f:
                 writer = csv.DictWriter(f, fieldnames=columns, extrasaction='ignore')
-                if not file_exists: writer.writeheader()
+                if not file_exists:
+                    writer.writeheader()
                 writer.writerow(row_data)
             logger.info(f"Baseline metrics saved to {RESULTS_FILE}")
         except Exception as e:
             logger.exception(f"Failed to save baseline metrics: {e}")
 
-    # execute_test_steps is inherited
-
-
 # --- Main Function ---
 def main():
-    """Main test execution function."""
     logger.info("="*50)
     logger.info("Starting Baseline Minimal Liquidity Manager Test on Fork")
     logger.info("="*50)
 
-    if not init_web3():
-        logger.critical("Web3 failed. Exiting baseline test.")
-        return
+    if not web3_utils.init_web3():
+        logger.critical("Web3 initialization failed. Exiting baseline test.")
+        sys.exit(1) 
 
-    baseline_address = None
+    if not web3_utils.w3 or not web3_utils.w3.is_connected():
+        logger.critical("web3_utils.w3 instance not available or not connected after init. Exiting baseline test.")
+        sys.exit(1)
+
+
+    baseline_address_val = None 
     try:
-        # --- Read Contract Address from JSON ---
         if not ADDRESS_FILE_BASELINE.exists():
-             logger.error(f"Baseline address file not found: {ADDRESS_FILE_BASELINE}")
-             raise FileNotFoundError(f"{ADDRESS_FILE_BASELINE}")
+            logger.error(f"Baseline address file not found: {ADDRESS_FILE_BASELINE}")
+            raise FileNotFoundError(f"File not found: {ADDRESS_FILE_BASELINE}")
 
         logger.info(f"Reading baseline address from: {ADDRESS_FILE_BASELINE}")
         with open(ADDRESS_FILE_BASELINE, 'r') as f:
-             content = f.read()
-             logger.debug(f"Baseline address file content: {content}")
-             addresses = json.loads(content)
-             baseline_address = addresses.get('address') # Read the 'address' key
-             if not baseline_address:
-                  logger.error(f"Key 'address' not found in {ADDRESS_FILE_BASELINE}")
-                  raise ValueError(f"Key 'address' not found")
-        logger.info(f"Loaded Baseline Minimal Address: {baseline_address}")
+            content = f.read()
+            logger.debug(f"Baseline address file content: {content}")
+            addresses_data = json.loads(content)
+            baseline_address_val = addresses_data.get('address')
+            if not baseline_address_val:
+                logger.error(f"Key 'address' not found in {ADDRESS_FILE_BASELINE}")
+                raise ValueError(f"Key 'address' not found in {ADDRESS_FILE_BASELINE}")
+        logger.info(f"Loaded Baseline Minimal Address: {baseline_address_val}")
 
-        # --- Initialize and Run Test ---
-        test = BaselineTest(baseline_address)
+        test = BaselineTest(baseline_address_val)
         test.execute_test_steps()
 
-    except FileNotFoundError as e: logger.error(f"Setup Error: {e}")
-    except ValueError as e: logger.error(f"Config Error: {e}")
-    except Exception as e: logger.exception(f"Unexpected baseline main error:")
+    except FileNotFoundError as e:
+        logger.error(f"Setup Error - Address file not found: {e}")
+    except ValueError as e:
+        logger.error(f"Configuration Error - Problem reading address file or address key missing: {e}")
+    except Exception as e:
+        logger.exception(f"An unexpected error occurred during baseline main execution:")
     finally:
-        logger.info("="*50); logger.info("Baseline test run finished."); logger.info("="*50)
-
+        logger.info("="*50)
+        logger.info("Baseline test run finished.")
+        logger.info("="*50)
 
 if __name__ == "__main__":
     main()

@@ -1,190 +1,325 @@
-# test/utils/fund_my_wallet.py
-from web3 import Web3
-import json
-import requests
+#!/usr/bin/env python3
+"""
+Wallet Funding Script for Hardhat Fork Testing
+Version: 3.0 (Final Working Version)
+"""
+
 import os
 import sys
-import logging # Add logging
-from pathlib import Path
+import logging
+import requests
+from time import sleep
+from web3 import Web3, HTTPProvider
+from web3.exceptions import ContractLogicError, TransactionNotFound
+from typing import Dict, Any, Optional
 
+# --- Constants ---
+DEFAULT_RPC_URL = "http://127.0.0.1:8545"
+MAX_RETRIES = 5
+RETRY_DELAY = 3
+GAS_BUFFER = 1.2
+MIN_ETH_BALANCE = 0.1
 
-# --- Setup Logging ---
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger('fund_my_wallet')
+# Token Configuration
+TOKEN_CONFIG = {
+    "WETH": {
+        "address": "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
+        "whale": "0x2f0b23f53734252bda2277357e97e1517d6b042a",
+        "amount": 20,
+        "decimals": 18
+    },
+    "USDC": {
+        "address": "0xA0b86991c6218b36c1d19D4A2e9Eb0cE3606eB48",
+        "whale": "0x55fe002aeff02f77364de339a1292923a15844b8",
+        "amount": 50000,
+        "decimals": 6
+    }
+}
 
-# Ensure utils can be imported (adjust path if needed)
-current_dir = Path(__file__).resolve().parent
-project_root = current_dir.parent.parent # Assumes utils is in test, test is in root
-sys.path.insert(0, str(project_root))
-# Load web3_utils to get w3 instance initialized with correct RPC
-try:
-    from test.utils.web3_utils import w3, init_web3, get_contract, send_transaction
-except ImportError:
-     logger.critical("Could not import web3_utils. Ensure it's in the python path and correct folder structure.")
-     sys.exit(1)
-
-# Ensure Web3 is connected
-if not init_web3():
-    logger.critical("Web3 failed to initialize in fund_my_wallet. Exiting.")
-    sys.exit(1)
-
-RPC_URL = os.getenv('MAINNET_FORK_RPC_URL', 'http://127.0.0.1:8545')
-
-# Destination address (Your deployer address from .env)
-MY_ADDRESS = os.getenv('DEPLOYER_ADDRESS')
-if not MY_ADDRESS:
-     logger.critical("DEPLOYER_ADDRESS not found in environment variables (.env).")
-     sys.exit(1)
-
-# --- Whales and Tokens ---
-# !!! VERIFY THESE WHALE ADDRESSES HAVE SUFFICIENT FUNDS ON ETHERSCAN MAINNET !!!
-# Using different examples known to often hold funds - ALWAYS DOUBLE CHECK
-WETH_WHALE = "0x2fEb1512183545f48f620C1ec108a43eB094De7a" # Example WETH whale
-USDC_WHALE = "0x47ac0Fb4F2D84898e4D9E7b4DaB3C24507a6D503" # Example USDC whale
-
-WETH_ADDRESS = "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2"
-USDC_ADDRESS = "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48" # 6 decimals
-
-# Amounts to transfer
-WETH_AMOUNT = 20  # e.g., 20 WETH
-USDC_AMOUNT = 50000 # e.g., 50,000 USDC
-
-# Convert addresses to checksum format
-try:
-    MY_ADDRESS = Web3.to_checksum_address(MY_ADDRESS)
-    WETH_WHALE = Web3.to_checksum_address(WETH_WHALE)
-    USDC_WHALE = Web3.to_checksum_address(USDC_WHALE)
-    WETH_ADDRESS = Web3.to_checksum_address(WETH_ADDRESS)
-    USDC_ADDRESS = Web3.to_checksum_address(USDC_ADDRESS)
-except ValueError as e:
-    logger.critical(f"Invalid address format found: {e}")
-    sys.exit(1)
-
-# Minimal ERC20 ABI for transfer and balanceOf
+# ERC20 ABI
 ERC20_ABI = [
-    {"constant": False, "inputs": [{"name": "_to", "type": "address"}, {"name": "_value", "type": "uint256"}], "name": "transfer", "outputs": [{"name": "", "type": "bool"}], "type": "function"},
-    {"constant": True, "inputs": [{"name": "_owner", "type": "address"}], "name": "balanceOf", "outputs": [{"name": "balance", "type": "uint256"}], "type": "function"}
+    {
+        "constant": False,
+        "inputs": [
+            {"name": "_to", "type": "address"},
+            {"name": "_value", "type": "uint256"}
+        ],
+        "name": "transfer",
+        "outputs": [{"name": "", "type": "bool"}],
+        "type": "function"
+    },
+    {
+        "constant": True,
+        "inputs": [{"name": "_owner", "type": "address"}],
+        "name": "balanceOf",
+        "outputs": [{"name": "balance", "type": "uint256"}],
+        "type": "function"
+    }
 ]
 
-def make_rpc_request(method, params):
-    """Helper function to make JSON-RPC requests directly to Hardhat node."""
-    payload = {"jsonrpc": "2.0", "method": method, "params": params, "id": 1}
-    try:
-        response = requests.post(RPC_URL, json=payload, timeout=10)
-        response.raise_for_status()
-        result = response.json()
-        if 'error' in result:
-            logger.error(f"RPC Error for {method}: {result['error']}")
-            return None
-        # logger.debug(f"RPC Response for {method}: {result.get('result')}")
-        return result.get('result')
-    except requests.exceptions.RequestException as e:
-        logger.error(f"Error making RPC request {method}: {e}")
+# --- Setup Logging ---
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler('funding.log')
+    ]
+)
+logger = logging.getLogger('wallet_funder')
+
+class WalletFunder:
+    def __init__(self):
+        """Initialize with Web3 connection and deployer address."""
+        self.rpc_url = os.getenv('MAINNET_FORK_RPC_URL', DEFAULT_RPC_URL)
+        logger.info(f"Initializing Web3 connection to {self.rpc_url}")
+        self.w3 = self._init_web3()
+        self.deployer_address = self._get_deployer_address()
+        logger.info(f"Using deployer address: {self.deployer_address}")
+
+    def _init_web3(self) -> Web3:
+        """Initialize and verify Web3 connection."""
+        for attempt in range(MAX_RETRIES):
+            try:
+                w3 = Web3(HTTPProvider(self.rpc_url, request_kwargs={'timeout': 60}))
+                
+                # Verify connection
+                if w3.is_connected():
+                    logger.info(f"Connected to chain ID: {w3.eth.chain_id}")
+                    return w3
+                raise ConnectionError("Web3 not connected")
+                
+            except Exception as e:
+                logger.error(f"Connection attempt {attempt + 1} failed: {str(e)}")
+                if attempt == MAX_RETRIES - 1:
+                    logger.critical("Failed to connect to Web3 provider")
+                    sys.exit(1)
+                sleep(RETRY_DELAY)
+        raise ConnectionError("Web3 initialization failed")
+
+    def _get_deployer_address(self) -> str:
+        """Get and validate deployer address."""
+        address = os.getenv('DEPLOYER_ADDRESS')
+        if not address:
+            logger.critical("DEPLOYER_ADDRESS not set")
+            sys.exit(1)
+        
+        try:
+            return self.w3.to_checksum_address(address)
+        except ValueError as e:
+            logger.critical(f"Invalid address format: {str(e)}")
+            sys.exit(1)
+
+    def make_rpc_request(self, method: str, params: list) -> Optional[Dict]:
+        """Make JSON-RPC request with retries."""
+        payload = {
+            "jsonrpc": "2.0",
+            "method": method,
+            "params": params,
+            "id": 1
+        }
+        
+        for attempt in range(MAX_RETRIES):
+            try:
+                response = requests.post(
+                    self.rpc_url,
+                    json=payload,
+                    timeout=60
+                )
+                response.raise_for_status()
+                result = response.json()
+                
+                if 'error' in result:
+                    logger.error(f"RPC error: {result['error']}")
+                    return None
+                return result.get('result')
+                
+            except requests.exceptions.RequestException as e:
+                logger.error(f"Request failed (attempt {attempt + 1}): {str(e)}")
+                if attempt == MAX_RETRIES - 1:
+                    return None
+                sleep(RETRY_DELAY)
         return None
 
-def impersonate_and_transfer(token_address, token_symbol, whale_address, recipient, amount_human, decimals):
-    """Impersonates whale, checks balance, and transfers tokens."""
-    logger.info(f"\nAttempting to transfer {amount_human} {token_symbol} from whale {whale_address[:6]}...")
-    token_contract = None
-    impersonation_active = False
-    success = False
-    try:
-        token_contract = get_contract(token_address, "IERC20") # Use get_contract helper
-
-        # 1. Impersonate account
-        logger.info(f"Impersonating {token_symbol} whale {whale_address}...")
-        if make_rpc_request("hardhat_impersonateAccount", [whale_address]) is None:
-            logger.error(f"Failed to start impersonating whale {whale_address}.")
+    def set_eth_balance(self, address: str, eth_amount: float) -> bool:
+        """Set ETH balance for an address."""
+        try:
+            checksum_addr = self.w3.to_checksum_address(address)
+            wei_amount = self.w3.to_wei(eth_amount, 'ether')
+            
+            logger.info(f"Setting balance for {checksum_addr[:10]}... to {eth_amount} ETH")
+            
+            result = self.make_rpc_request(
+                "hardhat_setBalance",
+                [checksum_addr, hex(wei_amount)]
+            )
+            
+            if result is None:
+                logger.error("Failed to set balance via RPC")
+                return False
+                
+            # Verify new balance
+            new_balance = self.w3.eth.get_balance(checksum_addr)
+            if new_balance >= wei_amount:
+                logger.info(f"✅ New balance: {self.w3.from_wei(new_balance, 'ether')} ETH")
+                return True
+            else:
+                logger.error(f"Balance verification failed")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Error setting balance: {str(e)}")
             return False
-        impersonation_active = True
 
-        # Give the whale some ETH for gas if needed
-        whale_eth_balance = w3.eth.get_balance(whale_address)
-        if whale_eth_balance < Web3.to_wei(0.1, 'ether'): # Ensure whale has at least 0.1 ETH
-             logger.info(f"Setting 1 ETH balance for whale {whale_address[:6]} to cover gas...")
-             set_eth_balance(whale_address, 1)
+    def transfer_tokens(self, token_symbol: str, token_config: Dict[str, Any]) -> bool:
+        """Complete token transfer process."""
+        whale_addr = None
+        try:
+            token_addr = self.w3.to_checksum_address(token_config['address'])
+            whale_addr = self.w3.to_checksum_address(token_config['whale'])
+            amount = int(token_config['amount'] * (10 ** token_config['decimals']))
+            
+            logger.info(f"\n=== Processing {token_symbol} transfer ===")
+            
+            # 1. Impersonate whale
+            if not self._impersonate_account(whale_addr):
+                return False
+                
+            # 2. Fund whale with ETH for gas
+            if not self._ensure_eth_balance(whale_addr, MIN_ETH_BALANCE):
+                return False
+                
+            # 3. Execute token transfer
+            return self._execute_token_transfer(
+                token_symbol,
+                token_addr,
+                whale_addr,
+                amount,
+                token_config['decimals']
+            )
+            
+        except Exception as e:
+            logger.error(f"Transfer failed: {str(e)}")
+            return False
+        finally:
+            if whale_addr:
+                self._stop_impersonating_account(whale_addr)
 
-        # 2. Check Whale's Token Balance
-        logger.info(f"Checking {token_symbol} balance of impersonated whale {whale_address}...")
-        whale_balance_wei = token_contract.functions.balanceOf(whale_address).call()
-        required_amount_wei = int(amount_human * (10 ** decimals))
-        readable_balance = whale_balance_wei / (10**decimals)
-        logger.info(f"Whale {token_symbol} balance: {readable_balance:.4f}, Required: {amount_human}")
+    def _impersonate_account(self, address: str) -> bool:
+        """Impersonate an account."""
+        logger.info(f"Impersonating {address[:10]}...")
+        result = self.make_rpc_request("hardhat_impersonateAccount", [address])
+        return result is not None
 
-        if whale_balance_wei < required_amount_wei:
-            logger.error(f"Impersonated whale has insufficient {token_symbol} balance ({readable_balance:.4f})")
-            return False # Failure due to balance
+    def _stop_impersonating_account(self, address: str) -> bool:
+        """Stop impersonating an account."""
+        logger.info(f"Stopping impersonation of {address[:10]}...")
+        result = self.make_rpc_request("hardhat_stopImpersonatingAccount", [address])
+        return result is not None
 
-        # 3. Build and Send Transaction using send_transaction helper
-        logger.info(f"Building & sending {token_symbol} transfer transaction...")
-        transfer_func = token_contract.functions.transfer(recipient, required_amount_wei)
-        tx_params = {'from': whale_address} # 'nonce', 'gas', etc., added by send_transaction
+    def _ensure_eth_balance(self, address: str, min_eth: float) -> bool:
+        """Ensure address has sufficient ETH."""
+        min_wei = self.w3.to_wei(min_eth, 'ether')
+        current_balance = self.w3.eth.get_balance(address)
+        
+        if current_balance >= min_wei:
+            logger.info(f"Account has sufficient ETH")
+            return True
+            
+        funding_amount = max(min_eth, 1.0)
+        logger.info(f"Funding with {funding_amount} ETH...")
+        return self.set_eth_balance(address, funding_amount)
 
-        receipt = send_transaction(transfer_func.build_transaction(tx_params))
+    def _execute_token_transfer(self, token_symbol: str, token_addr: str, 
+                              whale_addr: str, amount_wei: int, decimals: int) -> bool:
+        """Execute token transfer."""
+        try:
+            token_contract = self.w3.eth.contract(address=token_addr, abi=ERC20_ABI)
+            
+            # Check balance
+            whale_balance = token_contract.functions.balanceOf(whale_addr).call()
+            if whale_balance < amount_wei:
+                logger.error("Insufficient token balance")
+                return False
+                
+            # Prepare transaction
+            tx_data = token_contract.functions.transfer(
+                self.deployer_address,
+                amount_wei
+            ).build_transaction({
+                'from': whale_addr,
+                'gasPrice': self.w3.eth.gas_price
+            })
+            
+            # Estimate gas
+            try:
+                gas_estimate = token_contract.functions.transfer(
+                    self.deployer_address,
+                    amount_wei
+                ).estimate_gas({'from': whale_addr})
+                tx_data['gas'] = int(gas_estimate * GAS_BUFFER)
+            except Exception as e:
+                logger.error(f"Gas estimation failed: {str(e)}")
+                return False
+                
+            # Send transaction
+            tx_hash = self.make_rpc_request("eth_sendTransaction", [{
+                'from': whale_addr,
+                'to': token_addr,
+                'data': tx_data['data'],
+                'gas': hex(tx_data['gas']),
+                'gasPrice': hex(tx_data['gasPrice']),
+                'value': '0x0'
+            }])
+            
+            if not tx_hash:
+                logger.error("Failed to send transaction")
+                return False
+                
+            # Wait for receipt
+            receipt = self.w3.eth.wait_for_transaction_receipt(tx_hash, timeout=120)
+            if receipt.status == 1:
+                logger.info("✅ Transfer successful")
+                return True
+            else:
+                logger.error("Transaction reverted")
+                return False
+                
+        except Exception as e:
+            logger.error(f"Transfer execution failed: {str(e)}")
+            return False
 
-        if receipt and receipt.status == 1:
-            logger.info(f"✅ Transferred {amount_human} {token_symbol} from {whale_address[:6]}... to {recipient[:6]}... (tx: {receipt.transactionHash.hex()})")
-            success = True
-        else:
-            logger.error(f"❌ {token_symbol} transfer transaction failed or reverted.")
+def main():
+    try:
+        logger.info("\n=== Starting Wallet Funding ===")
+        
+        funder = WalletFunder()
+        success = True
+        
+        # Fund deployer with ETH
+        logger.info("\n[1/2] Funding deployer with ETH...")
+        if not funder.set_eth_balance(funder.deployer_address, 100.0):
+            logger.error("ETH funding failed")
             success = False
-
+        
+        # Transfer tokens
+        logger.info("\n[2/2] Transferring tokens...")
+        for symbol, config in TOKEN_CONFIG.items():
+            logger.info(f"\nProcessing {symbol}...")
+            if not funder.transfer_tokens(symbol, config):
+                logger.error(f"{symbol} transfer failed")
+                success = False
+        
+        if success:
+            logger.info("\n✅ All operations completed")
+            sys.exit(0)
+        else:
+            logger.error("\n‼️ Some operations failed")
+            sys.exit(1)
+            
     except Exception as e:
-        logger.exception(f"❌ ERROR during impersonate_and_transfer for {token_symbol}: {e}")
-        success = False
-    finally:
-        # 4. Stop impersonating (always attempt this)
-        if impersonation_active:
-             logger.info(f"Stopping impersonation for {whale_address}...")
-             make_rpc_request("hardhat_stopImpersonatingAccount", [whale_address])
-    return success
+        logger.critical(f"Fatal error: {str(e)}")
+        sys.exit(1)
 
-
-def set_eth_balance(address, eth_amount):
-    """Sets the ETH balance of an address using hardhat_setBalance."""
-    logger.info(f"Setting ETH balance for {address[:6]}... to {eth_amount} ETH")
-    try:
-        checksum_address = Web3.to_checksum_address(address) # Ensure checksum
-        hex_balance = hex(w3.to_wei(eth_amount, 'ether'))
-        if make_rpc_request("hardhat_setBalance", [checksum_address, hex_balance]) is None:
-            logger.error(f"❌ Failed request to set ETH balance for {checksum_address[:6]}...")
-            return False
-        logger.info(f"✅ ETH balance set request sent for {checksum_address[:6]}...")
-        # Verify balance after setting (optional, adds slight delay)
-        # time.sleep(1)
-        # new_balance = w3.eth.get_balance(checksum_address)
-        # logger.info(f"   New balance confirmed: {w3.from_wei(new_balance, 'ether')} ETH")
-        return True
-    except Exception as e:
-        logger.exception(f"❌ ERROR setting ETH balance for {address[:6]}: {e}")
-        return False
-
-# --- Main Execution ---
-logger.info("\n--- Funding Deployer Wallet ---")
-overall_success = True
-
-# 1. Set Deployer's ETH balance
-if not set_eth_balance(MY_ADDRESS, 100): # Set 100 ETH for deployer
-     overall_success = False
-     logger.warning("Could not set deployer ETH balance, subsequent steps might fail.")
-
-# 2. Transfer WETH from Whale to Deployer
-weth_success = impersonate_and_transfer(WETH_ADDRESS, "WETH", WETH_WHALE, MY_ADDRESS, WETH_AMOUNT, 18)
-if not weth_success:
-     logger.error("!!!!!!!!!!!!!!!! WETH Funding Failed !!!!!!!!!!!!!!!!")
-     overall_success = False
-
-# 3. Transfer USDC from Whale to Deployer
-usdc_success = impersonate_and_transfer(USDC_ADDRESS, "USDC", USDC_WHALE, MY_ADDRESS, USDC_AMOUNT, 6)
-if not usdc_success:
-     logger.error("!!!!!!!!!!!!!!!! USDC Funding Failed !!!!!!!!!!!!!!!!")
-     overall_success = False
-
-
-# --- Final Status ---
-if overall_success:
-    logger.info("\n--- Wallet Funding Script Finished Successfully ---")
-    sys.exit(0) # Exit with success code
-else:
-    logger.error("\n--- Wallet Funding Script Finished with Errors ---")
-    sys.exit(1) # Exit with error code
+if __name__ == "__main__":
+    main()

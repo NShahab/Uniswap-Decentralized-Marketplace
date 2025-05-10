@@ -1,0 +1,3 @@
+timestamp,contract_type,action_taken,tx_hash,predictedPrice_api,predictedTick_calculated,actualPrice_pool,sqrtPriceX96_pool,currentTick_pool,targetTickLower_calculated,targetTickUpper_calculated,finalTickLower_contract,finalTickUpper_contract,liquidity_contract,gas_used,gas_cost_eth,error_message
+2025-05-10 15:25:57,Predictive,funding_failed,,2213.1327070140837,-99650,,1364316565626712095697100696183249,195086,0,0,0,0,0,0,0.0,Contract funding failed before adjustment call
+2025-05-10 16:21:42,Predictive,tx_success_adjusted,4b156f73eae74e18d62cfe14ffa7fe57dd048b663a00b849963aa2d11da97656,2245.318851928711,-199155,2.9653170678279655e+20,1364316565626712095697100696183249,195086,0,0,-199180,-199130,168846183878172262818244,572354,0.00185835861702335,
