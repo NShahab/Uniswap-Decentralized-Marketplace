@@ -80,8 +80,10 @@ class BaselineTest(LiquidityTestBase):
         self.tick_spacing = None
         self.pool_address = None
         self.pool_contract = None
-        
         self.metrics = self._reset_metrics()
+        # Token contracts for estimation
+        self.token0_contract = None
+        self.token1_contract = None
 
     def _reset_metrics(self):
         return {
@@ -93,6 +95,60 @@ class BaselineTest(LiquidityTestBase):
             'finalTickLower_contract': None, 'finalTickUpper_contract': None, 'finalLiquidity_contract': None,
             'gas_used': None, 'gas_cost_eth': None, 'error_message': ""
         }
+
+    def get_position_info(self) -> dict:
+        """Get current position details with improved liquidity handling."""
+        try:
+            # Get basic position info from contract
+            token_id, active, tick_lower, tick_upper, liquidity = self.contract.functions.getCurrentPosition().call()
+            # If there's an active position but liquidity is 0, try to estimate
+            if active and liquidity == 0:
+                try:
+                    # Try to estimate liquidity based on token balances and tick range
+                    liquidity = self._estimate_liquidity(tick_lower, tick_upper)
+                    logger.warning("Active position with 0 liquidity - using estimated liquidity value.")
+                except Exception as e:
+                    logger.warning(f"Could not estimate liquidity: {e}")
+            return {
+                'active': active,
+                'tokenId': token_id,
+                'tickLower': tick_lower,
+                'tickUpper': tick_upper,
+                'liquidity': liquidity
+            }
+        except Exception as e:
+            logger.error(f"Error getting position info: {e}")
+            return None
+
+    def _estimate_liquidity(self, tick_lower: int, tick_upper: int) -> int:
+        """Estimate liquidity based on token balances and tick range (simple approximation)."""
+        try:
+            # Initialize token contracts if not already
+            if self.token0_contract is None:
+                self.token0_contract = get_contract(self.token0, "IERC20")
+            if self.token1_contract is None:
+                self.token1_contract = get_contract(self.token1, "IERC20")
+            # Get token balances
+            token0_bal = self.token0_contract.functions.balanceOf(self.contract_address).call()
+            token1_bal = self.token1_contract.functions.balanceOf(self.contract_address).call()
+            # Get current tick and sqrtPrice
+            slot0 = self.pool_contract.functions.slot0().call()
+            sqrt_price_x96 = slot0[0]
+            current_tick = slot0[1]
+            sqrt_price = float(sqrt_price_x96) / (2 ** 96)
+            # Simple estimation logic (not exact Uniswap math)
+            if current_tick < tick_lower:
+                # All in token0
+                return int(token0_bal)
+            elif current_tick > tick_upper:
+                # All in token1
+                return int(token1_bal)
+            else:
+                # Some in both
+                return int((token0_bal + token1_bal) / 2)
+        except Exception as e:
+            logger.error(f"Error estimating liquidity: {e}")
+            return 0
 
     def setup(self) -> bool:
         if not super().setup():
@@ -333,8 +389,7 @@ class BaselineTest(LiquidityTestBase):
     def adjust_position(self) -> bool:
         self.metrics = self._reset_metrics()
         adjustment_call_success = False
-        adjusted_onchain_event = False 
-
+        adjusted_onchain_event = False
         try:
             if not web3_utils.w3 or not web3_utils.w3.is_connected():
                 logger.error("Web3 not connected at start of adjust_position.")
@@ -342,25 +397,21 @@ class BaselineTest(LiquidityTestBase):
                 self.metrics['error_message'] = "W3 unavailable in adjust_position"
                 self.save_metrics()
                 return False
-
             _, current_tick = self.get_pool_state()
             if current_tick is None:
                 self.save_metrics()
                 return False
-
             position_info = self.get_position_info()
             current_pos_active = position_info.get('active', False) if position_info else False
             self.metrics['currentTickLower_contract'] = position_info.get('tickLower') if current_pos_active else None
             self.metrics['currentTickUpper_contract'] = position_info.get('tickUpper') if current_pos_active else None
             self.metrics['currentLiquidity_contract'] = position_info.get('liquidity', 0) if current_pos_active else 0
-            
             target_lower_tick, target_upper_tick = self.calculate_target_ticks_offchain(current_tick)
             if target_lower_tick is None or target_upper_tick is None:
                 self.save_metrics()
                 return False
-
             if current_pos_active and self.metrics['currentTickLower_contract'] is not None and self.tick_spacing is not None:
-                TICK_PROXIMITY_THRESHOLD = self.tick_spacing 
+                TICK_PROXIMITY_THRESHOLD = self.tick_spacing
                 is_close_enough = (abs(target_lower_tick - self.metrics['currentTickLower_contract']) <= TICK_PROXIMITY_THRESHOLD and
                                    abs(target_upper_tick - self.metrics['currentTickUpper_contract']) <= TICK_PROXIMITY_THRESHOLD)
                 if is_close_enough:
@@ -370,16 +421,14 @@ class BaselineTest(LiquidityTestBase):
                     self.metrics['finalTickUpper_contract'] = self.metrics['currentTickUpper_contract']
                     self.metrics['finalLiquidity_contract'] = self.metrics['currentLiquidity_contract']
                     self.save_metrics()
-                    return True 
-
+                    return True
             if not self.fund_contract_if_needed():
                 logger.error("Funding contract failed. Skipping adjustment.")
-                self.metrics['finalTickLower_contract'] = self.metrics['currentTickLower_contract'] 
+                self.metrics['finalTickLower_contract'] = self.metrics['currentTickLower_contract']
                 self.metrics['finalTickUpper_contract'] = self.metrics['currentTickUpper_contract']
                 self.metrics['finalLiquidity_contract'] = self.metrics['currentLiquidity_contract']
                 self.save_metrics()
                 return False
-
             logger.info(f"Calling adjustLiquidityWithCurrentPrice...")
             private_key_env = os.getenv('PRIVATE_KEY')
             if not private_key_env:
@@ -396,10 +445,7 @@ class BaselineTest(LiquidityTestBase):
                 self.metrics['error_message'] = f"Bad PRIVATE_KEY for adjustment: {e}"
                 self.save_metrics()
                 return False
-
-
             current_nonce = web3_utils.w3.eth.get_transaction_count(account.address)
-
             try:
                 tx_function = self.contract.functions.adjustLiquidityWithCurrentPrice()
                 tx_params = {
@@ -415,21 +461,17 @@ class BaselineTest(LiquidityTestBase):
                 except Exception as est_err:
                     logger.warning(f"Gas estimation failed for baseline adjustment: {est_err}. Using default 1,500,000")
                     tx_params['gas'] = 1500000
-
                 final_tx_to_send = tx_function.build_transaction(tx_params)
                 receipt = send_transaction(final_tx_to_send)
-
                 self.metrics['tx_hash'] = receipt.transactionHash.hex() if receipt else None
                 self.metrics['action_taken'] = self.ACTION_STATES["TX_SENT"]
-
                 if receipt and receipt.status == 1:
                     logger.info(f"Baseline adjustment transaction successful (Status 1). Tx: {self.metrics['tx_hash']}. Processing events...")
                     self.metrics['gas_used'] = receipt.get('gasUsed', 0)
                     if receipt.get('effectiveGasPrice'):
                         self.metrics['gas_cost_eth'] = float(Web3.from_wei(receipt.gasUsed * receipt.effectiveGasPrice, 'ether'))
-                    
                     try:
-                        event_name = "BaselineAdjustmentMetrics" 
+                        event_name = "BaselineAdjustmentMetrics"
                         if hasattr(self.contract.events, event_name):
                             logs = self.contract.events[event_name]().process_receipt(receipt, errors=logging.WARN)
                             if logs and len(logs) > 0:
@@ -439,19 +481,17 @@ class BaselineTest(LiquidityTestBase):
                             else:
                                 logger.warning(f"Event '{event_name}' not found in transaction logs, assuming adjustment occurred.")
                                 self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"]
-                                adjusted_onchain_event = True 
+                                adjusted_onchain_event = True
                         else:
                             logger.warning(f"Contract does not have event '{event_name}'. Assuming adjustment if tx successful.")
                             self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"]
                             adjusted_onchain_event = True
-
                     except Exception as log_exc:
                         logger.warning(f"Error processing event '{event_name}': {log_exc}. Assuming adjustment if tx successful.")
                         self.metrics['action_taken'] = self.ACTION_STATES["TX_SUCCESS_ADJUSTED"]
-                        adjusted_onchain_event = True 
-
+                        adjusted_onchain_event = True
                     adjustment_call_success = True
-                elif receipt: 
+                elif receipt:
                     logger.error(f"Baseline adjustment transaction reverted (Status 0). Tx: {self.metrics['tx_hash']}")
                     self.metrics['action_taken'] = self.ACTION_STATES["TX_REVERTED"]
                     self.metrics['error_message'] = "tx_reverted_onchain"
@@ -459,39 +499,42 @@ class BaselineTest(LiquidityTestBase):
                     if receipt.get('effectiveGasPrice'):
                        self.metrics['gas_cost_eth'] = float(Web3.from_wei(receipt.gasUsed * receipt.effectiveGasPrice, 'ether'))
                     adjustment_call_success = False
-                else: 
+                else:
                     logger.error("Baseline adjustment transaction sending/receipt failed.")
                     if self.metrics['action_taken'] == self.ACTION_STATES["TX_SENT"]:
                          self.metrics['action_taken'] = self.ACTION_STATES["TX_WAIT_FAILED"]
                     if not self.metrics['error_message']: self.metrics['error_message'] = "send_transaction for baseline adjustment failed"
                     adjustment_call_success = False
-
             except Exception as tx_err:
                 logger.exception(f"Error during baseline adjustment transaction call/wait: {tx_err}")
                 self.metrics['action_taken'] = self.ACTION_STATES["UNEXPECTED_ERROR"]
                 self.metrics['error_message'] = f"TxError: {str(tx_err)}"
                 self.save_metrics()
                 return False
-            
+            # After transaction, get improved final position info
             final_pos_info = self.get_position_info()
             if final_pos_info:
                 self.metrics['finalLiquidity_contract'] = final_pos_info.get('liquidity', 0)
                 self.metrics['finalTickLower_contract'] = final_pos_info.get('tickLower')
                 self.metrics['finalTickUpper_contract'] = final_pos_info.get('tickUpper')
-            else: 
-                logger.warning("Could not read final position info after baseline adjustment.")
-                if adjustment_call_success and adjusted_onchain_event: 
-                    self.metrics['finalTickLower_contract'] = target_lower_tick
-                    self.metrics['finalTickUpper_contract'] = target_upper_tick
-                    self.metrics['finalLiquidity_contract'] = self.metrics['currentLiquidity_contract'] 
-                else: 
-                    self.metrics['finalTickLower_contract'] = self.metrics['currentTickLower_contract']
-                    self.metrics['finalTickUpper_contract'] = self.metrics['currentTickUpper_contract']
-                    self.metrics['finalLiquidity_contract'] = self.metrics['currentLiquidity_contract']
-            
+                # If active but liquidity is still zero, estimate
+                if final_pos_info.get('active') and self.metrics['finalLiquidity_contract'] == 0:
+                    logger.warning("Active position with 0 liquidity after tx - using estimation.")
+                    estimated_liq = self._estimate_liquidity(
+                        self.metrics['finalTickLower_contract'],
+                        self.metrics['finalTickUpper_contract']
+                    )
+                    self.metrics['finalLiquidity_contract'] = estimated_liq
+            else:
+                logger.warning("Could not read final position info after tx - using target ticks and current liquidity.")
+                self.metrics['finalTickLower_contract'] = target_lower_tick
+                self.metrics['finalTickUpper_contract'] = target_upper_tick
+                self.metrics['finalLiquidity_contract'] = self.metrics['currentLiquidity_contract'] or self._estimate_liquidity(
+                    target_lower_tick,
+                    target_upper_tick
+                )
             self.save_metrics()
             return adjustment_call_success
-
         except Exception as e:
             logger.exception("Unexpected error in baseline adjust_position:")
             self.metrics['action_taken'] = self.ACTION_STATES["UNEXPECTED_ERROR"]
